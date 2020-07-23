@@ -9,7 +9,10 @@ namespace Blu4Net
     public class Status
     {
         [XmlElement("volume")]
-        public string Volume;
+        public string VolumePercent;
+
+        [XmlElement("db")]
+        public string VolumeDB;
 
         [XmlElement("service")]
         public string Service;

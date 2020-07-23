@@ -9,6 +9,9 @@ namespace Blu4Net
     public class SyncStatus
     {
         [XmlAttribute("volume")]
-        public int Volume;
+        public int VolumePercent;
+
+        [XmlAttribute("db")]
+        public string VolumeDB;
     }
 }
