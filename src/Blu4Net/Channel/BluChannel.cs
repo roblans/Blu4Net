@@ -45,7 +45,7 @@ namespace Blu4Net.Channel
                 Query = parameters != null && parameters.Count > 0 ? parameters.ToString() : null,
             }.Uri;
 
-            using (var client = new HttpClient() { Timeout = timeout } )
+            using (var client = new HttpClient() { Timeout = timeout })
             {
                 using (var response = await client.GetAsync(requestUri, cancellationToken))
                 using (var stream = await response.Content.ReadAsStreamAsync())
@@ -82,7 +82,7 @@ namespace Blu4Net.Channel
                             longPollingTag = response.ETag;
                             observer.OnNext(response);
                         }
-                        catch(OperationCanceledException)
+                        catch (OperationCanceledException)
                         {
                             observer.OnCompleted();
                             break;
@@ -100,7 +100,7 @@ namespace Blu4Net.Channel
             {
                 parameters["seek"] = seek.Value.ToString();
             }
-            
+
             return await SendRequest<PlayResponse>("Play", parameters);
         }
 
@@ -127,6 +127,20 @@ namespace Blu4Net.Channel
         public async Task<BackResponse> Back()
         {
             return await SendRequest<BackResponse>("Back");
+        }
+
+        public async Task<VolumeResponse> SetVolume(int percentage)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["level"] = percentage.ToString();
+            return await SendRequest<VolumeResponse>("Volume", parameters);
+        }
+
+        public async Task<VolumeResponse> Mute(bool mute)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["mute"] = mute ? 1.ToString() : 0.ToString();
+            return await SendRequest<VolumeResponse>("Volume", parameters);
         }
     }
 }

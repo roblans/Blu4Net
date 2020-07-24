@@ -93,5 +93,29 @@ namespace ChannelTests
             var response = await channel.Back();
             Assert.IsNotNull(response);
         }
+
+        [TestMethod]
+        public async Task Channel_SetVolume()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.SetVolume(10);
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_MuteOn()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.Mute(true);
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_MuteOff()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.Mute(false);
+            Assert.IsNotNull(response);
+        }
     }
 }
