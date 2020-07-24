@@ -18,21 +18,5 @@ namespace PlayerTests
         {
             _player = (await Player.DiscoverPlayers()).First();
         }
-
-        [TestMethod]
-        public async Task Player_GetSyncStatus()
-        {
-            var response = await _player.GetSyncStatus();
-
-            Assert.IsNotNull(response);
-        }
-
-        [TestMethod]
-        public async Task Player_GetStatus()
-        {
-            var response = await _player.GetStatus();
-
-            Assert.IsNotNull(response);
-        }
     }
 }

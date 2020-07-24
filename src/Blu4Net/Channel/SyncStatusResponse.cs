@@ -25,5 +25,10 @@ namespace Blu4Net.Channel
 
         [XmlAttribute("mac")]
         public string MAC;
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

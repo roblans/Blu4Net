@@ -43,20 +43,5 @@ namespace Blu4Net
 
             return players.ToArray();
         }
-        
-        public async Task<StatusResponse> GetStatus()
-        {
-            return await _channel.GetStatus();
-        }
-
-        public async Task<SyncStatusResponse> GetSyncStatus()
-        {
-            return await _channel.GetSyncStatus();
-        }
-
-        //public async Task<SyncStatus> PollSyncStatus(string etag)
-        //{
-        //    return await _channel.Poll<SyncStatus>("SyncStatus", 60, etag);
-        //}
     }
 }

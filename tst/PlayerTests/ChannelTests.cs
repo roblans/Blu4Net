@@ -15,7 +15,7 @@ namespace PlayerTests
         static Uri Enpoint = new UriBuilder("http", "192.168.0.27", 11000).Uri;
 
         [TestMethod]
-        public async Task Player_ObserveStatusChanges()
+        public async Task Channel_ObserveStatus()
         {
             var channel = new BluChannel(Enpoint);
             var response = await channel.StatusChanges.Timeout(TimeSpan.FromSeconds(1)).FirstOrDefaultAsync();
@@ -23,10 +23,50 @@ namespace PlayerTests
         }
 
         [TestMethod]
-        public async Task Player_ObserveSyncStatusChanges()
+        public async Task Channel_ObserveSyncStatus()
         {
             var channel = new BluChannel(Enpoint);
             var response = await channel.SyncStatusChanges.Timeout(TimeSpan.FromSeconds(1)).FirstOrDefaultAsync();
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_ObserveVolume()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.VolumeChanges.Timeout(TimeSpan.FromSeconds(1)).FirstOrDefaultAsync();
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_Play()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.Play();
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_PlaySeek()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.Play(30);
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_Pause()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.Pause();
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_PauseToggle()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.Pause(toggle: true);
             Assert.IsNotNull(response);
         }
     }

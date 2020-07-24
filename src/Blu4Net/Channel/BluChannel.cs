@@ -21,7 +21,7 @@ namespace Blu4Net.Channel
         public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(5);
         public IObservable<StatusResponse> StatusChanges { get; }
         public IObservable<SyncStatusResponse> SyncStatusChanges { get; }
-
+        public IObservable<VolumeResponse> VolumeChanges { get; }
         public BluChannel(Uri endpoint)
         {
             Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
@@ -31,6 +31,9 @@ namespace Blu4Net.Channel
 
             // recommended long polling interval for SyncStatus changes is 180 seconds
             SyncStatusChanges = LongPolling<SyncStatusResponse>("SyncStatus", 180);
+
+            // recommended long polling interval for is not specified (use 100)
+            VolumeChanges = LongPolling<VolumeResponse>("Volume", 100);
         }
 
         private async Task<T> SendRequest<T>(string request, NameValueCollection parameters, TimeSpan timeout, CancellationToken cancellationToken)
@@ -38,7 +41,7 @@ namespace Blu4Net.Channel
             var requestUri = new UriBuilder(Endpoint)
             {
                 Path = request,
-                Query = parameters?.ToString(),
+                Query = parameters != null && parameters.Count > 0 ? parameters.ToString() : null,
             }.Uri;
 
             using (var client = new HttpClient() { Timeout = timeout } )
@@ -89,14 +92,26 @@ namespace Blu4Net.Channel
             });
         }
 
-        public async Task<StatusResponse> GetStatus()
+        public async Task<PlayResponse> Play(int? seek = null)
         {
-            return await SendRequest<StatusResponse>("Status");
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            if (seek != null)
+            {
+                parameters["seek"] = seek.Value.ToString();
+            }
+            
+            return await SendRequest<PlayResponse>("Play", parameters);
         }
 
-        public async Task<SyncStatusResponse> GetSyncStatus()
+        public async Task<PlayResponse> Pause(bool toggle = false)
         {
-            return await SendRequest<SyncStatusResponse>("SyncStatus");
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            if (toggle)
+            {
+                parameters["toggle"] = 1.ToString();
+            }
+
+            return await SendRequest<PlayResponse>("Pause", parameters);
         }
     }
 }
