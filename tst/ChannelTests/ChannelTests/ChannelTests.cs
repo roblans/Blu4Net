@@ -7,7 +7,7 @@ using Blu4Net.Channel;
 using System;
 using System.Reactive.Linq;
 
-namespace PlayerTests
+namespace ChannelTests
 {
     [TestClass]
     public class ChannelTests

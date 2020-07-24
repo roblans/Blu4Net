@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blu4Net", "src\Blu4Net\Blu4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tst", "tst", "{3881E2C2-BD51-4716-8118-335A02977401}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayerTests", "tst\PlayerTests\PlayerTests.csproj", "{41931981-37F5-4A24-A57D-DD3DC918EB33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayerTests", "tst\PlayerTests\PlayerTests.csproj", "{41931981-37F5-4A24-A57D-DD3DC918EB33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannelTests", "tst\ChannelTests\ChannelTests\ChannelTests.csproj", "{8390B7EB-DC81-43A9-A44C-CA790680B36C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,10 @@ Global
 		{41931981-37F5-4A24-A57D-DD3DC918EB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41931981-37F5-4A24-A57D-DD3DC918EB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41931981-37F5-4A24-A57D-DD3DC918EB33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8390B7EB-DC81-43A9-A44C-CA790680B36C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8390B7EB-DC81-43A9-A44C-CA790680B36C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8390B7EB-DC81-43A9-A44C-CA790680B36C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8390B7EB-DC81-43A9-A44C-CA790680B36C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C2E9DFAA-73EC-4080-8A91-D0B30865B86B} = {69B0255E-55D8-4438-B16D-4B4D179220FE}
 		{41931981-37F5-4A24-A57D-DD3DC918EB33} = {3881E2C2-BD51-4716-8118-335A02977401}
+		{8390B7EB-DC81-43A9-A44C-CA790680B36C} = {3881E2C2-BD51-4716-8118-335A02977401}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED1817FB-BA64-40D8-A0CC-840703659480}

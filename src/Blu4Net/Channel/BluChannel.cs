@@ -22,6 +22,7 @@ namespace Blu4Net.Channel
         public IObservable<StatusResponse> StatusChanges { get; }
         public IObservable<SyncStatusResponse> SyncStatusChanges { get; }
         public IObservable<VolumeResponse> VolumeChanges { get; }
+
         public BluChannel(Uri endpoint)
         {
             Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
