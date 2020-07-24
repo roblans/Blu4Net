@@ -134,13 +134,13 @@ namespace ChannelTests
             var channel = new BluChannel(Enpoint);
             var listing = await channel.GetPlayQueueListing();
             var status = await channel.GetPlayQueueStatus();
-            Assert.AreEqual(status.Length, listing.Songs.Length);
+            Assert.AreEqual(status.Length, listing.Tracks.Length);
         }
 
         [TestMethod]
         public async Task Channel_GetPlayQueueListingSliced()
         {
-            var songs = new List<PlayQueueSong>();
+            var tracks = new List<PlayQueueTrack>();
             var index  = 0;
             var length = 100;
 
@@ -148,15 +148,15 @@ namespace ChannelTests
             while (true)
             {
                 var listing = await channel.GetPlayQueueListing(index, length);
-                if (listing.Songs == null)
+                if (listing.Tracks == null)
                     break;
                 
-                songs.AddRange(listing.Songs);
-                index += listing.Songs.Length;
+                tracks.AddRange(listing.Tracks);
+                index += listing.Tracks.Length;
             }
 
             var status = await channel.GetPlayQueueStatus();
-            Assert.AreEqual(status.Length, songs.Count);
+            Assert.AreEqual(status.Length, tracks.Count);
         }
     }
 }
