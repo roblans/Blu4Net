@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Blu4Net\Blu4Net.csproj" />
+    <ProjectReference Include="..\..\src\Blu4Net\Blu4Net.csproj" />
   </ItemGroup>
 
 </Project>
