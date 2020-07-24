@@ -77,5 +77,21 @@ namespace PlayerTests
             var response = await channel.Stop();
             Assert.IsNotNull(response);
         }
+
+        [TestMethod]
+        public async Task Channel_Skip()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.Skip();
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_Back()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.Back();
+            Assert.IsNotNull(response);
+        }
     }
 }

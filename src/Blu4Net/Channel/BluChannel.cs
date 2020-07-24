@@ -118,5 +118,14 @@ namespace Blu4Net.Channel
         {
             return await SendRequest<StopResponse>("Stop");
         }
+        public async Task<SkipResponse> Skip()
+        {
+            return await SendRequest<SkipResponse>("Skip");
+        }
+
+        public async Task<BackResponse> Back()
+        {
+            return await SendRequest<BackResponse>("Back");
+        }
     }
 }

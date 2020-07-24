@@ -38,11 +38,20 @@ namespace Blu4Net.Channel
         [XmlElement("title3")]
         public string Title3;
 
+        [XmlElement("song")]
+        public int Song;
+
         [XmlElement("totlen")]
-        public int TrackLength;
+        public int TotalLength;
 
         [XmlElement("secs")]
-        public int TrackPosition;
+        public int Seconds;
+
+        [XmlElement("shuffle")]
+        public int Shuffle;
+
+        [XmlElement("repeat")]
+        public int Repeat;
 
         [XmlElement("is_preset")]
         public int PresetNumber;
