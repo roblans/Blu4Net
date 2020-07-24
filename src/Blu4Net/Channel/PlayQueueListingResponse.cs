@@ -23,7 +23,7 @@ namespace Blu4Net.Channel
         }
     }
 
-    [XmlRoot("playlist")]
+    [XmlRoot("song")]
     public class PlayQueueTrack
     {
         [XmlElement("title")]
