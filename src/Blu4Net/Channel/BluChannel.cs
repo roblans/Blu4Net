@@ -113,5 +113,10 @@ namespace Blu4Net.Channel
 
             return await SendRequest<PlayResponse>("Pause", parameters);
         }
+
+        public async Task<StopResponse> Stop()
+        {
+            return await SendRequest<StopResponse>("Stop");
+        }
     }
 }
