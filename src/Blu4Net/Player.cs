@@ -44,12 +44,12 @@ namespace Blu4Net
             return players.ToArray();
         }
         
-        public async Task<Status> GetStatus()
+        public async Task<StatusResponse> GetStatus()
         {
             return await _channel.GetStatus();
         }
 
-        public async Task<SyncStatus> GetSyncStatus()
+        public async Task<SyncStatusResponse> GetSyncStatus()
         {
             return await _channel.GetSyncStatus();
         }

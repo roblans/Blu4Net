@@ -34,18 +34,5 @@ namespace PlayerTests
 
             Assert.IsNotNull(response);
         }
-
-        [TestMethod]
-        public async Task Player_ObserveSyncStatus()
-        {
-            var channel = new BluChannel(new UriBuilder("http", "192.168.0.27", 11000).Uri);
-            var subscription = channel.StartObserving<SyncStatus>("SyncStatus", 100).Subscribe(value =>
-            {
-                System.Diagnostics.Trace.WriteLine($"Volume: {value.VolumePercent}%, {value.VolumeDB}dB");
-            });
-
-            await Task.Delay(10000);
-            subscription.Dispose();
-        }
     }
 }
