@@ -18,7 +18,7 @@ namespace Blu4Net.Channel
     {
         static readonly TimeSpan InfiniteTimeout = TimeSpan.FromMilliseconds(System.Threading.Timeout.Infinite);
         public Uri Endpoint { get; }
-        public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(5);
+        public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(30);
         public IObservable<StatusResponse> StatusChanges { get; }
         public IObservable<SyncStatusResponse> SyncStatusChanges { get; }
         public IObservable<VolumeResponse> VolumeChanges { get; }
@@ -136,11 +136,31 @@ namespace Blu4Net.Channel
             return await SendRequest<VolumeResponse>("Volume", parameters);
         }
 
-        public async Task<VolumeResponse> Mute(bool mute)
+        public async Task<VolumeResponse> Mute(bool mute = true)
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["mute"] = mute ? 1.ToString() : 0.ToString();
             return await SendRequest<VolumeResponse>("Volume", parameters);
+        }
+
+        public async Task<PlayQueueStatusResponse> GetPlayQueueStatus()
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["length"] = 1.ToString();
+            return await SendRequest<PlayQueueStatusResponse>("Playlist", parameters);
+        }
+
+        public async Task<PlayQueueListingResponse> GetPlayQueueListing()
+        {
+            return await SendRequest<PlayQueueListingResponse>("Playlist");
+        }
+
+        public async Task<PlayQueueListingResponse> GetPlayQueueListing(int start, int end)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["start"] = start.ToString();
+            parameters["end"] = end.ToString();
+            return await SendRequest<PlayQueueListingResponse>("Playlist", parameters);
         }
     }
 }

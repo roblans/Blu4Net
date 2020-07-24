@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Blu4Net.Channel;
 using System;
 using System.Reactive.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ChannelTests
 {
@@ -116,6 +118,45 @@ namespace ChannelTests
             var channel = new BluChannel(Enpoint);
             var response = await channel.Mute(false);
             Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_GetPlayQueueStatus()
+        {
+            var channel = new BluChannel(Enpoint);
+            var response = await channel.GetPlayQueueStatus();
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task Channel_GetPlayQueueListing()
+        {
+            var channel = new BluChannel(Enpoint);
+            var listing = await channel.GetPlayQueueListing();
+            var status = await channel.GetPlayQueueStatus();
+            Assert.AreEqual(status.Length, listing.Songs.Length);
+        }
+
+        [TestMethod]
+        public async Task Channel_GetPlayQueueListingSliced()
+        {
+            var songs = new List<PlayQueueSong>();
+            var position = 0;
+            var length = 100;
+
+            var channel = new BluChannel(Enpoint);
+            while (true)
+            {
+                var listing = await channel.GetPlayQueueListing(position, position + length - 1);
+                if (listing.Songs == null)
+                    break;
+                
+                songs.AddRange(listing.Songs);
+                position += listing.Songs.Length;
+            }
+
+            var status = await channel.GetPlayQueueStatus();
+            Assert.AreEqual(status.Length, songs.Count);
         }
     }
 }
