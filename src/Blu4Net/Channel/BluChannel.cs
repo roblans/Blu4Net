@@ -155,11 +155,11 @@ namespace Blu4Net.Channel
             return await SendRequest<PlayQueueListingResponse>("Playlist");
         }
 
-        public async Task<PlayQueueListingResponse> GetPlayQueueListing(int start, int end)
+        public async Task<PlayQueueListingResponse> GetPlayQueueListing(int startIndex, int length)
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
-            parameters["start"] = start.ToString();
-            parameters["end"] = end.ToString();
+            parameters["start"] = startIndex.ToString();
+            parameters["end"] = (startIndex + length - 1).ToString();
             return await SendRequest<PlayQueueListingResponse>("Playlist", parameters);
         }
     }

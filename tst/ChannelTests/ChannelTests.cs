@@ -141,18 +141,18 @@ namespace ChannelTests
         public async Task Channel_GetPlayQueueListingSliced()
         {
             var songs = new List<PlayQueueSong>();
-            var position = 0;
+            var index  = 0;
             var length = 100;
 
             var channel = new BluChannel(Enpoint);
             while (true)
             {
-                var listing = await channel.GetPlayQueueListing(position, position + length - 1);
+                var listing = await channel.GetPlayQueueListing(index, length);
                 if (listing.Songs == null)
                     break;
                 
                 songs.AddRange(listing.Songs);
-                position += listing.Songs.Length;
+                index += listing.Songs.Length;
             }
 
             var status = await channel.GetPlayQueueStatus();
