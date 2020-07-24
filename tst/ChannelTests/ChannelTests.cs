@@ -45,7 +45,7 @@ namespace ChannelTests
         {
             var channel = new BluChannel(Enpoint);
             var response = await channel.Play();
-            Assert.IsNotNull(response);
+            Assert.IsTrue(response.State == "stream" || response.State == "play");
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace ChannelTests
         {
             var channel = new BluChannel(Enpoint);
             var response = await channel.Pause();
-            Assert.IsNotNull(response);
+            Assert.AreEqual("pause", response.State);
         }
 
         [TestMethod]
@@ -77,7 +77,7 @@ namespace ChannelTests
         {
             var channel = new BluChannel(Enpoint);
             var response = await channel.Stop();
-            Assert.IsNotNull(response);
+            Assert.AreEqual("stop", response.State);
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace ChannelTests
         {
             var channel = new BluChannel(Enpoint);
             var response = await channel.SetVolume(10);
-            Assert.IsNotNull(response);
+            Assert.AreEqual(10, response.Volume);
         }
 
         [TestMethod]
@@ -109,7 +109,7 @@ namespace ChannelTests
         {
             var channel = new BluChannel(Enpoint);
             var response = await channel.Mute(true);
-            Assert.IsNotNull(response);
+            Assert.AreEqual(1, response.Mute);
         }
 
         [TestMethod]
@@ -117,7 +117,7 @@ namespace ChannelTests
         {
             var channel = new BluChannel(Enpoint);
             var response = await channel.Mute(false);
-            Assert.IsNotNull(response);
+            Assert.AreEqual(0, response.Mute);
         }
 
         [TestMethod]
