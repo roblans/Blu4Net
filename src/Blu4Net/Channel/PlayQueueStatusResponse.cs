@@ -14,6 +14,9 @@ namespace Blu4Net.Channel
         [XmlElement("length")]
         public int Length;
 
+        [XmlElement("modified")]
+        public int Modified;
+
         public override string ToString()
         {
             return Name;

@@ -191,6 +191,11 @@ namespace Blu4Net.Channel
             return GetPlayQueueListing(0, 0);
         }
 
+        public async Task<ClearPlayQueueResponse> ClearPlayQueue()
+        {
+            return await SendRequest<ClearPlayQueueResponse>("Clear");
+        }
+
         public Task<ShuffleResponse> GetShuffle()
         {
             return SendRequest<ShuffleResponse>("Shuffle");

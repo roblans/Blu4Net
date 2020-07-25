@@ -220,6 +220,13 @@ namespace ChannelTests
         }
 
         [TestMethod]
+        public async Task Channel_ClearPlayQueue()
+        {
+            var response = await Channel.ClearPlayQueue();
+            Assert.AreEqual(0, response.Length);
+        }
+
+        [TestMethod]
         public async Task Channel_RepeatToggle()
         {
             var repeat = (await Channel.GetRepeat()).Repeat;

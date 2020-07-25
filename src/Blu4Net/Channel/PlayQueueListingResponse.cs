@@ -14,6 +14,9 @@ namespace Blu4Net.Channel
         [XmlAttribute("length")]
         public int Length;
 
+        [XmlAttribute("modified")]
+        public int Modified;
+
         [XmlElement("song")]
         public PlayQueueTrack[] Tracks = new PlayQueueTrack[0];
 
