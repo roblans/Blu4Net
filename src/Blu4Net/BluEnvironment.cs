@@ -12,8 +12,13 @@ namespace Blu4Net
 {
     public class BluEnvironment
     {
-        public static IObservable<Uri> PlayerEndpoints => ZeroconfResolver.Resolve("_musc._tcp.local.", TimeSpan.FromSeconds(30), 3, 2000).Select(host => GetEndpoint(host));
-        public static IObservable<BluPlayer> Players => PlayerEndpoints.SelectAsync(endpoint => BluPlayer.Connect(endpoint));
+        public static IObservable<Uri> PlayerEndpoints => ZeroconfResolver
+            .Resolve("_musc._tcp.local.", TimeSpan.FromSeconds(30), 5, 2000)
+            .Where(element => element.IPAddress != null)
+            .Select(host => GetEndpoint(host));
+
+        public static IObservable<BluPlayer> Players => PlayerEndpoints
+            .SelectAsync(endpoint => BluPlayer.Connect(endpoint));
 
         private static Uri GetEndpoint(IZeroconfHost host)
         {
