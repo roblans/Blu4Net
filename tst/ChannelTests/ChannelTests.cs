@@ -202,6 +202,13 @@ namespace ChannelTests
         }
 
         [TestMethod]
+        public async Task Channel_ClearPlayQueue()
+        {
+            var response = await Channel.ClearPlayQueue();
+            Assert.AreEqual(0, response.Length);
+        }
+
+        [TestMethod]
         public async Task Channel_GetShuffle()
         {
             var response = await Channel.GetShuffle();
@@ -223,12 +230,6 @@ namespace ChannelTests
             Assert.IsTrue(response.Repeat >= 0 && response.Repeat <= 2);
         }
 
-        [TestMethod]
-        public async Task Channel_ClearPlayQueue()
-        {
-            var response = await Channel.ClearPlayQueue();
-            Assert.AreEqual(0, response.Length);
-        }
 
         [TestMethod]
         public async Task Channel_RepeatToggle()
@@ -236,6 +237,13 @@ namespace ChannelTests
             var repeat = (await Channel.GetRepeat()).Repeat;
             var response = await Channel.SetRepeat((repeat + 1) % 3);
             Assert.AreNotEqual(repeat, response.Repeat);
+        }
+
+        [TestMethod]
+        public async Task Channel_GetPresets()
+        {
+            var response = await Channel.GetPresets();
+            Assert.IsTrue(response.Presets.Length >= 0 && response.Presets.Length <= 40);
         }
     }
 }

@@ -219,5 +219,15 @@ namespace Blu4Net.Channel
             parameters["state"] = state.ToString();
             return SendRequest<RepeatResponse>("Repeat", parameters);
         }
+
+        public async Task<PresetsResponse> GetPresets()
+        {
+            var response = await SendRequest<PresetsResponse>("Presets");
+            if (response.Presets == null)
+            {
+                response.Presets = new Preset[0];
+            }
+            return response;
+        }
     }
 }
