@@ -79,7 +79,7 @@ namespace Blu4Net.Channel
                         try
                         {
                             var response = await SendRequest<T>(request, parameters, InfiniteTimeout, cancellationToken);
-                            if (longPollingTag != null)
+                            if (!object.Equals(longPollingTag, response.ETag))
                             {
                                 observer.OnNext(response);
                             }

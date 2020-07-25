@@ -40,31 +40,40 @@ namespace ChannelTests
         [TestMethod]
         public async Task Channel_StatusChanged()
         {
+            var volume = (await Channel.GetVolume()).Volume;
+
             var response = Channel.StatusChanges
+                .Where(element => element.Volume == volume + 1)
                 .Timeout(TimeSpan.FromSeconds(10))
                 .FirstAsync();
 
-            await response;
+            await Channel.SetVolume(volume + 1);
         }
 
         [TestMethod]
         public async Task Channel_SyncStatusChanged()
         {
+            var volume = (await Channel.GetVolume()).Volume;
+
             var response = Channel.SyncStatusChanges
+                .Where(element => element.Volume == volume + 1)
                 .Timeout(TimeSpan.FromSeconds(10))
                 .FirstAsync();
 
-            await response;
+            await Channel.SetVolume(volume + 1);
         }
 
         [TestMethod]
         public async Task Channel_VolumeChanged()
         {
+            var volume = (await Channel.GetVolume()).Volume;
+
             var response = Channel.VolumeChanges
+                .Where(element => element.Volume == volume + 1)
                 .Timeout(TimeSpan.FromSeconds(10))
                 .FirstAsync();
 
-            await response;
+            await Channel.SetVolume(volume + 1);
         }
 
         [TestMethod]
