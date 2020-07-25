@@ -196,5 +196,35 @@ namespace ChannelTests
             var status = await Channel.GetPlayQueueStatus();
             Assert.AreEqual(status.Length, tracks.Count);
         }
+
+        [TestMethod]
+        public async Task Channel_GetShuffle()
+        {
+            var response = await Channel.GetShuffle();
+            Assert.IsTrue(response.Shuffle >= 0 && response.Shuffle <= 1);
+        }
+
+        [TestMethod]
+        public async Task Channel_ShuffleToggle()
+        {
+            var shuffle = (await Channel.GetShuffle()).Shuffle;
+            var response = await Channel.SetShuffle(shuffle == 0);
+            Assert.AreNotEqual(shuffle, response.Shuffle);
+        }
+
+        [TestMethod]
+        public async Task Channel_GetRepeat()
+        {
+            var response = await Channel.GetRepeat();
+            Assert.IsTrue(response.Repeat >= 0 && response.Repeat <= 2);
+        }
+
+        [TestMethod]
+        public async Task Channel_RepeatToggle()
+        {
+            var repeat = (await Channel.GetRepeat()).Repeat;
+            var response = await Channel.SetRepeat((repeat + 1) % 3);
+            Assert.AreNotEqual(repeat, response.Repeat);
+        }
     }
 }

@@ -190,5 +190,29 @@ namespace Blu4Net.Channel
         {
             return GetPlayQueueListing(0, 0);
         }
+
+        public Task<ShuffleResponse> GetShuffle()
+        {
+            return SendRequest<ShuffleResponse>("Shuffle");
+        }
+
+        public Task<ShuffleResponse> SetShuffle(bool enable = true)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["state"] = enable ? 1.ToString() : 0.ToString();
+            return SendRequest<ShuffleResponse>("Shuffle", parameters);
+        }
+
+        public Task<RepeatResponse> GetRepeat()
+        {
+            return SendRequest<RepeatResponse>("Repeat");
+        }
+
+        public Task<RepeatResponse> SetRepeat(int state)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["state"] = state.ToString();
+            return SendRequest<RepeatResponse>("Repeat", parameters);
+        }
     }
 }
