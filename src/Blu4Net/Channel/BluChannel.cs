@@ -79,8 +79,11 @@ namespace Blu4Net.Channel
                         try
                         {
                             var response = await SendRequest<T>(request, parameters, InfiniteTimeout, cancellationToken);
+                            if (longPollingTag != null)
+                            {
+                                observer.OnNext(response);
+                            }
                             longPollingTag = response.ETag;
-                            observer.OnNext(response);
                         }
                         catch (OperationCanceledException)
                         {
@@ -91,6 +94,16 @@ namespace Blu4Net.Channel
 
                 }, cancellationToken);
             });
+        }
+
+        public async Task<StatusResponse> GetStatus()
+        {
+            return await SendRequest<StatusResponse>("Status");
+        }
+
+        public async Task<SyncStatusResponse> GetSyncStatus()
+        {
+            return await SendRequest<SyncStatusResponse>("SyncStatus");
         }
 
         public async Task<PlayResponse> Play(int? seek = null)
@@ -119,6 +132,7 @@ namespace Blu4Net.Channel
         {
             return await SendRequest<StopResponse>("Stop");
         }
+
         public async Task<SkipResponse> Skip()
         {
             return await SendRequest<SkipResponse>("Skip");
@@ -127,6 +141,11 @@ namespace Blu4Net.Channel
         public async Task<BackResponse> Back()
         {
             return await SendRequest<BackResponse>("Back");
+        }
+
+        public async Task<VolumeResponse> GetVolume()
+        {
+            return await SendRequest<VolumeResponse>("Volume");
         }
 
         public async Task<VolumeResponse> SetVolume(int percentage)
@@ -150,17 +169,26 @@ namespace Blu4Net.Channel
             return await SendRequest<PlayQueueStatusResponse>("Playlist", parameters);
         }
 
-        public async Task<PlayQueueListingResponse> GetPlayQueueListing()
-        {
-            return await SendRequest<PlayQueueListingResponse>("Playlist");
-        }
-
         public async Task<PlayQueueListingResponse> GetPlayQueueListing(int startIndex, int length)
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
-            parameters["start"] = startIndex.ToString();
-            parameters["end"] = (startIndex + length - 1).ToString();
-            return await SendRequest<PlayQueueListingResponse>("Playlist", parameters);
+            if (length != 0)
+            {
+                parameters["start"] = startIndex.ToString();
+                parameters["end"] = (startIndex + length - 1).ToString();
+            }
+            
+            var response = await SendRequest<PlayQueueListingResponse>("Playlist", parameters);
+            if (response.Tracks == null)
+            {
+                response.Tracks = new PlayQueueTrack[0];
+            }
+            return response;
+        }
+
+        public Task<PlayQueueListingResponse> GetPlayQueueListing()
+        {
+            return GetPlayQueueListing(0, 0);
         }
     }
 }

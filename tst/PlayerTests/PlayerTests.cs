@@ -1,22 +1,21 @@
 using Blu4Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Net;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Blu4Net.Channel;
-using System;
 
 namespace PlayerTests
 {
     [TestClass]
     public class PlayerTests
     {
-        static Player _player;
+        static BluPlayer Player;
 
         [ClassInitialize()]
         public static async Task Initialize(TestContext testContext) 
         {
-            _player = (await Player.DiscoverPlayers()).First();
+            Player = await BluEnvironment.FindPlayers().FirstAsync();
         }
     }
 }

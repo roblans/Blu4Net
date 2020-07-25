@@ -14,126 +14,156 @@ namespace ChannelTests
     [TestClass]
     public class ChannelTests
     {
-        static Uri Enpoint = new UriBuilder("http", "192.168.0.27", 11000).Uri;
+        static BluChannel Channel;
+
+        [ClassInitialize()]
+        public static async Task Initialize(TestContext testContext)
+        {
+            var enpoint = await BluEnvironment.FindPlayerEndpoints().FirstAsync();
+            Channel = new BluChannel(enpoint);
+        }
 
         [TestMethod]
-        public async Task Channel_ObserveStatus()
+        public async Task Channel_GetStatus()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.StatusChanges.Timeout(TimeSpan.FromSeconds(1)).FirstOrDefaultAsync();
+            var response = await Channel.GetStatus();
             Assert.IsNotNull(response);
         }
 
         [TestMethod]
-        public async Task Channel_ObserveSyncStatus()
+        public async Task Channel_GetSyncStatus()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.SyncStatusChanges.Timeout(TimeSpan.FromSeconds(1)).FirstOrDefaultAsync();
+            var response = await Channel.GetSyncStatus();
             Assert.IsNotNull(response);
         }
 
         [TestMethod]
-        public async Task Channel_ObserveVolume()
+        public async Task Channel_StatusChanged()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.VolumeChanges.Timeout(TimeSpan.FromSeconds(1)).FirstOrDefaultAsync();
-            Assert.IsNotNull(response);
+            var response = Channel.StatusChanges
+                .Timeout(TimeSpan.FromSeconds(10))
+                .FirstAsync();
+
+            await response;
+        }
+
+        [TestMethod]
+        public async Task Channel_SyncStatusChanged()
+        {
+            var response = Channel.SyncStatusChanges
+                .Timeout(TimeSpan.FromSeconds(10))
+                .FirstAsync();
+
+            await response;
+        }
+
+        [TestMethod]
+        public async Task Channel_VolumeChanged()
+        {
+            var response = Channel.VolumeChanges
+                .Timeout(TimeSpan.FromSeconds(10))
+                .FirstAsync();
+
+            await response;
         }
 
         [TestMethod]
         public async Task Channel_Play()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.Play();
+            var response = await Channel.Play();
             Assert.IsTrue(response.State == "stream" || response.State == "play");
         }
 
         [TestMethod]
         public async Task Channel_PlaySeek()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.Play(30);
+            var response = await Channel.Play(30);
             Assert.IsNotNull(response);
         }
 
         [TestMethod]
         public async Task Channel_Pause()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.Pause();
+            var response = await Channel.Pause();
             Assert.AreEqual("pause", response.State);
         }
 
         [TestMethod]
         public async Task Channel_PauseToggle()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.Pause(toggle: true);
+            var response = await Channel.Pause(toggle: true);
             Assert.IsNotNull(response);
         }
 
         [TestMethod]
         public async Task Channel_Stop()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.Stop();
+            var response = await Channel.Stop();
             Assert.AreEqual("stop", response.State);
         }
 
         [TestMethod]
         public async Task Channel_Skip()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.Skip();
-            Assert.IsNotNull(response);
+            var status = await Channel.GetStatus();
+            if (status.State == "play")
+            {
+                var response = await Channel.Skip();
+                Assert.IsNotNull(response);
+            }
         }
 
         [TestMethod]
         public async Task Channel_Back()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.Back();
+            var status = await Channel.GetStatus();
+            if (status.State == "play")
+            {
+                var response = await Channel.Back();
+                Assert.IsNotNull(response);
+            }
+        }
+
+        [TestMethod]
+        public async Task Channel_GetVolume()
+        {
+            var response = await Channel.GetVolume();
             Assert.IsNotNull(response);
         }
 
         [TestMethod]
         public async Task Channel_SetVolume()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.SetVolume(10);
+            var response = await Channel.SetVolume(10);
             Assert.AreEqual(10, response.Volume);
         }
 
         [TestMethod]
         public async Task Channel_MuteOn()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.Mute(true);
+            var response = await Channel.Mute(true);
             Assert.AreEqual(1, response.Mute);
         }
 
         [TestMethod]
         public async Task Channel_MuteOff()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.Mute(false);
+            var response = await Channel.Mute(false);
             Assert.AreEqual(0, response.Mute);
         }
 
         [TestMethod]
         public async Task Channel_GetPlayQueueStatus()
         {
-            var channel = new BluChannel(Enpoint);
-            var response = await channel.GetPlayQueueStatus();
+            var response = await Channel.GetPlayQueueStatus();
             Assert.IsNotNull(response);
         }
 
         [TestMethod]
         public async Task Channel_GetPlayQueueListing()
         {
-            var channel = new BluChannel(Enpoint);
-            var listing = await channel.GetPlayQueueListing();
-            var status = await channel.GetPlayQueueStatus();
+            var listing = await Channel.GetPlayQueueListing();
+            var status = await Channel.GetPlayQueueStatus();
             Assert.AreEqual(status.Length, listing.Tracks.Length);
         }
 
@@ -144,18 +174,17 @@ namespace ChannelTests
             var index  = 0;
             var length = 100;
 
-            var channel = new BluChannel(Enpoint);
             while (true)
             {
-                var listing = await channel.GetPlayQueueListing(index, length);
-                if (listing.Tracks == null)
+                var listing = await Channel.GetPlayQueueListing(index, length);
+                if (listing.Tracks.Length == 0)
                     break;
                 
                 tracks.AddRange(listing.Tracks);
                 index += listing.Tracks.Length;
             }
 
-            var status = await channel.GetPlayQueueStatus();
+            var status = await Channel.GetPlayQueueStatus();
             Assert.AreEqual(status.Length, tracks.Count);
         }
     }
