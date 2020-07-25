@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace PlayerTests
@@ -15,7 +16,7 @@ namespace PlayerTests
         [ClassInitialize()]
         public static async Task Initialize(TestContext testContext) 
         {
-            Player = await BluEnvironment.FindPlayers().FirstAsync();
+            Player = await BluEnvironment.Players.FirstAsync();
         }
     }
 }

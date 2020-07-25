@@ -37,7 +37,7 @@ namespace Blu4Net.Channel
             VolumeChanges = LongPolling<VolumeResponse>("Volume", 100);
         }
 
-        private async Task<T> SendRequest<T>(string request, NameValueCollection parameters, TimeSpan timeout, CancellationToken cancellationToken)
+        private async Task<XDocument> SendRequest(string request, NameValueCollection parameters, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var requestUri = new UriBuilder(Endpoint)
             {
@@ -50,10 +50,15 @@ namespace Blu4Net.Channel
                 using (var response = await client.GetAsync(requestUri, cancellationToken))
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
-                    var document = XDocument.Load(stream);
-                    return document.Deserialize<T>();
+                    return XDocument.Load(stream);
                 }
             }
+        }
+
+        private async Task<T> SendRequest<T>(string request, NameValueCollection parameters, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            var document = await SendRequest(request, parameters, timeout, cancellationToken);
+            return document.Deserialize<T>();
         }
 
         private Task<T> SendRequest<T>(string request, NameValueCollection parameters = null)

@@ -19,7 +19,7 @@ namespace ChannelTests
         [ClassInitialize()]
         public static async Task Initialize(TestContext testContext)
         {
-            var enpoint = await BluEnvironment.FindPlayerEndpoints().FirstAsync();
+            var enpoint = await BluEnvironment.PlayerEndpoints.FirstAsync();
             Channel = new BluChannel(enpoint);
         }
 
