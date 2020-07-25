@@ -12,6 +12,8 @@ namespace Blu4Net
 {
     public class BluEnvironment
     {
+        const int DefaultEndpointPort = 11000;
+        
         public static IObservable<Uri> PlayerEndpoints => ZeroconfResolver
             .Resolve("_musc._tcp.local.", TimeSpan.FromSeconds(30), 5, 2000)
             .Where(element => element.IPAddress != null)
@@ -23,7 +25,7 @@ namespace Blu4Net
         private static Uri GetEndpoint(IZeroconfHost host)
         {
             var address = IPAddress.Parse(host.IPAddress);
-            var port = 11000;
+            var port = DefaultEndpointPort;
 
             if (host.Services.TryGetValue("_musc._tcp.local.", out var service))
             {
