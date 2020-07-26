@@ -79,8 +79,8 @@ namespace ChannelTests
         [TestMethod]
         public async Task Channel_Play()
         {
-            var queue = await Channel.GetPlayQueueStatus();
-            if (queue.Length > 0)
+            var status = await Channel.GetPlaylistStatus();
+            if (status.Length > 0)
             {
                 var response = await Channel.Play();
                 Assert.AreEqual("play", response.State);
@@ -166,30 +166,30 @@ namespace ChannelTests
         }
 
         [TestMethod]
-        public async Task Channel_GetPlayQueueStatus()
+        public async Task Channel_GetPlaylistStatus()
         {
-            var response = await Channel.GetPlayQueueStatus();
+            var response = await Channel.GetPlaylistStatus();
             Assert.IsNotNull(response);
         }
 
         [TestMethod]
-        public async Task Channel_GetPlayQueueListing()
+        public async Task Channel_GetPlaylistList()
         {
-            var listing = await Channel.GetPlayQueueListing();
-            var status = await Channel.GetPlayQueueStatus();
+            var listing = await Channel.GetPlaylistList();
+            var status = await Channel.GetPlaylistStatus();
             Assert.AreEqual(status.Length, listing.Tracks.Length);
         }
 
         [TestMethod]
-        public async Task Channel_GetPlayQueueListingSliced()
+        public async Task Channel_GetPlaylistListBatched()
         {
-            var tracks = new List<PlayQueueTrack>();
+            var tracks = new List<PlaylistTrack>();
             var index  = 0;
             var length = 100;
 
             while (true)
             {
-                var listing = await Channel.GetPlayQueueListing(index, length);
+                var listing = await Channel.GetPlaylistList(index, length);
                 if (listing.Tracks.Length == 0)
                     break;
                 
@@ -197,14 +197,14 @@ namespace ChannelTests
                 index += listing.Tracks.Length;
             }
 
-            var status = await Channel.GetPlayQueueStatus();
+            var status = await Channel.GetPlaylistStatus();
             Assert.AreEqual(status.Length, tracks.Count);
         }
 
         [TestMethod]
-        public async Task Channel_ClearPlayQueue()
+        public async Task Channel_Clear()
         {
-            var response = await Channel.ClearPlayQueue();
+            var response = await Channel.Clear();
             Assert.AreEqual(0, response.Length);
         }
 

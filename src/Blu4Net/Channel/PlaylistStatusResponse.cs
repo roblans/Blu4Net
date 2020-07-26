@@ -6,17 +6,20 @@ using System.Xml.Serialization;
 namespace Blu4Net.Channel
 {
     [XmlRoot("playlist")]
-    public class ClearPlayQueueResponse
+    public class PlaylistStatusResponse
     {
-        [XmlAttribute("length")]
+        [XmlElement("name")]
+        public string Name;
+
+        [XmlElement("length")]
         public int Length;
 
-        [XmlAttribute("modified")]
+        [XmlElement("modified")]
         public int Modified;
 
         public override string ToString()
         {
-            return Length.ToString();
+            return Name;
         }
     }
 }

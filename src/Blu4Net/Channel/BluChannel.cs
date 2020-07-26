@@ -173,14 +173,14 @@ namespace Blu4Net.Channel
             return await SendRequest<VolumeResponse>("Volume", parameters);
         }
 
-        public async Task<PlayQueueStatusResponse> GetPlayQueueStatus()
+        public async Task<PlaylistStatusResponse> GetPlaylistStatus()
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["length"] = 1.ToString();
-            return await SendRequest<PlayQueueStatusResponse>("Playlist", parameters);
+            return await SendRequest<PlaylistStatusResponse>("Playlist", parameters);
         }
 
-        public async Task<PlayQueueListingResponse> GetPlayQueueListing(int startIndex, int length)
+        public async Task<PlaylistListingResponse> GetPlaylistList(int startIndex, int length)
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             if (length != 0)
@@ -189,22 +189,22 @@ namespace Blu4Net.Channel
                 parameters["end"] = (startIndex + length - 1).ToString();
             }
             
-            var response = await SendRequest<PlayQueueListingResponse>("Playlist", parameters);
+            var response = await SendRequest<PlaylistListingResponse>("Playlist", parameters);
             if (response.Tracks == null)
             {
-                response.Tracks = new PlayQueueTrack[0];
+                response.Tracks = new PlaylistTrack[0];
             }
             return response;
         }
 
-        public Task<PlayQueueListingResponse> GetPlayQueueListing()
+        public Task<PlaylistListingResponse> GetPlaylistList()
         {
-            return GetPlayQueueListing(0, 0);
+            return GetPlaylistList(0, 0);
         }
 
-        public async Task<ClearPlayQueueResponse> ClearPlayQueue()
+        public async Task<ClearResponse> Clear()
         {
-            return await SendRequest<ClearPlayQueueResponse>("Clear");
+            return await SendRequest<ClearResponse>("Clear");
         }
 
         public Task<ShuffleResponse> GetShuffle()

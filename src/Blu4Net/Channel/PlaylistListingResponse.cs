@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace Blu4Net.Channel
 {
     [XmlRoot("playlist")]
-    public class PlayQueueListingResponse
+    public class PlaylistListingResponse
     {
         [XmlAttribute("name")]
         public string Name;
@@ -18,7 +18,7 @@ namespace Blu4Net.Channel
         public int Modified;
 
         [XmlElement("song")]
-        public PlayQueueTrack[] Tracks = new PlayQueueTrack[0];
+        public PlaylistTrack[] Tracks = new PlaylistTrack[0];
 
         public override string ToString()
         {
@@ -27,7 +27,7 @@ namespace Blu4Net.Channel
     }
 
     [XmlRoot("song")]
-    public class PlayQueueTrack
+    public class PlaylistTrack
     {
         [XmlElement("title")]
         public string Title;
