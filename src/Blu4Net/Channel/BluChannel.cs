@@ -249,7 +249,7 @@ namespace Blu4Net.Channel
             return GetPlaylistList(0, int.MaxValue);
         }
 
-        public async Task<ClearResponse> Clear()
+        public async Task<ClearResponse> ClearPlaylist()
         {
             return await SendRequest<ClearResponse>("Clear");
         }
