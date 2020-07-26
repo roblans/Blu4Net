@@ -19,7 +19,7 @@ namespace Blu4Net.Channel
 
         public override string ToString()
         {
-            return Volume.ToString();
+            return $"{Volume}% {Decibel}db";
         }
     }
 }
