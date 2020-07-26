@@ -46,6 +46,14 @@ namespace Blu4Net.Channel
             }
         }
 
+        private Task<XDocument> SendRequest(string request, NameValueCollection parameters = null)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            return SendRequest(request, parameters, Timeout, CancellationToken.None);
+        }
+
         private async Task<T> SendRequest<T>(string request, NameValueCollection parameters, TimeSpan timeout, CancellationToken cancellationToken)
         {
             if (request == null)
@@ -292,6 +300,16 @@ namespace Blu4Net.Channel
                 response.Presets = new Preset[0];
             }
             return response;
+        }
+
+        public Task<XDocument> BrowseContent(string key = null)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            if (key != null)
+            {
+                parameters["key"] = key;
+            }
+            return SendRequest("Browse", parameters);
         }
     }
 }

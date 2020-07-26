@@ -236,5 +236,14 @@ namespace ChannelTests
             var response = await Channel.GetPresets();
             Assert.IsTrue(response.Presets.Length >= 0 && response.Presets.Length <= 40);
         }
+
+        [TestMethod]
+        public async Task Channel_BrowseContent()
+        {
+            var content = await Channel.BrowseContent();
+            var library = await Channel.BrowseContent("LocalMusic:");
+            var albums = await Channel.BrowseContent("LocalMusic:bySection/%2FAlbums%3Fservice%3DLocalMusic");
+            var albumsA = await Channel.BrowseContent("/Albums?service=LocalMusic&limit=50&&section=A");
+        }
     }
 }
