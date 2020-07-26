@@ -13,14 +13,6 @@ namespace Blu4Net
     public class BluEnvironment
     {
         const int DefaultEndpointPort = 11000;
-        
-        public static IObservable<Uri> PlayerEndpoints => ZeroconfResolver
-            .Resolve("_musc._tcp.local.", TimeSpan.FromSeconds(30), 5, 2000)
-            .Where(element => element.IPAddress != null)
-            .Select(host => GetEndpoint(host));
-
-        public static IObservable<BluPlayer> Players => PlayerEndpoints
-            .SelectAsync(endpoint => BluPlayer.Connect(endpoint));
 
         private static Uri GetEndpoint(IZeroconfHost host)
         {
@@ -33,6 +25,31 @@ namespace Blu4Net
             }
 
             return new UriBuilder("http", address.ToString(), port).Uri;
+        }
+
+        public static IObservable<Uri> ResolveEndpoints(TimeSpan scanTime)
+        {
+            return ZeroconfResolver
+              .Resolve("_musc._tcp.local.", scanTime)
+              .Where(element => element.IPAddress != null)
+              .Select(host => GetEndpoint(host));
+        }
+
+        public static IObservable<Uri> ResolveEndpoints()
+        {
+            return ResolveEndpoints(TimeSpan.FromSeconds(2));
+        }
+
+        public static IObservable<BluPlayer> ResolvePlayers(TimeSpan scanTime)
+        {
+            return  ResolveEndpoints(scanTime)
+            .SelectAsync(endpoint => BluPlayer.Connect(endpoint));
+        }
+
+        public static IObservable<BluPlayer> ResolvePlayers()
+        {
+            return ResolveEndpoints(TimeSpan.FromSeconds(2))
+            .SelectAsync(endpoint => BluPlayer.Connect(endpoint));
         }
     }
 }

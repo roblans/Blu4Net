@@ -16,7 +16,7 @@ namespace PlayerTests
         [ClassInitialize()]
         public static async Task Initialize(TestContext testContext) 
         {
-            Player = await BluEnvironment.Players.FirstAsync();
+            Player = await BluEnvironment.ResolvePlayers().FirstAsync();
         }
     }
 }

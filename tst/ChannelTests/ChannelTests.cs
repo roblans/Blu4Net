@@ -19,7 +19,7 @@ namespace ChannelTests
         [ClassInitialize()]
         public static async Task Initialize(TestContext testContext)
         {
-            var enpoint = await BluEnvironment.PlayerEndpoints.FirstAsync();
+            var enpoint = await BluEnvironment.ResolveEndpoints().FirstAsync();
             Channel = new BluChannel(enpoint);
         }
 
@@ -42,7 +42,7 @@ namespace ChannelTests
         {
             var volume = (await Channel.GetVolume()).Volume;
 
-            var response = Channel.StatusChanges
+            var response = Channel.StatusChanges()
                 .Where(element => element.Volume == volume + 1)
                 .Timeout(TimeSpan.FromSeconds(10))
                 .FirstAsync();
@@ -55,7 +55,7 @@ namespace ChannelTests
         {
             var volume = (await Channel.GetVolume()).Volume;
 
-            var response = Channel.SyncStatusChanges
+            var response = Channel.SyncStatusChanges()
                 .Where(element => element.Volume == volume + 1)
                 .Timeout(TimeSpan.FromSeconds(10))
                 .FirstAsync();
@@ -68,7 +68,7 @@ namespace ChannelTests
         {
             var volume = (await Channel.GetVolume()).Volume;
 
-            var response = Channel.VolumeChanges
+            var response = Channel.VolumeChanges()
                 .Where(element => element.Volume == volume + 1)
                 .Timeout(TimeSpan.FromSeconds(10))
                 .FirstAsync();
