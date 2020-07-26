@@ -54,7 +54,7 @@ namespace Blu4Net.Channel
         public int Repeat;
 
         [XmlElement("is_preset")]
-        public int PresetNumber;
+        public int PresetID;
 
         [XmlElement("preset_name")]
         public string PresetName;

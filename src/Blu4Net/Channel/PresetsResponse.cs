@@ -33,11 +33,11 @@ namespace Blu4Net.Channel
         public int Volume = -1;
 
         [XmlAttribute("id")]
-        public int Number;
+        public int ID;
 
         public override string ToString()
         {
-            return Number.ToString();
+            return ID.ToString();
         }
     }
 

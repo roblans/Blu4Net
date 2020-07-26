@@ -177,7 +177,7 @@ namespace ChannelTests
         {
             var response = await Channel.GetPlaylist();
             var status = await Channel.GetPlaylistStatus();
-            Assert.AreEqual(status.Length, response.Tracks.Length);
+            Assert.AreEqual(status.Length, response.Songs.Length);
         }
 
         [TestMethod]
@@ -186,7 +186,7 @@ namespace ChannelTests
             var length = 0;
             await foreach (var listing in Channel.GetPlaylist(500))
             {
-                length += listing.Tracks.Length;
+                length += listing.Songs.Length;
             }
             var status = await Channel.GetPlaylistStatus();
             Assert.AreEqual(status.Length, length);

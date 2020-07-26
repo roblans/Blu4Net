@@ -222,9 +222,9 @@ namespace Blu4Net.Channel
             }
             
             var response = await SendRequest<PlaylistResponse>("Playlist", parameters);
-            if (response.Tracks == null)
+            if (response.Songs == null)
             {
-                response.Tracks = new PlaylistTrack[0];
+                response.Songs = new PlaylistSong[0];
             }
             return response;
         }
@@ -236,11 +236,11 @@ namespace Blu4Net.Channel
             while (true)
             {
                 var listing = await GetPlaylist(startIndex, batchSize);
-                if (listing.Tracks.Length == 0)
+                if (listing.Songs.Length == 0)
                     break;
 
                 yield return listing;
-                startIndex += listing.Tracks.Length;
+                startIndex += listing.Songs.Length;
             }
         }
 

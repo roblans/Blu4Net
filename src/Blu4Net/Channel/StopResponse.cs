@@ -10,6 +10,7 @@ namespace Blu4Net.Channel
     {
         [XmlText()]
         public string State;
+
         public override string ToString()
         {
             return State;

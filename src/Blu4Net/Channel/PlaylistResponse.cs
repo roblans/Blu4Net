@@ -18,7 +18,7 @@ namespace Blu4Net.Channel
         public int Modified;
 
         [XmlElement("song")]
-        public PlaylistTrack[] Tracks = new PlaylistTrack[0];
+        public PlaylistSong[] Songs = new PlaylistSong[0];
 
         public override string ToString()
         {
@@ -27,7 +27,7 @@ namespace Blu4Net.Channel
     }
 
     [XmlRoot("song")]
-    public class PlaylistTrack
+    public class PlaylistSong
     {
         [XmlElement("title")]
         public string Title;
