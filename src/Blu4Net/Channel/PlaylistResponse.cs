@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace Blu4Net.Channel
 {
     [XmlRoot("playlist")]
-    public class PlaylistListResponse
+    public class PlaylistResponse
     {
         [XmlAttribute("name")]
         public string Name;

@@ -207,7 +207,7 @@ namespace Blu4Net.Channel
             return await SendRequest<PlaylistStatusResponse>("Playlist", parameters);
         }
 
-        private async Task<PlaylistListResponse> GetPlaylistList(int startIndex, int length)
+        private async Task<PlaylistResponse> GetPlaylist(int startIndex, int length)
         {
             if (startIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(startIndex), "Value must be greater than zero");
@@ -221,7 +221,7 @@ namespace Blu4Net.Channel
                 parameters["end"] = (startIndex + length - 1).ToString();
             }
             
-            var response = await SendRequest<PlaylistListResponse>("Playlist", parameters);
+            var response = await SendRequest<PlaylistResponse>("Playlist", parameters);
             if (response.Tracks == null)
             {
                 response.Tracks = new PlaylistTrack[0];
@@ -229,13 +229,13 @@ namespace Blu4Net.Channel
             return response;
         }
 
-        public async IAsyncEnumerable<PlaylistListResponse> GetPlaylistList(int batchSize)
+        public async IAsyncEnumerable<PlaylistResponse> GetPlaylist(int batchSize)
         {
             var startIndex = 0;
 
             while (true)
             {
-                var listing = await GetPlaylistList(startIndex, batchSize);
+                var listing = await GetPlaylist(startIndex, batchSize);
                 if (listing.Tracks.Length == 0)
                     break;
 
@@ -244,9 +244,9 @@ namespace Blu4Net.Channel
             }
         }
 
-        public Task<PlaylistListResponse> GetPlaylistList()
+        public Task<PlaylistResponse> GetPlaylist()
         {
-            return GetPlaylistList(0, int.MaxValue);
+            return GetPlaylist(0, int.MaxValue);
         }
 
         public async Task<ClearResponse> ClearPlaylist()

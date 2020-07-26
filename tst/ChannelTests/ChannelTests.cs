@@ -173,18 +173,18 @@ namespace ChannelTests
         }
 
         [TestMethod]
-        public async Task Channel_GetPlaylistList()
+        public async Task Channel_GetPlaylist()
         {
-            var response = await Channel.GetPlaylistList();
+            var response = await Channel.GetPlaylist();
             var status = await Channel.GetPlaylistStatus();
             Assert.AreEqual(status.Length, response.Tracks.Length);
         }
 
         [TestMethod]
-        public async Task Channel_GetPlaylistListBatched()
+        public async Task Channel_GetPlaylistBatched()
         {
             var length = 0;
-            await foreach (var listing in Channel.GetPlaylistList(500))
+            await foreach (var listing in Channel.GetPlaylist(500))
             {
                 length += listing.Tracks.Length;
             }
