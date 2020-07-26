@@ -104,7 +104,7 @@ namespace ChannelTests
         [TestMethod]
         public async Task Channel_PauseToggle()
         {
-            var response = await Channel.Pause(toggle: true);
+            var response = await Channel.Pause(toggle: 1);
             Assert.IsNotNull(response);
         }
 
@@ -154,14 +154,14 @@ namespace ChannelTests
         [TestMethod]
         public async Task Channel_MuteOn()
         {
-            var response = await Channel.Mute(true);
+            var response = await Channel.Mute(1);
             Assert.AreEqual(1, response.Mute);
         }
 
         [TestMethod]
         public async Task Channel_MuteOff()
         {
-            var response = await Channel.Mute(false);
+            var response = await Channel.Mute(0);
             Assert.AreEqual(0, response.Mute);
         }
 
@@ -219,7 +219,7 @@ namespace ChannelTests
         public async Task Channel_ShuffleToggle()
         {
             var shuffle = (await Channel.GetShuffle()).Shuffle;
-            var response = await Channel.SetShuffle(shuffle == 0);
+            var response = await Channel.SetShuffle(shuffle == 0 ? 1 : 0);
             Assert.AreNotEqual(shuffle, response.Shuffle);
         }
 

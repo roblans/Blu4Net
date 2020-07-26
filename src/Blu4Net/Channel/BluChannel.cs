@@ -27,6 +27,9 @@ namespace Blu4Net.Channel
 
         private async Task<XDocument> SendRequest(string request, NameValueCollection parameters, TimeSpan timeout, CancellationToken cancellationToken)
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
             var requestUri = new UriBuilder(Endpoint)
             {
                 Path = request,
@@ -45,17 +48,28 @@ namespace Blu4Net.Channel
 
         private async Task<T> SendRequest<T>(string request, NameValueCollection parameters, TimeSpan timeout, CancellationToken cancellationToken)
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
             var document = await SendRequest(request, parameters, timeout, cancellationToken);
             return document.Deserialize<T>();
         }
 
         private Task<T> SendRequest<T>(string request, NameValueCollection parameters = null)
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
             return SendRequest<T>(request, parameters, Timeout, CancellationToken.None);
         }
 
         private IObservable<T> LongPolling<T>(string request, int timeout) where T : LongPollingResponse
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            if (timeout < 0)
+                throw new ArgumentOutOfRangeException(nameof(timeout), "Value must be greater than zero");
+
             return Observable.Create<T>((observer, cancellationToken) =>
             {
                 return Task.Run(async () =>
@@ -117,23 +131,30 @@ namespace Blu4Net.Channel
             return await SendRequest<SyncStatusResponse>("SyncStatus");
         }
 
-        public async Task<PlayResponse> Play(int? seek = null)
+        public Task<PlayResponse> Play()
         {
-            var parameters = HttpUtility.ParseQueryString(string.Empty);
-            if (seek != null)
-            {
-                parameters["seek"] = seek.Value.ToString();
-            }
-
-            return await SendRequest<PlayResponse>("Play", parameters);
+            return SendRequest<PlayResponse>("Play");
         }
 
-        public async Task<PlayResponse> Pause(bool toggle = false)
+        public Task<PlayResponse> Play(int seek)
         {
+            if (seek < 0)
+                throw new ArgumentException(nameof(seek), "Value must be greater than zero");
+
             var parameters = HttpUtility.ParseQueryString(string.Empty);
-            if (toggle)
+            parameters["seek"] = seek.ToString();
+            return SendRequest<PlayResponse>("Play", parameters);
+        }
+
+        public async Task<PlayResponse> Pause(int toggle = 0)
+        {
+            if (toggle < 0 || toggle > 1)
+                throw new ArgumentOutOfRangeException(nameof(toggle), "toggle must be 0 or 1");
+
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            if (toggle == 1)
             {
-                parameters["toggle"] = 1.ToString();
+                parameters["toggle"] = toggle.ToString();
             }
 
             return await SendRequest<PlayResponse>("Pause", parameters);
@@ -161,15 +182,21 @@ namespace Blu4Net.Channel
 
         public async Task<VolumeResponse> SetVolume(int percentage)
         {
+            if (percentage < 0 || percentage > 100)
+                throw new ArgumentOutOfRangeException(nameof(percentage), "Value must be between 0 and 100");
+
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["level"] = percentage.ToString();
             return await SendRequest<VolumeResponse>("Volume", parameters);
         }
 
-        public async Task<VolumeResponse> Mute(bool mute = true)
+        public async Task<VolumeResponse> Mute(int mute = 1)
         {
+            if (mute < 0 || mute > 1)
+                throw new ArgumentOutOfRangeException(nameof(mute), "Value must be 0 or 1");
+
             var parameters = HttpUtility.ParseQueryString(string.Empty);
-            parameters["mute"] = mute ? 1.ToString() : 0.ToString();
+            parameters["mute"] = mute.ToString();
             return await SendRequest<VolumeResponse>("Volume", parameters);
         }
 
@@ -182,6 +209,11 @@ namespace Blu4Net.Channel
 
         public async Task<PlaylistListingResponse> GetPlaylistList(int startIndex, int length)
         {
+            if (startIndex < 0)
+                throw new ArgumentOutOfRangeException(nameof(startIndex), "Value must be greater than zero");
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length), "Value must be greater than zero");
+
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             if (length != 0)
             {
@@ -212,10 +244,13 @@ namespace Blu4Net.Channel
             return SendRequest<ShuffleResponse>("Shuffle");
         }
 
-        public Task<ShuffleResponse> SetShuffle(bool enable = true)
+        public Task<ShuffleResponse> SetShuffle(int state = 1)
         {
+            if (state < 0 || state > 1)
+                throw new ArgumentOutOfRangeException(nameof(state), "Value must be 0 or 1");
+
             var parameters = HttpUtility.ParseQueryString(string.Empty);
-            parameters["state"] = enable ? 1.ToString() : 0.ToString();
+            parameters["state"] = state.ToString();
             return SendRequest<ShuffleResponse>("Shuffle", parameters);
         }
 
@@ -226,6 +261,9 @@ namespace Blu4Net.Channel
 
         public Task<RepeatResponse> SetRepeat(int state)
         {
+            if (state < 0 || state > 2)
+                throw new ArgumentOutOfRangeException(nameof(state), "Value must be 0, 1 or 2");
+
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["state"] = state.ToString();
             return SendRequest<RepeatResponse>("Repeat", parameters);
