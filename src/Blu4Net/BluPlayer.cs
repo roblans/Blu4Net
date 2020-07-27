@@ -22,7 +22,8 @@ namespace Blu4Net
         public IObservable<int> VolumeChanges { get; }
         public int Volume { get; private set; }
 
-        //public ObserverableValue<PlayerState> State { get; private set; }
+        public IObservable<PlayerState> StateChanges { get; }
+        public PlayerState State { get; private set; }
 
         private BluPlayer(BluChannel channel, SyncStatusResponse syncStatus, StatusResponse status)
         {
@@ -30,9 +31,16 @@ namespace Blu4Net
             _syncStatus = syncStatus ?? throw new ArgumentNullException(nameof(syncStatus));
             _status = status ?? throw new ArgumentNullException(nameof(status));
 
+            var subscription = default(IDisposable);
             Volume = status.Volume;
             VolumeChanges = channel.VolumeChanges.Select(response => response.Volume);
-            var subscription = VolumeChanges.Subscribe(volume => Volume = volume);
+            subscription = VolumeChanges.Subscribe(volume => Volume = volume);
+            _subscriptions.Add(subscription);
+
+            State = ParseState(status.State);
+            StateChanges = channel.StatusChanges.Select(response => ParseState(response.State));
+            subscription = StateChanges.Subscribe(state => State = state);
+            _subscriptions.Add(subscription);
         }
 
         private static PlayerState ParseState(string value)
@@ -40,11 +48,11 @@ namespace Blu4Net
             switch (value)
             {
                 case "play":
-                    return PlayerState.Play;
+                    return PlayerState.Playing;
                 case "pause":
-                    return PlayerState.Pause;
+                    return PlayerState.Paused;
                 case "stop":
-                    return PlayerState.Stop;
+                    return PlayerState.Stopped;
                 case "connecting":
                     return PlayerState.Connecting;
             }
@@ -69,6 +77,24 @@ namespace Blu4Net
         {
             var response = await _channel.SetVolume(value);
             return Volume = response.Volume;
+        }
+
+        public async Task<PlayerState> Play()
+        {
+            var response = await _channel.Play();
+            return State = ParseState(response.State);
+        }
+
+        public async Task<PlayerState> Pause(bool toggle = false)
+        {
+            var response = await _channel.Pause(toggle ? 0 : 1);
+            return State = ParseState(response.State);
+        }
+
+        public async Task<PlayerState> Stop()
+        {
+            var response = await _channel.Stop();
+            return State = ParseState(response.State);
         }
 
         public override string ToString()

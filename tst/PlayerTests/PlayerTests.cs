@@ -36,8 +36,41 @@ namespace PlayerTests
             // wait until the observerable completes
             var newVolume = await observerable.Timeout(TimeSpan.FromSeconds(2));
 
+            // volume changed?
+            Assert.AreNotEqual(oldVolume, newVolume);
+
             // restore old volume
             var restoredVolume = await Player.SetVolume(oldVolume);
+
+            // volume restored?
+            Assert.AreEqual(oldVolume, restoredVolume);
+        }
+
+        [TestMethod]
+        public async Task Player_PausePlay()
+        {
+            if (Player.State == PlayerState.Playing)
+            {
+                // pause the player
+                var oldState = await Player.Pause();
+
+                // player paused?
+                Assert.AreEqual(PlayerState.Paused, oldState);
+
+                // create an observerable which waits until the player starts playing
+                var observerable = Player.StateChanges
+                    .Where(element => element == PlayerState.Playing)
+                    .FirstAsync();
+
+                // start playing
+                await Player.Play();
+
+                // wait until the observerable completes
+                var newState = await observerable.Timeout(TimeSpan.FromSeconds(2));
+
+                // player playing?
+                Assert.AreEqual(PlayerState.Playing, newState);
+            }
         }
     }
 }

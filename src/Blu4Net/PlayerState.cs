@@ -7,9 +7,9 @@ namespace Blu4Net
     public enum PlayerState
     {
         Unknown,
-        Play,
-        Pause,
-        Stop,
+        Playing,
+        Paused,
+        Stopped,
         Connecting,
     }
 }
