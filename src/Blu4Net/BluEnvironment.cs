@@ -37,7 +37,7 @@ namespace Blu4Net
 
         public static IObservable<Uri> ResolveEndpoints()
         {
-            return ResolveEndpoints(TimeSpan.FromSeconds(2));
+            return ResolveEndpoints(TimeSpan.FromSeconds(5));
         }
 
         public static IObservable<BluPlayer> ResolvePlayers(TimeSpan scanTime)
@@ -48,8 +48,7 @@ namespace Blu4Net
 
         public static IObservable<BluPlayer> ResolvePlayers()
         {
-            return ResolveEndpoints(TimeSpan.FromSeconds(2))
-            .SelectAsync(endpoint => BluPlayer.Connect(endpoint));
+            return ResolvePlayers(TimeSpan.FromSeconds(5));
         }
     }
 }

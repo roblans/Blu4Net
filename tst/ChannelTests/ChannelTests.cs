@@ -253,22 +253,28 @@ namespace ChannelTests
             if (libraryKey != null)
             {
                 var library = await Channel.BrowseContent(libraryKey.BrowseKey);
-                var artistsKey = library.Items.FirstOrDefault(element => element.Text == "Artists");
-                if (artistsKey != null)
+                var artistsItem = library.Items.FirstOrDefault(element => element.Text == "Artists");
+                if (artistsItem != null)
                 {
-                    var alphabet = await Channel.BrowseContent(artistsKey.BrowseKey);
-                    var letterMKey = alphabet.Items.FirstOrDefault(element => element.Text == "M");
-                    if (letterMKey != null)
+                    var alphabet = await Channel.BrowseContent(artistsItem.BrowseKey);
+                    var letterMItem = alphabet.Items.FirstOrDefault(element => element.Text == "M");
+                    if (letterMItem != null)
                     {
-                        var artists = await Channel.BrowseContent(letterMKey.BrowseKey);
-                        var museKey = artists.Items.FirstOrDefault(element => element.Text == "Muse");
-                        if (museKey != null)
+                        var artists = await Channel.BrowseContent(letterMItem.BrowseKey);
+                        var museItem = artists.Items.FirstOrDefault(element => element.Text == "Muse");
+                        if (museItem != null)
                         {
-                            var category = await Channel.BrowseContent(museKey.BrowseKey);
-                            var albumsKey = category.Items.FirstOrDefault(element => element.Text == "Albums");
-                            if (albumsKey != null)
+                            var category = await Channel.BrowseContent(museItem.BrowseKey);
+                            var albumsItem = category.Items.FirstOrDefault(element => element.Text == "Albums");
+                            if (albumsItem != null)
                             {
-                                var albums = await Channel.BrowseContent(albumsKey.BrowseKey);
+                                var albums = await Channel.BrowseContent(albumsItem.BrowseKey);
+                                var albumItem = albums.Items.FirstOrDefault(element => element.Text == "Black Holes and Revelations");
+                                if (albumItem != null)
+                                {
+                                    var tracks = await Channel.BrowseContent(albumItem.BrowseKey);
+                                    var trackItem = tracks.Items.FirstOrDefault(element => element.Text == "11. Knights of Cydonia");
+                                }
                             }
                         }
                     }
