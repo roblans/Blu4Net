@@ -247,10 +247,33 @@ namespace ChannelTests
         [TestMethod]
         public async Task Channel_BrowseContent()
         {
-            var content = await Channel.BrowseContent();
-            var library = await Channel.BrowseContent("LocalMusic:");
-            var albums = await Channel.BrowseContent("LocalMusic:bySection/%2FAlbums%3Fservice%3DLocalMusic");
-            var albumsA = await Channel.BrowseContent("/Albums?service=LocalMusic&limit=50&&section=A");
+            var root = await Channel.BrowseContent();
+
+            var libraryKey = root.Items.FirstOrDefault(element => element.Text == "Library");
+            if (libraryKey != null)
+            {
+                var library = await Channel.BrowseContent(libraryKey.BrowseKey);
+                var artistsKey = library.Items.FirstOrDefault(element => element.Text == "Artists");
+                if (artistsKey != null)
+                {
+                    var alphabet = await Channel.BrowseContent(artistsKey.BrowseKey);
+                    var letterMKey = alphabet.Items.FirstOrDefault(element => element.Text == "M");
+                    if (letterMKey != null)
+                    {
+                        var artists = await Channel.BrowseContent(letterMKey.BrowseKey);
+                        var museKey = artists.Items.FirstOrDefault(element => element.Text == "Muse");
+                        if (museKey != null)
+                        {
+                            var category = await Channel.BrowseContent(museKey.BrowseKey);
+                            var albumsKey = category.Items.FirstOrDefault(element => element.Text == "Albums");
+                            if (albumsKey != null)
+                            {
+                                var albums = await Channel.BrowseContent(albumsKey.BrowseKey);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

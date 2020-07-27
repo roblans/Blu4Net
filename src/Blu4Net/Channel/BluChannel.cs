@@ -315,14 +315,14 @@ namespace Blu4Net.Channel
             throw new InvalidDataException();
         }
 
-        public Task<XDocument> BrowseContent(string key = null)
+        public Task<BrowseContentResponse> BrowseContent(string key = null)
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             if (key != null)
             {
                 parameters["key"] = key;
             }
-            return SendRequest("Browse", parameters);
+            return SendRequest<BrowseContentResponse>("Browse", parameters);
         }
     }
 }
