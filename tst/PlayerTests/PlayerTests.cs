@@ -19,6 +19,12 @@ namespace PlayerTests
             Player = await BluEnvironment.ResolvePlayers().FirstAsync();
         }
 
+        [ClassCleanup]
+        public static void Cleanup()
+        {
+            Player.Dispose();
+        }
+
         [TestMethod]
         public async Task Player_ChangeVolume()
         {
@@ -71,6 +77,62 @@ namespace PlayerTests
                 // player playing?
                 Assert.AreEqual(PlayerState.Playing, newState);
             }
+        }
+
+        [TestMethod]
+        public async Task Player_ChangeShuffleMode()
+        {
+            // get the current volume
+            var oldMode = Player.Mode;
+
+            // turn shuffle off
+            var mode = await Player.SetMode(new PlayerMode(ShuffleMode.ShuffleOff, RepeatMode.RepeatOff));
+
+            // shuffle off?
+            Assert.AreEqual(mode.Shuffle, ShuffleMode.ShuffleOff);
+
+            // create an observerable which waits until the shuffle is on
+            var observerable = Player.ModeChanges
+                .Where(element => element.Shuffle == ShuffleMode.ShuffleOn)
+                .FirstAsync();
+
+
+            // turn shuffle on
+            mode = await Player.SetMode(new PlayerMode(ShuffleMode.ShuffleOn, RepeatMode.RepeatOff));
+
+            // wait until the observerable completes
+            var newState = await observerable.Timeout(TimeSpan.FromSeconds(20));
+
+            // restore
+            await Player.SetMode(oldMode);
+        }
+
+        [TestMethod]
+        public async Task Player_ChangeRepeatMode()
+        {
+            // get the current volume
+            var oldMode = Player.Mode;
+
+            // turn repeat off
+            var mode = await Player.SetMode(new PlayerMode(ShuffleMode.ShuffleOff, RepeatMode.RepeatOff));
+
+            // repeat off?
+            Assert.AreEqual(mode.Repeat, RepeatMode.RepeatOff);
+
+            // create an observerable which waits until the repeat is on
+            var observerable = Player.ModeChanges
+                .Where(element => element.Repeat == RepeatMode.RepeatAll)
+                .FirstAsync();
+
+
+            // turn repeat on
+            mode = await Player.SetMode(new PlayerMode(ShuffleMode.ShuffleOn, RepeatMode.RepeatAll));
+
+            // wait until the observerable completes
+            var newState = await observerable.Timeout(TimeSpan.FromSeconds(20));
+
+            // restore
+            await Player.SetMode(oldMode);
         }
     }
 }
