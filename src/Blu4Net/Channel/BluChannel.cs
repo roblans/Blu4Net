@@ -20,9 +20,22 @@ namespace Blu4Net.Channel
         public Uri Endpoint { get; }
         public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(30);
 
+        public IObservable<StatusResponse> StatusChanges { get; }
+        public IObservable<SyncStatusResponse> SyncStatusChanges { get; }
+        public IObservable<VolumeResponse> VolumeChanges { get; }
+
         public BluChannel(Uri endpoint)
         {
             Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+
+            // recommended long polling interval for Status is 100 seconds
+            StatusChanges = LongPolling<StatusResponse>("Status", 100);
+
+            // recommended long polling interval for SyncStatus changes is 180 seconds
+            SyncStatusChanges = LongPolling<SyncStatusResponse>("SyncStatus", 180);
+
+            // recommended long polling interval for volume is not specified (use 100)
+            VolumeChanges = LongPolling<VolumeResponse>("Volume", 100);
         }
 
         private async Task<XDocument> SendRequest(string request, NameValueCollection parameters, TimeSpan timeout, CancellationToken cancellationToken)
@@ -111,23 +124,6 @@ namespace Blu4Net.Channel
             });
         }
 
-        public IObservable<StatusResponse> StatusChanges()
-        {
-            // recommended long polling interval for Status is 100 seconds
-            return LongPolling<StatusResponse>("Status", 100);
-        }
-
-        public IObservable<SyncStatusResponse> SyncStatusChanges()
-        {
-            // recommended long polling interval for SyncStatus changes is 180 seconds
-            return LongPolling<SyncStatusResponse>("SyncStatus", 180);
-        }
-
-        public IObservable<VolumeResponse> VolumeChanges()
-        {
-            // recommended long polling interval for volume is not specified (use 100)
-            return LongPolling<VolumeResponse>("Volume", 100);
-        }
 
         public async Task<StatusResponse> GetStatus()
         {
@@ -237,13 +233,13 @@ namespace Blu4Net.Channel
             return response;
         }
 
-        public async IAsyncEnumerable<PlaylistResponse> GetPlaylist(int batchSize)
+        public async IAsyncEnumerable<PlaylistResponse> GetPlaylistPaged(int pageSize)
         {
             var startIndex = 0;
 
             while (true)
             {
-                var listing = await GetPlaylist(startIndex, batchSize);
+                var listing = await GetPlaylist(startIndex, pageSize);
                 if (listing.Songs.Length == 0)
                     break;
 

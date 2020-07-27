@@ -42,7 +42,7 @@ namespace ChannelTests
         {
             var volume = (await Channel.GetVolume()).Volume;
 
-            var response = Channel.StatusChanges()
+            var response = Channel.StatusChanges
                 .Where(element => element.Volume == volume + 1)
                 .Timeout(TimeSpan.FromSeconds(10))
                 .FirstAsync();
@@ -55,7 +55,7 @@ namespace ChannelTests
         {
             var volume = (await Channel.GetVolume()).Volume;
 
-            var response = Channel.SyncStatusChanges()
+            var response = Channel.SyncStatusChanges
                 .Where(element => element.Volume == volume + 1)
                 .Timeout(TimeSpan.FromSeconds(10))
                 .FirstAsync();
@@ -68,7 +68,7 @@ namespace ChannelTests
         {
             var volume = (await Channel.GetVolume()).Volume;
 
-            var response = Channel.VolumeChanges()
+            var response = Channel.VolumeChanges
                 .Where(element => element.Volume == volume + 1)
                 .Timeout(TimeSpan.FromSeconds(10))
                 .FirstAsync();
@@ -181,12 +181,12 @@ namespace ChannelTests
         }
 
         [TestMethod]
-        public async Task Channel_GetPlaylistBatched()
+        public async Task Channel_GetPlaylistPaged()
         {
             var length = 0;
-            await foreach (var listing in Channel.GetPlaylist(500))
+            await foreach (var list in Channel.GetPlaylistPaged(500))
             {
-                length += listing.Songs.Length;
+                length += list.Songs.Length;
             }
             var status = await Channel.GetPlaylistStatus();
             Assert.AreEqual(status.Length, length);
