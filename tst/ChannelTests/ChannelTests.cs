@@ -249,10 +249,10 @@ namespace ChannelTests
         {
             var root = await Channel.BrowseContent();
 
-            var libraryKey = root.Items.FirstOrDefault(element => element.Text == "Library");
-            if (libraryKey != null)
+            var libraryItem = root.Items.FirstOrDefault(element => element.Text == "Library");
+            if (libraryItem != null)
             {
-                var library = await Channel.BrowseContent(libraryKey.BrowseKey);
+                var library = await Channel.BrowseContent(libraryItem.BrowseKey);
                 var artistsItem = library.Items.FirstOrDefault(element => element.Text == "Artists");
                 if (artistsItem != null)
                 {
