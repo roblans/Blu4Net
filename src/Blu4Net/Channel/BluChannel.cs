@@ -118,6 +118,11 @@ namespace Blu4Net.Channel
                             observer.OnCompleted();
                             break;
                         }
+                        catch (Exception error)
+                        {
+                            observer.OnError(error);
+                            break;
+                        }
                     }
 
                 }, cancellationToken);

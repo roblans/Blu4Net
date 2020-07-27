@@ -19,8 +19,10 @@ namespace Blu4Net
 
         public string Name => _syncStatus.Name;
         public Uri Endpoint => _channel.Endpoint;
-        public Volume Volume { get; private set; } 
-        public IObservable<Volume> VolumeChanges { get; }
+        public IObservable<int> VolumeChanges { get; }
+        public int Volume { get; private set; }
+
+        //public ObserverableValue<PlayerState> State { get; private set; }
 
         private BluPlayer(BluChannel channel, SyncStatusResponse syncStatus, StatusResponse status)
         {
@@ -28,17 +30,26 @@ namespace Blu4Net
             _syncStatus = syncStatus ?? throw new ArgumentNullException(nameof(syncStatus));
             _status = status ?? throw new ArgumentNullException(nameof(status));
 
-            Volume = Volume.FromPercentage(_status.Volume);
-            VolumeChanges = channel.VolumeChanges.Select(response => Volume = Volume.FromResponse(response));
-            VolumeChanges.Subscribe(value => Volume = value);
+            Volume = status.Volume;
+            VolumeChanges = channel.VolumeChanges.Select(response => response.Volume);
+            var subscription = VolumeChanges.Subscribe(volume => Volume = volume);
         }
 
-        public async Task SetVolume(Volume value)
+        private static PlayerState ParseState(string value)
         {
-            if (Volume == null)
-                throw new ArgumentNullException(nameof(value));
+            switch (value)
+            {
+                case "play":
+                    return PlayerState.Play;
+                case "pause":
+                    return PlayerState.Pause;
+                case "stop":
+                    return PlayerState.Stop;
+                case "connecting":
+                    return PlayerState.Connecting;
+            }
 
-            await _channel.SetVolume(value.Percentage);
+            return PlayerState.Unknown;
         }
 
         public static async Task<BluPlayer> Connect(Uri endpoint)
@@ -52,6 +63,12 @@ namespace Blu4Net
         public static Task<BluPlayer> Connect(IPAddress address, int port = 11000)
         {
             return Connect(new UriBuilder("http", address.ToString(), port).Uri);
+        }
+
+        public async Task<int> SetVolume(int value)
+        {
+            var response = await _channel.SetVolume(value);
+            return Volume = response.Volume;
         }
 
         public override string ToString()
