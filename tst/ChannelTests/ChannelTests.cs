@@ -238,6 +238,13 @@ namespace ChannelTests
         }
 
         [TestMethod]
+        public async Task Channel_LoadPreset()
+        {
+            var preset2 = await Channel.LoadPreset(2);
+            var preset5 = await Channel.LoadPreset(5);
+        }
+
+        [TestMethod]
         public async Task Channel_BrowseContent()
         {
             var content = await Channel.BrowseContent();

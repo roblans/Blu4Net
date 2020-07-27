@@ -298,6 +298,23 @@ namespace Blu4Net.Channel
             return response;
         }
 
+        public async Task<PresetLoadedResponse> LoadPreset(int id)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["id"] = id.ToString();
+            
+            var document = await SendRequest("Preset", parameters);
+            if (document.Root.Name == "loaded")
+            {
+                return document.Deserialize<PlaylistPresetLoadedResponse>();
+            }
+            if (document.Root.Name == "state")
+            {
+                return document.Deserialize<StreamPresetLoadedResponse>();
+            }
+            throw new InvalidDataException();
+        }
+
         public Task<XDocument> BrowseContent(string key = null)
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
