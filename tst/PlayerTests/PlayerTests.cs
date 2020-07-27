@@ -18,5 +18,26 @@ namespace PlayerTests
         {
             Player = await BluEnvironment.ResolvePlayers().FirstAsync();
         }
+
+        [TestMethod]
+        public async Task Player_ChangeVolume()
+        {
+            // get the current volume
+            var oldVolume = Player.Volume;
+
+            // create an observerable which waits until the volume has changed by 1 percent
+            var observerable = Player.VolumeChanges
+                .Where(element => element.Percentage == oldVolume.Percentage + 1)
+                .FirstAsync();
+
+            // increase the volume by 1 percent
+            await Player.SetVolume(Volume.FromPercentage(oldVolume.Percentage + 1));
+
+            // wait until the observerable completes
+            var newVolume = await observerable.Timeout(TimeSpan.FromSeconds(2));
+
+            // restore old volume
+            await Player.SetVolume(oldVolume);
+        }
     }
 }
