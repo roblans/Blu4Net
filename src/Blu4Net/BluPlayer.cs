@@ -61,6 +61,8 @@ namespace Blu4Net
         {
             switch (value)
             {
+                case "stream":
+                    return PlayerState.Streaming;
                 case "play":
                     return PlayerState.Playing;
                 case "pause":
@@ -139,6 +141,18 @@ namespace Blu4Net
         {
             var response = await _channel.Stop();
             return State = ParseState(response.State);
+        }
+
+        public async Task<int?> Back()
+        {
+            var response = await _channel.Back();
+            return response?.ID;
+        }
+
+        public async Task<int?> Skip()
+        {
+            var response = await _channel.Skip();
+            return response?.ID;
         }
 
         public async Task<PlayerMode> SetMode(PlayerMode mode)

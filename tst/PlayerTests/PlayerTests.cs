@@ -14,7 +14,7 @@ namespace PlayerTests
         static BluPlayer Player;
 
         [ClassInitialize()]
-        public static async Task Initialize(TestContext testContext) 
+        public static async Task Initialize(TestContext testContext)
         {
             Player = await BluEnvironment.ResolvePlayers().FirstAsync();
         }
@@ -133,6 +133,36 @@ namespace PlayerTests
             {
                 await Player.SetMode(previous);
             }
+        }
+
+        [TestMethod]
+        public async Task Player_Play()
+        {
+            await Player.Play();
+        }
+
+        [TestMethod]
+        public async Task Player_Stop()
+        {
+            await Player.Stop();
+        }
+
+        [TestMethod]
+        public async Task Player_Pause()
+        {
+            await Player.Pause();
+        }
+
+        [TestMethod]
+        public async Task Player_Skip()
+        {
+            await Player.Skip();
+        }
+
+        [TestMethod]
+        public async Task Player_Back()
+        {
+            await Player.Back();
         }
     }
 }

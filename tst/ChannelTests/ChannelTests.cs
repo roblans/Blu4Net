@@ -137,12 +137,8 @@ namespace ChannelTests
         [TestMethod]
         public async Task Channel_Play()
         {
-            var status = await Channel.GetPlaylistStatus();
-            if (status.Length > 0)
-            {
-                var response = await Channel.Play();
-                Assert.AreEqual("play", response.State);
-            }
+            var response = await Channel.Play();
+            Assert.AreEqual("play", response.State);
         }
 
         [TestMethod]
