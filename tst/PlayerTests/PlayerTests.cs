@@ -52,7 +52,7 @@ namespace PlayerTests
         }
 
         [TestMethod]
-        public async Task Player_PausePlay()
+        public async Task Player_ChangeState()
         {
             if (Player.State == PlayerState.Playing)
             {
