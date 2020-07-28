@@ -19,7 +19,7 @@ namespace Blu4Net.Channel
         static readonly TimeSpan InfiniteTimeout = TimeSpan.FromMilliseconds(System.Threading.Timeout.Infinite);
         public Uri Endpoint { get; }
         public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(30);
-
+        public TextWriter Log { get; set; }
         public IObservable<StatusResponse> StatusChanges { get; }
         public IObservable<SyncStatusResponse> SyncStatusChanges { get; }
         public IObservable<VolumeResponse> VolumeChanges { get; }
@@ -29,13 +29,21 @@ namespace Blu4Net.Channel
             Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 
             // recommended long polling interval for Status is 100 seconds
-            StatusChanges = LongPolling<StatusResponse>("Status", 100);
+            StatusChanges = LongPolling<StatusResponse>("Status", 100).Publish().RefCount();
 
             // recommended long polling interval for SyncStatus changes is 180 seconds
-            SyncStatusChanges = LongPolling<SyncStatusResponse>("SyncStatus", 180);
+            SyncStatusChanges = LongPolling<SyncStatusResponse>("SyncStatus", 180).Publish().RefCount();
 
             // recommended long polling interval for volume is not specified (use 100)
-            VolumeChanges = LongPolling<VolumeResponse>("Volume", 100);
+            VolumeChanges = LongPolling<VolumeResponse>("Volume", 100).Publish().RefCount();
+        }
+
+        private void LogMessage(string message)
+        {
+            if (Log != null && message != null)
+            {
+                Log.WriteLine(message);
+            }
         }
 
         private async Task<XDocument> SendRequest(string request, NameValueCollection parameters, TimeSpan timeout, CancellationToken cancellationToken)
@@ -49,12 +57,18 @@ namespace Blu4Net.Channel
                 Query = parameters != null && parameters.Count > 0 ? parameters.ToString() : null,
             }.Uri;
 
+            LogMessage($"Request: {requestUri}");
+            
             using (var client = new HttpClient() { Timeout = timeout })
             {
                 using (var response = await client.GetAsync(requestUri, cancellationToken))
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
-                    return XDocument.Load(stream);
+                    var document = XDocument.Load(stream);
+
+                    LogMessage($"Response: {document}");
+
+                    return document;
                 }
             }
         }
@@ -107,6 +121,7 @@ namespace Blu4Net.Channel
                         try
                         {
                             var response = await SendRequest<T>(request, parameters, InfiniteTimeout, cancellationToken);
+
                             if (!object.Equals(longPollingTag, response.ETag))
                             {
                                 observer.OnNext(response);
@@ -327,9 +342,6 @@ namespace Blu4Net.Channel
             {
                 parameters["key"] = key;
             }
-#if DEBUG
-            var document = await SendRequest("Browse", parameters);
-#endif
             return await SendRequest<BrowseContentResponse>("Browse", parameters);
         }
     }

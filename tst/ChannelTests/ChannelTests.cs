@@ -8,6 +8,7 @@ using System;
 using System.Reactive.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Blu4Net.Diagnostics;
 
 namespace ChannelTests
 {
@@ -17,10 +18,28 @@ namespace ChannelTests
         static BluChannel Channel;
 
         [ClassInitialize()]
-        public static async Task Initialize(TestContext testContext)
+        public static async Task Initialize(TestContext context)
         {
             var enpoint = await BluEnvironment.ResolveEndpoints().FirstAsync();
             Channel = new BluChannel(enpoint);
+            Channel.Log = new DelegateTextWriter((message => context.WriteLine(message)));
+        }
+
+        //[TestMethod]
+        public async Task Channel_Longpolling()
+        {
+            using (var subscription1 = Channel.VolumeChanges
+                    .Do(volume => Debug.WriteLine($"Volume 1: {volume}"))
+                    .Subscribe())
+            {
+                await Task.Delay(30000);
+                using (var subscription2 = Channel.VolumeChanges
+                    .Do(volume => Debug.WriteLine($"Volume 2: {volume}"))
+                    .Subscribe())
+                {
+                    await Task.Delay(30000);
+                }
+            }
         }
 
         [TestMethod]
@@ -41,39 +60,78 @@ namespace ChannelTests
         public async Task Channel_StatusChanged()
         {
             var volume = (await Channel.GetVolume()).Volume;
+            try
+            {
+                var completion = new TaskCompletionSource<int>();
 
-            var response = Channel.StatusChanges
-                .Where(element => element.Volume == volume + 1)
-                .Timeout(TimeSpan.FromSeconds(10))
-                .FirstAsync();
-
-            await Channel.SetVolume(volume + 1);
+                using (Channel.StatusChanges
+                    .Where(element => element.Volume == volume + 1)
+                    .Timeout(TimeSpan.FromSeconds(2))
+                    .Subscribe(response =>
+                    {
+                        completion.SetResult(response.Volume);
+                    }))
+                {
+                    await Channel.SetVolume(volume + 1);
+                    await completion.Task;
+                };
+            }
+            finally
+            {
+                await Channel.SetVolume(volume);
+            }
         }
 
         [TestMethod]
         public async Task Channel_SyncStatusChanged()
         {
             var volume = (await Channel.GetVolume()).Volume;
+            try
+            {
+                var completion = new TaskCompletionSource<int>();
 
-            var response = Channel.SyncStatusChanges
-                .Where(element => element.Volume == volume + 1)
-                .Timeout(TimeSpan.FromSeconds(10))
-                .FirstAsync();
-
-            await Channel.SetVolume(volume + 1);
+                using (Channel.SyncStatusChanges
+                    .Where(element => element.Volume == volume + 1)
+                    .Timeout(TimeSpan.FromSeconds(2))
+                    .Subscribe(response =>
+                    {
+                        completion.SetResult(response.Volume);
+                    }))
+                {
+                    await Channel.SetVolume(volume + 1);
+                    await completion.Task;
+                };
+            }
+            finally
+            {
+                await Channel.SetVolume(volume);
+            }
         }
 
         [TestMethod]
         public async Task Channel_VolumeChanged()
         {
             var volume = (await Channel.GetVolume()).Volume;
+            try
+            {
+                var completion = new TaskCompletionSource<int>();
 
-            var response = Channel.VolumeChanges
-                .Where(element => element.Volume == volume + 1)
-                .Timeout(TimeSpan.FromSeconds(10))
-                .FirstAsync();
-
-            await Channel.SetVolume(volume + 1);
+                using (Channel.VolumeChanges
+                    .Where(element => element.Volume == volume + 1)
+                    .Timeout(TimeSpan.FromSeconds(2))
+                    .Subscribe(response =>
+                    {
+                        completion.SetResult(response.Volume);
+                    }))
+                {
+                    await Channel.SetVolume(volume + 1);
+                    await completion.Task;
+                };
+            }
+            finally
+            {
+                await Channel.SetVolume(volume);
+            }
         }
 
         [TestMethod]
