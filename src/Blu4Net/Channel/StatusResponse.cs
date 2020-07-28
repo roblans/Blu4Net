@@ -59,6 +59,12 @@ namespace Blu4Net.Channel
         [XmlElement("preset_name")]
         public string PresetName;
 
+        [XmlElement("streamUrl")]
+        public string StreamUrl;
+
+        [XmlElement("serviceIcon")]
+        public string ServiceIcon;
+
         public override string ToString()
         {
             return State;
