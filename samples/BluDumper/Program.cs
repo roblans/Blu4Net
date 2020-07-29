@@ -24,10 +24,10 @@ namespace BluDumper
             Console.WriteLine($"Endpoint: {endpoint}");
 
             var player = await BluPlayer.Connect(endpoint);
-            await DumpPlayer(player);
+            DumpPlayer(player);
         }
 
-        private static async Task DumpPlayer(BluPlayer player)
+        private static void DumpPlayer(BluPlayer player)
         {
             Console.WriteLine($"Player: {player.Name}");
             Console.WriteLine(new string('=', 80));
@@ -36,16 +36,41 @@ namespace BluDumper
             Console.WriteLine($"Mode: {player.Mode}");
             Console.WriteLine($"Volume: {player.Volume}%");
             
-            Console.WriteLine($"Media:");
-            for(var i=0; i<player.Media.Titles.Length; i++)
-            {
-                Console.WriteLine($"\tTitle{i+1}: {player.Media.Titles[i]}");
-            }
-            Console.WriteLine($"\tImageUri: {player.Media.ImageUri}");
-            Console.WriteLine($"\tServiceIconUri: {player.Media.ServiceIconUri}");
+            DumpMedia(player.Media);
 
             Console.WriteLine(new string('=', 80));
             Console.WriteLine();
+
+            player.StateChanges.Subscribe(state =>
+            {
+                Console.WriteLine($"State: {state}");
+            });
+
+            player.ModeChanges.Subscribe(mode =>
+            {
+                Console.WriteLine($"Mode: {mode}");
+            });
+
+            player.VolumeChanges.Subscribe(volume =>
+            {
+                Console.WriteLine($"Volume: {volume}%");
+            });
+
+            player.MediaChanges.Subscribe(media =>
+            {
+                DumpMedia(media);
+            });
+        }
+
+        private static void DumpMedia(PlayerMedia media)
+        {
+            Console.WriteLine($"Media:");
+            for (var i = 0; i < media.Titles.Length; i++)
+            {
+                Console.WriteLine($"\tTitle{i + 1}: {media.Titles[i]}");
+            }
+            Console.WriteLine($"\tImageUri: {media.ImageUri}");
+            Console.WriteLine($"\tServiceIconUri: {media.ServiceIconUri}");
         }
     }
 }

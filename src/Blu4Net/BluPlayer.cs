@@ -1,6 +1,7 @@
 ﻿using Blu4Net.Channel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
 using System.Text;
@@ -86,8 +87,9 @@ namespace Blu4Net
         {
             var imageUri = response.Image != null ? ParseUri(response.Image) : null;
             var serviceIconUri = response.ServiceIcon != null ? ParseUri(response.ServiceIcon) : null;
+            var titles = new[] { response.Title1, response.Title2, response.Title3 }.Where(element => element != null).ToArray();
 
-            return new PlayerMedia(new[] { response.Title1, response.Title2, response.Title3 }, imageUri, serviceIconUri);
+            return new PlayerMedia(titles, imageUri, serviceIconUri);
         }
 
         private PlayerState ParseState(string value)
