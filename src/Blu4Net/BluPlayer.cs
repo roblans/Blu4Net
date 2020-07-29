@@ -68,35 +68,26 @@ namespace Blu4Net
 
             Name = syncStatusResponse.Name;
 
-            var subscription = default(IDisposable);
             Volume = statusResponse.Volume;
             VolumeChanges = _channel.VolumeChanges
                 .Select(response => response.Volume)
                 .DistinctUntilChanged();
-            subscription = VolumeChanges.Subscribe(volume => Volume = volume);
-            _subscriptions.Add(subscription);
 
             State = ParseState(statusResponse.State);
             StateChanges = _channel.StatusChanges
                 .Do(response => _statusResponse = response)
                 .Select(response => ParseState(response.State))
                 .DistinctUntilChanged();
-            subscription = StateChanges.Subscribe(state => State = state);
-            _subscriptions.Add(subscription);
 
             Mode = ParseMode(statusResponse.Shuffle, statusResponse.Repeat);
             ModeChanges = _channel.StatusChanges
                 .Select(response => ParseMode(response.Shuffle, response.Repeat))
                 .DistinctUntilChanged();
-            subscription = ModeChanges.Subscribe(mode => Mode = mode);
-            _subscriptions.Add(subscription);
 
             Media = ParseMedia(statusResponse);
             MediaChanges = _channel.StatusChanges
                 .Select(response => ParseMedia(response))
                 .DistinctUntilChanged();
-            subscription = MediaChanges.Subscribe(media => Media = media);
-            _subscriptions.Add(subscription);
 
             Presets = ParsePresets(presetsResponse);
             PresetsChanges = _channel.StatusChanges
@@ -105,8 +96,11 @@ namespace Blu4Net
                 .SelectAsync(async _ => await _channel.GetPresets())
                 .Select(response => ParsePresets(response));
 
-            subscription = PresetsChanges.Subscribe(presets => Presets = presets);
-            _subscriptions.Add(subscription);
+            _subscriptions.Add(VolumeChanges.Subscribe(volume => Volume = volume));
+            _subscriptions.Add(StateChanges.Subscribe(state => State = state));
+            _subscriptions.Add(ModeChanges.Subscribe(mode => Mode = mode));
+            _subscriptions.Add(MediaChanges.Subscribe(media => Media = media));
+            _subscriptions.Add(PresetsChanges.Subscribe(presets => Presets = presets));
         }
 
         public ValueTask Disconnect()
