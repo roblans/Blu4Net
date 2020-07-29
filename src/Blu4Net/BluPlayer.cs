@@ -66,7 +66,7 @@ namespace Blu4Net
             MediaChanges = channel.StatusChanges
                 .Select(response => ParseMedia(response))
                 .DistinctUntilChanged();
-            subscription = ModeChanges.Subscribe(mode => Mode = mode);
+            subscription = MediaChanges.Subscribe(media => Media = media);
             _subscriptions.Add(subscription);
         }
 
