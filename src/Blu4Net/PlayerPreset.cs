@@ -19,7 +19,7 @@ namespace Blu4Net
 
         public override string ToString()
         {
-            return $"{Number} - {Name}";
+            return $"{Number}. {Name}";
         }
     }
 }

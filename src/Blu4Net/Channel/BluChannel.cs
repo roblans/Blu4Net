@@ -110,7 +110,7 @@ namespace Blu4Net.Channel
                 return Task.Run(async () =>
                 {
                     var longPollingTag = default(string);
-                    while (true)
+                    while (!cancellationToken.IsCancellationRequested)
                     {
                         var parameters = HttpUtility.ParseQueryString(string.Empty);
                         if (longPollingTag != null)

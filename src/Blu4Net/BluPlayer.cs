@@ -74,7 +74,7 @@ namespace Blu4Net
 
         private Uri ParseUri(string value)
         {
-            if (Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri))
+            if (value != null && Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri))
             {
                 if (uri.IsAbsoluteUri)
                 {
@@ -87,6 +87,9 @@ namespace Blu4Net
 
         private PlayerMedia ParseMedia(StatusResponse response)
         {
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
+
             var imageUri = response.Image != null ? ParseUri(response.Image) : null;
             var serviceIconUri = response.ServiceIcon != null ? ParseUri(response.ServiceIcon) : null;
             var titles = new[] { response.Title1, response.Title2, response.Title3 }.Where(element => element != null).ToArray();
@@ -96,20 +99,22 @@ namespace Blu4Net
 
         private PlayerState ParseState(string value)
         {
-            switch (value)
+            if (value != null)
             {
-                case "stream":
-                    return PlayerState.Streaming;
-                case "play":
-                    return PlayerState.Playing;
-                case "pause":
-                    return PlayerState.Paused;
-                case "stop":
-                    return PlayerState.Stopped;
-                case "connecting":
-                    return PlayerState.Connecting;
+                switch (value)
+                {
+                    case "stream":
+                        return PlayerState.Streaming;
+                    case "play":
+                        return PlayerState.Playing;
+                    case "pause":
+                        return PlayerState.Paused;
+                    case "stop":
+                        return PlayerState.Stopped;
+                    case "connecting":
+                        return PlayerState.Connecting;
+                }
             }
-
             return PlayerState.Unknown;
         }
 
@@ -145,6 +150,9 @@ namespace Blu4Net
 
         public static async Task<BluPlayer> Connect(Uri endpoint)
         {
+            if (endpoint == null)
+                throw new ArgumentNullException(nameof(endpoint));
+
             var channel = new BluChannel(endpoint);
             var syncStatus = await channel.GetSyncStatus();
             var status = await channel.GetStatus();
@@ -153,7 +161,18 @@ namespace Blu4Net
 
         public static Task<BluPlayer> Connect(IPAddress address, int port = 11000)
         {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+
             return Connect(new UriBuilder("http", address.ToString(), port).Uri);
+        }
+
+        public static Task<BluPlayer> Connect(string host, int port = 11000)
+        {
+            if (host == null)
+                throw new ArgumentNullException(nameof(host));
+
+            return Connect(new UriBuilder("http", host, port).Uri);
         }
 
         public TextWriter Log
@@ -162,9 +181,12 @@ namespace Blu4Net
             set { _channel.Log = value; }
         }
 
-        public async Task<int> SetVolume(int value)
+        public async Task<int> SetVolume(int percentage)
         {
-            var response = await _channel.SetVolume(value);
+            if (percentage < 0 || percentage > 100)
+                throw new ArgumentOutOfRangeException(nameof(percentage), "Value must be between 0 and 100");
+
+            var response = await _channel.SetVolume(percentage);
             return Volume = response.Volume;
         }
 
