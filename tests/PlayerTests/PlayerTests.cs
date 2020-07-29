@@ -183,9 +183,9 @@ namespace PlayerTests
         }
 
         [TestMethod]
-        public async Task Player_GetPresets()
+        public void Player_GetPresets()
         {
-            var presets = await Player.GetPresets();
+            var presets = Player.Presets;
             Assert.IsNotNull(presets);
         }
     }

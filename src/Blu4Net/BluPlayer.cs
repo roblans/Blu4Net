@@ -16,8 +16,7 @@ namespace Blu4Net
     {
         private readonly BluChannel _channel;
         private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
-
-        private StatusResponse _status;
+        private StatusResponse _statusResponse;
 
         public string Name { get; private set; }
         public Uri Endpoint { get; }
@@ -33,6 +32,9 @@ namespace Blu4Net
 
         public PlayerMedia Media { get; private set; }
         public IObservable<PlayerMedia> MediaChanges { get; private set; }
+
+        public IReadOnlyList<PlayerPreset> Presets { get; private set; }
+        public IObservable<IReadOnlyList<PlayerPreset>> PresetsChanges { get; private set; }
 
         public BluPlayer(Uri endpoint)
         {
@@ -60,42 +62,52 @@ namespace Blu4Net
 
         public async Task Connect()
         {
-            var syncStatus = await _channel.GetSyncStatus();
-            Name = syncStatus.Name;
+            var syncStatusResponse = await _channel.GetSyncStatus();
+            var statusResponse = await _channel.GetStatus();
+            var presetsResponse = await _channel.GetPresets();
 
-            _status = await _channel.GetStatus();
+            Name = syncStatusResponse.Name;
 
             var subscription = default(IDisposable);
-            Volume = _status.Volume;
+            Volume = statusResponse.Volume;
             VolumeChanges = _channel.VolumeChanges
                 .Select(response => response.Volume)
                 .DistinctUntilChanged();
             subscription = VolumeChanges.Subscribe(volume => Volume = volume);
             _subscriptions.Add(subscription);
 
-            State = ParseState(_status.State);
+            State = ParseState(statusResponse.State);
             StateChanges = _channel.StatusChanges
-                .Do(status => _status = status)
+                .Do(response => _statusResponse = response)
                 .Select(response => ParseState(response.State))
                 .DistinctUntilChanged();
             subscription = StateChanges.Subscribe(state => State = state);
             _subscriptions.Add(subscription);
 
-            Mode = ParseMode(_status.Shuffle, _status.Repeat);
+            Mode = ParseMode(statusResponse.Shuffle, statusResponse.Repeat);
             ModeChanges = _channel.StatusChanges
                 .Select(response => ParseMode(response.Shuffle, response.Repeat))
                 .DistinctUntilChanged();
             subscription = ModeChanges.Subscribe(mode => Mode = mode);
             _subscriptions.Add(subscription);
 
-            Media = ParseMedia(_status);
+            Media = ParseMedia(statusResponse);
             MediaChanges = _channel.StatusChanges
                 .Select(response => ParseMedia(response))
                 .DistinctUntilChanged();
             subscription = MediaChanges.Subscribe(media => Media = media);
             _subscriptions.Add(subscription);
-        }
 
+            Presets = ParsePresets(presetsResponse);
+            PresetsChanges = _channel.StatusChanges
+                .Select(response => response.PresetID)
+                .DistinctUntilChanged()
+                .SelectAsync(async _ => await _channel.GetPresets())
+                .Select(response => ParsePresets(response));
+
+            subscription = PresetsChanges.Subscribe(presets => Presets = presets);
+            _subscriptions.Add(subscription);
+        }
 
         public ValueTask Disconnect()
         {
@@ -104,6 +116,13 @@ namespace Blu4Net
                 subscription.Dispose();
             }
             return default;
+        }
+
+        private IReadOnlyList<PlayerPreset> ParsePresets(PresetsResponse response)
+        {
+            return response.Presets
+                .Select(element => new PlayerPreset(element.ID, element.Name, ParseUri(element.Image)))
+                .ToArray();
         }
 
         private Uri ParseUri(string value)
@@ -224,8 +243,8 @@ namespace Blu4Net
 
         public async Task<int?> Back()
         {
-            if (_status.StreamUrl == null)
-            {
+            if (_statusResponse != null && _statusResponse.StreamUrl == null)
+            { 
                 var response = await _channel.Back();
                 return response?.ID;
             }
@@ -234,7 +253,7 @@ namespace Blu4Net
 
         public async Task<int?> Skip()
         {
-            if (_status.StreamUrl == null)
+            if (_statusResponse != null && _statusResponse.StreamUrl == null)
             {
                 var response = await _channel.Skip();
                 return response?.ID;
@@ -274,13 +293,6 @@ namespace Blu4Net
             return ParseMode(shuffleResponse.Shuffle, repeatResponse.Repeat);
         }
 
-
-        public async Task<IReadOnlyList<PlayerPreset>> GetPresets()
-        {
-            return (await _channel.GetPresets())
-                .Presets
-                .Select(element => new PlayerPreset(element.ID, element.Name, ParseUri(element.Image))).ToArray();
-        }
 
         public override string ToString()
         {

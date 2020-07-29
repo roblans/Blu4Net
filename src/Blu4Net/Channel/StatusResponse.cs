@@ -53,8 +53,11 @@ namespace Blu4Net.Channel
         [XmlElement("repeat")]
         public int Repeat;
 
+        [XmlElement("prid")]
+        public string PresetID;
+
         [XmlElement("is_preset")]
-        public int PresetID;
+        public int IsPreset;
 
         [XmlElement("preset_name")]
         public string PresetName;
@@ -64,6 +67,8 @@ namespace Blu4Net.Channel
 
         [XmlElement("serviceIcon")]
         public string ServiceIcon;
+
+
 
         public override string ToString()
         {
