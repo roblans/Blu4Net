@@ -17,17 +17,17 @@ namespace PlayerTests
         [ClassInitialize()]
         public static async Task Initialize(TestContext context)
         {
-            Player = await BluEnvironment.ResolveEndpoints()
-                .SelectAsync(endpoint => BluPlayer.Connect(endpoint))
-                .FirstAsync();
+            var endpoint = await BluEnvironment.ResolveEndpoints().FirstAsync();
 
+            Player = new BluPlayer(endpoint);
             Player.Log = new DelegateTextWriter((message => context.WriteLine(message)));
+            await Player.Connect();
         }
 
         [ClassCleanup]
-        public static void Cleanup()
+        public static async Task Cleanup()
         {
-            Player.Dispose();
+            await Player.Disconnect();
         }
 
         [TestMethod]

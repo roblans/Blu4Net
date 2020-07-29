@@ -12,64 +12,98 @@ using Zeroconf;
 
 namespace Blu4Net
 {
-    public class BluPlayer : IDisposable
+    public class BluPlayer
     {
         private readonly BluChannel _channel;
         private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
 
         private StatusResponse _status;
-        private SyncStatusResponse _syncStatus;
 
-        public string Name => _syncStatus.Name;
-        public Uri Endpoint => _channel.Endpoint;
+        public string Name { get; private set; }
+        public Uri Endpoint { get; }
         
         public int Volume { get; private set; }
-        public IObservable<int> VolumeChanges { get; }
+        public IObservable<int> VolumeChanges { get; private set; }
 
         public PlayerState State { get; private set; }
-        public IObservable<PlayerState> StateChanges { get; }
+        public IObservable<PlayerState> StateChanges { get; private set; }
 
         public PlayerMode Mode { get; private set; }
-        public IObservable<PlayerMode> ModeChanges { get; }
+        public IObservable<PlayerMode> ModeChanges { get; private set; }
 
         public PlayerMedia Media { get; private set; }
-        public IObservable<PlayerMedia> MediaChanges { get; }
+        public IObservable<PlayerMedia> MediaChanges { get; private set; }
 
-        private BluPlayer(BluChannel channel, SyncStatusResponse syncStatus, StatusResponse status)
+        public BluPlayer(Uri endpoint)
         {
-            _channel = channel ?? throw new ArgumentNullException(nameof(channel));
-            _syncStatus = syncStatus ?? throw new ArgumentNullException(nameof(syncStatus));
-            _status = status ?? throw new ArgumentNullException(nameof(status));
+            Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            _channel = new BluChannel(Endpoint);
+        }
+
+        public BluPlayer(IPAddress address, int port = 11000)
+        {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+
+            Endpoint = new UriBuilder("http", address.ToString(), port).Uri;
+            _channel = new BluChannel(Endpoint);
+        }
+
+        public BluPlayer(string host, int port = 11000)
+        {
+            if (host == null)
+                throw new ArgumentNullException(nameof(host));
+
+            Endpoint = new UriBuilder("http", host, port).Uri;
+            _channel = new BluChannel(Endpoint);
+        }
+
+        public async Task Connect()
+        {
+            var syncStatus = await _channel.GetSyncStatus();
+            Name = syncStatus.Name;
+
+            _status = await _channel.GetStatus();
 
             var subscription = default(IDisposable);
-            Volume = status.Volume;
-            VolumeChanges = channel.VolumeChanges
+            Volume = _status.Volume;
+            VolumeChanges = _channel.VolumeChanges
                 .Select(response => response.Volume)
                 .DistinctUntilChanged();
             subscription = VolumeChanges.Subscribe(volume => Volume = volume);
             _subscriptions.Add(subscription);
 
-            State = ParseState(status.State);
-            StateChanges = channel.StatusChanges
+            State = ParseState(_status.State);
+            StateChanges = _channel.StatusChanges
                 .Do(status => _status = status)
                 .Select(response => ParseState(response.State))
                 .DistinctUntilChanged();
             subscription = StateChanges.Subscribe(state => State = state);
             _subscriptions.Add(subscription);
 
-            Mode = ParseMode(status.Shuffle, status.Repeat);
-            ModeChanges = channel.StatusChanges
+            Mode = ParseMode(_status.Shuffle, _status.Repeat);
+            ModeChanges = _channel.StatusChanges
                 .Select(response => ParseMode(response.Shuffle, response.Repeat))
                 .DistinctUntilChanged();
             subscription = ModeChanges.Subscribe(mode => Mode = mode);
             _subscriptions.Add(subscription);
 
-            Media = ParseMedia(status);
-            MediaChanges = channel.StatusChanges
+            Media = ParseMedia(_status);
+            MediaChanges = _channel.StatusChanges
                 .Select(response => ParseMedia(response))
                 .DistinctUntilChanged();
             subscription = MediaChanges.Subscribe(media => Media = media);
             _subscriptions.Add(subscription);
+        }
+
+
+        public ValueTask Disconnect()
+        {
+            foreach (var subscription in _subscriptions)
+            {
+                subscription.Dispose();
+            }
+            return default;
         }
 
         private Uri ParseUri(string value)
@@ -148,32 +182,6 @@ namespace Blu4Net
             return new PlayerMode(shuffleMode, repeatMode);
         }
 
-        public static async Task<BluPlayer> Connect(Uri endpoint)
-        {
-            if (endpoint == null)
-                throw new ArgumentNullException(nameof(endpoint));
-
-            var channel = new BluChannel(endpoint);
-            var syncStatus = await channel.GetSyncStatus();
-            var status = await channel.GetStatus();
-            return new BluPlayer(channel, syncStatus, status);
-        }
-
-        public static Task<BluPlayer> Connect(IPAddress address, int port = 11000)
-        {
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
-
-            return Connect(new UriBuilder("http", address.ToString(), port).Uri);
-        }
-
-        public static Task<BluPlayer> Connect(string host, int port = 11000)
-        {
-            if (host == null)
-                throw new ArgumentNullException(nameof(host));
-
-            return Connect(new UriBuilder("http", host, port).Uri);
-        }
 
         public TextWriter Log
         {
@@ -277,14 +285,6 @@ namespace Blu4Net
         public override string ToString()
         {
             return Name;
-        }
-
-        public void Dispose()
-        {
-            foreach(var subscription in _subscriptions)
-            {
-                subscription.Dispose();
-            }
         }
     }
 }

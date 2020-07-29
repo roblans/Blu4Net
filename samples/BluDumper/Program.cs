@@ -23,7 +23,9 @@ namespace BluDumper
         {
             Console.WriteLine($"Endpoint: {endpoint}");
 
-            var player = await BluPlayer.Connect(endpoint);
+            var player = new BluPlayer(endpoint);
+            player.Log = Console.Out;
+            await player.Connect();
             await DumpPlayer(player);
         }
 

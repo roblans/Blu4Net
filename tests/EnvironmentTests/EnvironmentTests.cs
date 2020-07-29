@@ -25,15 +25,5 @@ namespace EnvironmentTests
             var endpoints = await BluEnvironment.ResolveEndpoints().ToArray();
             Assert.IsTrue(endpoints.Length > 0);
         }
-
-        [TestMethod]
-        public async Task EnvironmentTests_ResolvePlayers()
-        {
-            var players = await BluEnvironment.ResolveEndpoints()
-                  .SelectAsync(endpoint => BluPlayer.Connect(endpoint))
-                  .ToArray();
-
-            Assert.IsTrue(players.Length > 0);
-        }
     }
 }
