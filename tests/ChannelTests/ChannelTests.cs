@@ -8,7 +8,7 @@ using System;
 using System.Reactive.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Blu4Net.Diagnostics;
+using Blu4Net.IO;
 
 namespace ChannelTests
 {
@@ -23,23 +23,6 @@ namespace ChannelTests
             var enpoint = await BluEnvironment.ResolveEndpoints().FirstAsync();
             Channel = new BluChannel(enpoint);
             Channel.Log = new DelegateTextWriter((message => context.WriteLine(message)));
-        }
-
-        //[TestMethod]
-        public async Task Channel_Longpolling()
-        {
-            using (var subscription1 = Channel.VolumeChanges
-                    .Do(volume => Debug.WriteLine($"Volume 1: {volume}"))
-                    .Subscribe())
-            {
-                await Task.Delay(30000);
-                using (var subscription2 = Channel.VolumeChanges
-                    .Do(volume => Debug.WriteLine($"Volume 2: {volume}"))
-                    .Subscribe())
-                {
-                    await Task.Delay(30000);
-                }
-            }
         }
 
         [TestMethod]

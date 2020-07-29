@@ -75,7 +75,7 @@ namespace BluDumper
         private static void DumpMedia(PlayerMedia media)
         {
             Console.WriteLine($"Media:");
-            for (var i = 0; i < media.Titles.Length; i++)
+            for (var i = 0; i < media.Titles.Count; i++)
             {
                 Console.WriteLine($"\tTitle{i + 1}: {media.Titles[i]}");
             }

@@ -1,4 +1,5 @@
 using Blu4Net;
+using Blu4Net.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,13 @@ namespace PlayerTests
         static BluPlayer Player;
 
         [ClassInitialize()]
-        public static async Task Initialize(TestContext testContext)
+        public static async Task Initialize(TestContext context)
         {
-            Player = await BluEnvironment.ResolvePlayers().FirstAsync();
+            Player = await BluEnvironment.ResolveEndpoints()
+                .SelectAsync(endpoint => BluPlayer.Connect(endpoint))
+                .FirstAsync();
+
+            Player.Log = new DelegateTextWriter((message => context.WriteLine(message)));
         }
 
         [ClassCleanup]
@@ -181,6 +186,7 @@ namespace PlayerTests
         public async Task Player_GetPresets()
         {
             var presets = await Player.GetPresets();
+            Assert.IsNotNull(presets);
         }
     }
 }

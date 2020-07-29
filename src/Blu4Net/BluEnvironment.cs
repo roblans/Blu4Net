@@ -12,7 +12,8 @@ namespace Blu4Net
 {
     public class BluEnvironment
     {
-        const int DefaultEndpointPort = 11000;
+        public static int DefaultEndpointPort = 11000;
+        public static TimeSpan DefaultScanTimeout = TimeSpan.FromSeconds(5);
 
         private static Uri GetEndpoint(IZeroconfHost host)
         {
@@ -37,18 +38,7 @@ namespace Blu4Net
 
         public static IObservable<Uri> ResolveEndpoints()
         {
-            return ResolveEndpoints(TimeSpan.FromSeconds(5));
-        }
-
-        public static IObservable<BluPlayer> ResolvePlayers(TimeSpan scanTime)
-        {
-            return  ResolveEndpoints(scanTime)
-            .SelectAsync(endpoint => BluPlayer.Connect(endpoint));
-        }
-
-        public static IObservable<BluPlayer> ResolvePlayers()
-        {
-            return ResolvePlayers(TimeSpan.FromSeconds(5));
+            return ResolveEndpoints(DefaultScanTimeout);
         }
     }
 }

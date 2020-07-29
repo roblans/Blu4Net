@@ -1,9 +1,11 @@
 ﻿using Blu4Net.Channel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Zeroconf;
@@ -154,6 +156,12 @@ namespace Blu4Net
             return Connect(new UriBuilder("http", address.ToString(), port).Uri);
         }
 
+        public TextWriter Log
+        {
+            get { return _channel.Log;  }
+            set { _channel.Log = value; }
+        }
+
         public async Task<int> SetVolume(int value)
         {
             var response = await _channel.SetVolume(value);
@@ -237,7 +245,7 @@ namespace Blu4Net
         }
 
 
-        public async Task<PlayerPreset[]> GetPresets()
+        public async Task<IReadOnlyList<PlayerPreset>> GetPresets()
         {
             return (await _channel.GetPresets())
                 .Presets

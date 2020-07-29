@@ -29,7 +29,10 @@ namespace EnvironmentTests
         [TestMethod]
         public async Task EnvironmentTests_ResolvePlayers()
         {
-            var players = await BluEnvironment.ResolvePlayers().ToArray();
+            var players = await BluEnvironment.ResolveEndpoints()
+                  .SelectAsync(endpoint => BluPlayer.Connect(endpoint))
+                  .ToArray();
+
             Assert.IsTrue(players.Length > 0);
         }
     }

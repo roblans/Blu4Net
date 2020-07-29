@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Blu4Net.Diagnostics
+namespace Blu4Net.IO
 {
     public class DelegateTextWriter : TextWriter
     {
