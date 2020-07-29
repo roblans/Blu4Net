@@ -160,6 +160,12 @@ namespace Blu4Net
             return Volume = response.Volume;
         }
 
+        public async Task<int> Mute(bool on)
+        {
+            var response = await _channel.Mute(on ? 1 : 0);
+            return Volume = response.Volume;
+        }
+
         public async Task<PlayerState> Play()
         {
             var response = await _channel.Play();

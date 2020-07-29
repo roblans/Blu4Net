@@ -142,6 +142,18 @@ namespace PlayerTests
         }
 
         [TestMethod]
+        public async Task Player_MuteOn()
+        {
+            await Player.Mute(true);
+        }
+
+        [TestMethod]
+        public async Task Player_MuteOff()
+        {
+            await Player.Mute(false);
+        }
+
+        [TestMethod]
         public async Task Player_Stop()
         {
             await Player.Stop();
