@@ -236,6 +236,14 @@ namespace Blu4Net
             return ParseMode(shuffleResponse.Shuffle, repeatResponse.Repeat);
         }
 
+
+        public async Task<PlayerPreset[]> GetPresets()
+        {
+            return (await _channel.GetPresets())
+                .Presets
+                .Select(element => new PlayerPreset(element.ID, element.Name, ParseUri(element.Image))).ToArray();
+        }
+
         public override string ToString()
         {
             return Name;

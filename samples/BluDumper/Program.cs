@@ -24,10 +24,10 @@ namespace BluDumper
             Console.WriteLine($"Endpoint: {endpoint}");
 
             var player = await BluPlayer.Connect(endpoint);
-            DumpPlayer(player);
+            await DumpPlayer(player);
         }
 
-        private static void DumpPlayer(BluPlayer player)
+        private static async Task DumpPlayer(BluPlayer player)
         {
             Console.WriteLine($"Player: {player.Name}");
             Console.WriteLine(new string('=', 80));
@@ -35,12 +35,22 @@ namespace BluDumper
             Console.WriteLine($"State: {player.State}");
             Console.WriteLine($"Mode: {player.Mode}");
             Console.WriteLine($"Volume: {player.Volume}%");
-            
+
+            Console.WriteLine($"Presets:");
+            foreach(var preset in await player.GetPresets())
+            {
+                Console.WriteLine($"\tNumber: {preset.Number}");
+                Console.WriteLine($"\tName: {preset.Name}");
+                Console.WriteLine($"\tImageUri: {preset.ImageUri}");
+                Console.WriteLine();
+            }
+
             DumpMedia(player.Media);
 
             Console.WriteLine(new string('=', 80));
             Console.WriteLine();
 
+            Console.WriteLine("Waiting for changes...");
             player.StateChanges.Subscribe(state =>
             {
                 Console.WriteLine($"State: {state}");

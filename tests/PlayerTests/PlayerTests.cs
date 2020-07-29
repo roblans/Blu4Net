@@ -176,5 +176,11 @@ namespace PlayerTests
         {
             await Player.Back();
         }
+
+        [TestMethod]
+        public async Task Player_GetPresets()
+        {
+            var presets = await Player.GetPresets();
+        }
     }
 }
