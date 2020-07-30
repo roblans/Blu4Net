@@ -28,14 +28,14 @@ namespace Blu4Net
         public IObservable<RepeatMode> RepeatModeChanges { get; }
         public IObservable<PlayerMedia> MediaChanges { get; }
 
-        private BluPlayer(BluChannel channel, SyncStatusResponse synStatus)
+        private BluPlayer(BluChannel channel, SyncStatusResponse synStatus, StatusResponse status)
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
 
             Name = synStatus.Name;
 
-            PresetList = new PresetList(_channel);
-            PlayQueue = new PlayQueue(_channel);
+            PresetList = new PresetList(_channel, status.PresetsID);
+            PlayQueue = new PlayQueue(_channel, status.PlaylistID);
 
             VolumeChanges = _channel.VolumeChanges
                 .DistinctUntilChanged(response => response.Volume)
@@ -46,11 +46,11 @@ namespace Blu4Net
                 .Select(response => ParseState(response.State));
 
             ShuffleModeChanges = _channel.StatusChanges
-                .DistinctUntilChanged(response => $"{response.Shuffle}")
+                .DistinctUntilChanged(response => response.Shuffle)
                 .Select(response => (ShuffleMode)response.Shuffle);
 
             RepeatModeChanges = _channel.StatusChanges
-                .DistinctUntilChanged(response => $"{response.Repeat}")
+                .DistinctUntilChanged(response => response.Repeat)
                 .Select(response => (RepeatMode)response.Repeat);
 
             MediaChanges = _channel.StatusChanges
@@ -65,8 +65,9 @@ namespace Blu4Net
             
             var channel = new BluChannel(endpoint);
             var syncStatus = await channel.GetSyncStatus();
+            var status = await channel.GetStatus();
 
-            return new BluPlayer(channel, syncStatus);
+            return new BluPlayer(channel, syncStatus, status);
         }
 
         public static Task<BluPlayer> Connect(IPAddress address, int port = 11000)

@@ -98,17 +98,24 @@ namespace BluDumper
                 Console.WriteLine($"\tNumber: {preset.Number}");
                 Console.WriteLine($"\tName: {preset.Name}");
                 Console.WriteLine($"\tImageUri: {preset.ImageUri}");
-                Console.WriteLine();
             }
         }
 
         private static async Task DumpQueue(PlayQueue queue)
         {
             Console.WriteLine($"Queue:");
-
             var info = await queue.GetInfo();
             Console.WriteLine($"\tName: {info.Name}");
             Console.WriteLine($"\tLength: {info.Length}");
+
+            //Console.WriteLine($"\tSongs:");
+            //await foreach (var page in queue.GetSongsPaged(500))
+            //{
+            //    foreach (var song in page)
+            //    {
+            //        Console.WriteLine($"\t\t{song}"); 
+            //    }
+            //}
         }
     }
 }

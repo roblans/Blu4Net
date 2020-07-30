@@ -16,11 +16,12 @@ namespace Blu4Net
 
         public IObservable<Unit> Changes { get; }
 
-        internal PresetList(BluChannel channel)
+        internal PresetList(BluChannel channel, string currentPrestListID)
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
 
             Changes = _channel.StatusChanges
+            .Where(response => response.PresetsID != currentPrestListID)
             .DistinctUntilChanged(response => response.PresetsID)
             .Select(response => Unit.Default);
         }
