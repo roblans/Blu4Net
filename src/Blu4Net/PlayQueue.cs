@@ -15,14 +15,13 @@ namespace Blu4Net
         private readonly BluChannel _channel;
         public IObservable<Unit> Changes { get; }
 
-        internal PlayQueue(BluChannel channel, string currentPlayQueueID)
+        internal PlayQueue(BluChannel channel, StatusResponse status)
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
 
             Changes = _channel.StatusChanges
-            .Where(response => response.PlaylistID != currentPlayQueueID)
+            .SkipWhile(response => response.PlaylistID == status.PlaylistID)
             .DistinctUntilChanged(response => response.PlaylistID)
-            .Do(response => Console.WriteLine($"PlaylistID: {response.PlaylistID}"))
             .Select(response => Unit.Default);
         }
 

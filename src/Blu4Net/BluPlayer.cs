@@ -17,7 +17,8 @@ namespace Blu4Net
         private readonly BluChannel _channel;
 
         public string Name { get; }
-        public Uri Endpoint => _channel.Endpoint;
+        public string Brand { get; }
+        public Uri Endpoint { get; }
 
         public PresetList PresetList { get; private set; }
         public PlayQueue PlayQueue { get; private set; }
@@ -32,28 +33,35 @@ namespace Blu4Net
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
 
+            Endpoint = _channel.Endpoint;
             Name = synStatus.Name;
+            Brand = synStatus.Brand;
 
-            PresetList = new PresetList(_channel, status.PresetsID);
-            PlayQueue = new PlayQueue(_channel, status.PlaylistID);
+            PresetList = new PresetList(_channel, status);
+            PlayQueue = new PlayQueue(_channel, status);
 
             VolumeChanges = _channel.VolumeChanges
+                .SkipWhile(response => response.Volume == status.Volume)
                 .DistinctUntilChanged(response => response.Volume)
                 .Select(response => response.Volume);
 
             StateChanges = _channel.StatusChanges
+                .SkipWhile(response => response.State == status.State)
                 .DistinctUntilChanged(response => response.State)
                 .Select(response => ParseState(response.State));
 
             ShuffleModeChanges = _channel.StatusChanges
+                .SkipWhile(response => response.Shuffle == status.Shuffle)
                 .DistinctUntilChanged(response => response.Shuffle)
                 .Select(response => (ShuffleMode)response.Shuffle);
 
             RepeatModeChanges = _channel.StatusChanges
+                .SkipWhile(response => response.Repeat == status.Repeat)
                 .DistinctUntilChanged(response => response.Repeat)
                 .Select(response => (RepeatMode)response.Repeat);
 
             MediaChanges = _channel.StatusChanges
+                .SkipWhile(response => response.Title1 == status.Title1 && response.Title2 == status.Title2 && response.Title3 == status.Title3)
                 .DistinctUntilChanged(response => $"{response.Title1}{response.Title2}{response.Title3}")
                 .Select(response => ParseMedia(response));
         }
