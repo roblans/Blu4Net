@@ -53,6 +53,9 @@ namespace Blu4Net.Channel
         [XmlElement("repeat")]
         public int Repeat;
 
+        [XmlElement("pid")]
+        public string PlayQueueID;
+
         [XmlElement("prid")]
         public string PresetsID;
 

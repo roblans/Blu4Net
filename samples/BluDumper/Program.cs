@@ -46,6 +46,7 @@ namespace BluDumper
 
             DumpPresets(player.Presets);
             DumpMedia(player.Media);
+            DumpQueue(player.Queue);
 
             Console.WriteLine(new string('=', 80));
             Console.WriteLine();
@@ -98,6 +99,13 @@ namespace BluDumper
                 Console.WriteLine($"\tImageUri: {preset.ImageUri}");
                 Console.WriteLine();
             }
+        }
+
+        private static void DumpQueue(PlayQueue queue)
+        {
+            Console.WriteLine($"Queue:");
+            Console.WriteLine($"\tName: {queue.Name}");
+            Console.WriteLine($"\tLength: {queue.Length}");
         }
     }
 }

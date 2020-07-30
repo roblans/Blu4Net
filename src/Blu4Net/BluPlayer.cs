@@ -36,28 +36,23 @@ namespace Blu4Net
         public IReadOnlyList<PlayerPreset> Presets { get; private set; }
         public IObservable<IReadOnlyList<PlayerPreset>> PresetsChanges { get; private set; }
 
+        public PlayQueue Queue { get; private set; }
+
         public BluPlayer(Uri endpoint)
         {
             Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
             _channel = new BluChannel(Endpoint);
+            Queue = new PlayQueue(_channel);
         }
 
         public BluPlayer(IPAddress address, int port = 11000)
+            : this(new UriBuilder("http", address.ToString(), port).Uri)
         {
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
-
-            Endpoint = new UriBuilder("http", address.ToString(), port).Uri;
-            _channel = new BluChannel(Endpoint);
         }
 
         public BluPlayer(string host, int port = 11000)
+            : this(new UriBuilder("http", host, port).Uri)
         {
-            if (host == null)
-                throw new ArgumentNullException(nameof(host));
-
-            Endpoint = new UriBuilder("http", host, port).Uri;
-            _channel = new BluChannel(Endpoint);
         }
 
         public async Task Connect()
@@ -100,15 +95,18 @@ namespace Blu4Net
             _subscriptions.Add(ModeChanges.Subscribe(mode => Mode = mode));
             _subscriptions.Add(MediaChanges.Subscribe(media => Media = media));
             _subscriptions.Add(PresetsChanges.Subscribe(presets => Presets = presets));
+
+            await Queue.Connect();
         }
 
-        public ValueTask Disconnect()
+        public async ValueTask Disconnect()
         {
+            await Queue.Disconnect();
+
             foreach (var subscription in _subscriptions)
             {
                 subscription.Dispose();
             }
-            return default;
         }
 
         private IReadOnlyList<PlayerPreset> ParsePresets(PresetsResponse response)
