@@ -19,21 +19,15 @@ namespace PlayerTests
         {
             var endpoint = await BluEnvironment.ResolveEndpoints().FirstAsync();
 
-            Player = new BluPlayer(endpoint);
+            Player = await BluPlayer.Connect(endpoint);
             Player.Log = new DelegateTextWriter((message => context.WriteLine(message)));
-            await Player.Connect();
         }
 
-        [ClassCleanup]
-        public static async Task Cleanup()
-        {
-            await Player.Disconnect();
-        }
 
         [TestMethod]
         public async Task Player_ChangeVolume()
         {
-            var previous = Player.Volume;
+            var previous = await Player.GetVolume();
             try
             {
                 var completion = new TaskCompletionSource<int>();
@@ -59,7 +53,8 @@ namespace PlayerTests
         [TestMethod]
         public async Task Player_ChangeState()
         {
-            if (Player.State == PlayerState.Playing)
+            var state = await Player.GetState();
+            if (state == PlayerState.Playing)
             {
                 try
                 {
@@ -87,56 +82,56 @@ namespace PlayerTests
         [TestMethod]
         public async Task Player_ChangeShuffleMode()
         {
-            var previous = Player.Mode;
+            var previous = await Player.GetShuffleMode();
             try
             {
-                await Player.SetMode(new PlayerMode(ShuffleMode.ShuffleOff, RepeatMode.RepeatOff));
+                await Player.SetShuffleMode(ShuffleMode.ShuffleOff);
 
-                var completion = new TaskCompletionSource<PlayerMode>();
+                var completion = new TaskCompletionSource<ShuffleMode>();
 
-                using (Player.ModeChanges
-                    .Where(element => element.Shuffle == ShuffleMode.ShuffleOn)
+                using (Player.ShuffleModeChanges
+                    .Where(element => element == ShuffleMode.ShuffleOn)
                     .Timeout(TimeSpan.FromSeconds(2))
                     .Subscribe(value =>
                     {
                         completion.SetResult(value);
                     }))
                 {
-                    await Player.SetMode(new PlayerMode(ShuffleMode.ShuffleOn, RepeatMode.RepeatOff));
+                    await Player.SetShuffleMode(ShuffleMode.ShuffleOn);
                     await completion.Task;
                 };
             }
             finally
             {
-                await Player.SetMode(previous);
+                await Player.SetShuffleMode(previous);
             }
         }
 
         [TestMethod]
         public async Task Player_ChangeRepeatMode()
         {
-            var previous = Player.Mode;
+            var previous = await Player.GetRepeatMode();
             try
             {
-                await Player.SetMode(new PlayerMode(ShuffleMode.ShuffleOff, RepeatMode.RepeatOff));
+                await Player.SetRepeatMode(RepeatMode.RepeatOff);
 
-                var completion = new TaskCompletionSource<PlayerMode>();
+                var completion = new TaskCompletionSource<RepeatMode>();
 
-                using (Player.ModeChanges
-                    .Where(element => element.Repeat == RepeatMode.RepeatAll)
+                using (Player.RepeatModeChanges
+                    .Where(element => element == RepeatMode.RepeatAll)
                     .Timeout(TimeSpan.FromSeconds(2))
                     .Subscribe(value =>
                     {
                         completion.SetResult(value);
                     }))
                 {
-                    await Player.SetMode(new PlayerMode(ShuffleMode.ShuffleOff, RepeatMode.RepeatAll));
+                    await Player.SetRepeatMode(RepeatMode.RepeatAll);
                     await completion.Task;
                 };
             }
             finally
             {
-                await Player.SetMode(previous);
+                await Player.SetRepeatMode(previous);
             }
         }
 
@@ -183,9 +178,9 @@ namespace PlayerTests
         }
 
         [TestMethod]
-        public void Player_GetPresets()
+        public async Task Player_GetPresets()
         {
-            var presets = Player.Presets;
+            var presets = await Player.PresetList.GetPresets();
             Assert.IsNotNull(presets);
         }
     }

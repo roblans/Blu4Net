@@ -10,43 +10,34 @@ namespace BluDumper
     class Program
     {
 
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
-            var players = new List<BluPlayer>();
-
             using (BluEnvironment.ResolveEndpoints().Subscribe(async endpoint =>
             {
                 Console.WriteLine($"Endpoint: {endpoint}");
      
-                var player = new BluPlayer(endpoint);
-                await player.Connect();
+                var player = await BluPlayer.Connect(endpoint);
                 
-                DumpPlayer(player);
-
-                players.Add(player);
+                await DumpPlayer(player);
             }))
             {
                 Console.ReadLine();
-
-                foreach(var player in players)
-                {
-                    await player.Disconnect();
-                }
             }
         }
 
-        private static void DumpPlayer(BluPlayer player)
+        private static async Task DumpPlayer(BluPlayer player)
         {
             Console.WriteLine($"Player: {player.Name}");
             Console.WriteLine(new string('=', 80));
 
-            Console.WriteLine($"State: {player.State}");
-            Console.WriteLine($"Mode: {player.Mode}");
-            Console.WriteLine($"Volume: {player.Volume}%");
+            Console.WriteLine($"State: {await player.GetState()}");
+            Console.WriteLine($"Shuffle: {await player.GetShuffleMode()}");
+            Console.WriteLine($"Repeat: {await player.GetRepeatMode()}");
+            Console.WriteLine($"Volume: {await player.GetVolume()}%");
 
-            DumpPresets(player.Presets);
-            DumpMedia(player.Media);
-            DumpQueue(player.Queue);
+            await DumpPresets(player.PresetList);
+            DumpMedia(await player.GetMedia());
+            await DumpQueue(player.PlayQueue);
 
             Console.WriteLine(new string('=', 80));
             Console.WriteLine();
@@ -57,9 +48,14 @@ namespace BluDumper
                 Console.WriteLine($"State: {state}");
             });
 
-            player.ModeChanges.Subscribe(mode =>
+            player.ShuffleModeChanges.Subscribe(mode =>
             {
-                Console.WriteLine($"Mode: {mode}");
+                Console.WriteLine($"Shuffle: {mode}");
+            });
+
+            player.RepeatModeChanges.Subscribe(mode =>
+            {
+                Console.WriteLine($"Repeat: {mode}");
             });
 
             player.VolumeChanges.Subscribe(volume =>
@@ -72,9 +68,14 @@ namespace BluDumper
                 DumpMedia(media);
             });
 
-            player.PresetsChanges.Subscribe(presets =>
+            player.PresetList.Changes.Subscribe(async _ =>
             {
-                DumpPresets(presets);
+                await DumpPresets(player.PresetList);
+            });
+
+            player.PlayQueue.Changes.Subscribe(async _ =>
+            {
+                await DumpQueue(player.PlayQueue);
             });
         }
 
@@ -89,10 +90,10 @@ namespace BluDumper
             Console.WriteLine($"\tServiceIconUri: {media.ServiceIconUri}");
         }
 
-        private static void DumpPresets(IEnumerable<PlayerPreset> presets)
+        private static async Task DumpPresets(PresetList list)
         {
             Console.WriteLine($"Presets:");
-            foreach (var preset in presets)
+            foreach (var preset in await list.GetPresets())
             {
                 Console.WriteLine($"\tNumber: {preset.Number}");
                 Console.WriteLine($"\tName: {preset.Name}");
@@ -101,11 +102,13 @@ namespace BluDumper
             }
         }
 
-        private static void DumpQueue(PlayQueue queue)
+        private static async Task DumpQueue(PlayQueue queue)
         {
             Console.WriteLine($"Queue:");
-            Console.WriteLine($"\tName: {queue.Name}");
-            Console.WriteLine($"\tLength: {queue.Length}");
+
+            var info = await queue.GetInfo();
+            Console.WriteLine($"\tName: {info.Name}");
+            Console.WriteLine($"\tLength: {info.Length}");
         }
     }
 }
