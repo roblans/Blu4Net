@@ -70,32 +70,31 @@ namespace Blu4Net
 
             Volume = statusResponse.Volume;
             VolumeChanges = _channel.VolumeChanges
-                .Select(response => response.Volume)
-                .DistinctUntilChanged();
+                .DistinctUntilChanged(response => response.Volume)
+                .Select(response => response.Volume);
 
             State = ParseState(statusResponse.State);
             StateChanges = _channel.StatusChanges
-                .Do(response => _statusResponse = response)
-                .Select(response => ParseState(response.State))
-                .DistinctUntilChanged();
+                .DistinctUntilChanged(response => response.State)
+                .Select(response => ParseState(response.State));
 
             Mode = ParseMode(statusResponse.Shuffle, statusResponse.Repeat);
             ModeChanges = _channel.StatusChanges
-                .Select(response => ParseMode(response.Shuffle, response.Repeat))
-                .DistinctUntilChanged();
+                .DistinctUntilChanged(response => $"{response.Shuffle}{response.Repeat}")
+                .Select(response => ParseMode(response.Shuffle, response.Repeat));
 
             Media = ParseMedia(statusResponse);
             MediaChanges = _channel.StatusChanges
-                .Select(response => ParseMedia(response))
-                .DistinctUntilChanged();
+                .DistinctUntilChanged(response => $"{response.Title1}{response.Title2}{response.Title3}")
+                .Select(response => ParseMedia(response));
 
             Presets = ParsePresets(presetsResponse);
             PresetsChanges = _channel.StatusChanges
-                .Select(response => response.PresetID)
-                .DistinctUntilChanged()
+                .DistinctUntilChanged(response => response.PresetsID)
                 .SelectAsync(async _ => await _channel.GetPresets())
                 .Select(response => ParsePresets(response));
 
+            _subscriptions.Add(_channel.StatusChanges.Subscribe(status => _statusResponse = status));
             _subscriptions.Add(VolumeChanges.Subscribe(volume => Volume = volume));
             _subscriptions.Add(StateChanges.Subscribe(state => State = state));
             _subscriptions.Add(ModeChanges.Subscribe(mode => Mode = mode));

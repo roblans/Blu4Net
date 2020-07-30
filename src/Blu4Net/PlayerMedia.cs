@@ -7,12 +7,11 @@ using System.Text;
 
 namespace Blu4Net
 {
-    public class PlayerMedia : IEquatable<PlayerMedia>
+    public class PlayerMedia
     {
         public IReadOnlyList<string> Titles { get; }
         public Uri ImageUri { get; }
         public Uri ServiceIconUri { get; }
-
 
         public PlayerMedia(IReadOnlyList<string> titles, Uri imageUri, Uri serviceIconUri)
         {
@@ -24,22 +23,9 @@ namespace Blu4Net
             ServiceIconUri = serviceIconUri;
         }
 
-        public override bool Equals(object obj)
+        public override string ToString()
         {
-            return Equals(obj as PlayerMedia);
-        }
-
-        public bool Equals(PlayerMedia other)
-        {
-            return other != null && Titles.SequenceEqual(other.Titles);
-        }
-
-        public override int GetHashCode()
-        {
-            return Titles
-                .Where(element => element != null)
-                .Select(element => element.GetHashCode())
-                .Aggregate(-1591799448, (sum, item) => sum + 1521134295 * item);
+            return Titles.FirstOrDefault() ?? base.ToString();
         }
     }
 }
