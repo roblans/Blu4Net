@@ -12,25 +12,34 @@ namespace BluDumper
         static async Task Main(string[] args)
         {
             var endpoint = await BluEnvironment.ResolveEndpoints().FirstOrDefaultAsync();
-            Console.WriteLine($"Endpoint: {endpoint}");
-
-            var player = await BluPlayer.Connect(endpoint);
-            Console.WriteLine($"Player: {player.Name}");
-            Console.WriteLine(new string('=', 80));
-
-            await DumpPlayer(player);
-
-            while (true)
+            if (endpoint != null)
             {
-                var key = Console.ReadKey();
-                    
-                if (key.KeyChar == 'q')
-                    break;
+                Console.WriteLine($"Endpoint: {endpoint}");
 
-                if (key.KeyChar == 'p')
+                var player = await BluPlayer.Connect(endpoint);
+                Console.WriteLine($"Player: {player.Name}");
+                Console.WriteLine(new string('=', 80));
+
+                await DumpPlayer(player);
+
+                while (true)
                 {
-                    await DumpQueuedSongs(player.PlayQueue);
+                    var key = Console.ReadKey();
+
+                    if (key.KeyChar == 'q')
+                        break;
+
+                    if (key.KeyChar == 'p')
+                    {
+                        await DumpQueuedSongs(player.PlayQueue);
+                    }
                 }
+            }
+            else 
+            {
+                Console.WriteLine("No player found!");
+                Console.WriteLine("Press 'q' to quit");
+                while (Console.ReadKey().KeyChar != 'q') { }
             }
         }
 
