@@ -9,39 +9,33 @@ namespace BluDumper
 {
     class Program
     {
-        static BluPlayer player;
-
         static async Task Main(string[] args)
         {
-            using (BluEnvironment.ResolveEndpoints().Subscribe(async endpoint =>
-            {
-                Console.WriteLine($"Endpoint: {endpoint}");
-     
-                player = await BluPlayer.Connect(endpoint);
-                
-                await DumpPlayer(player);
-            }))
-            {
-                while (true)
-                {
-                    var key = Console.ReadKey();
-                    
-                    if (key.KeyChar == 'q')
-                        break;
+            var endpoint = await BluEnvironment.ResolveEndpoints().FirstOrDefaultAsync();
+            Console.WriteLine($"Endpoint: {endpoint}");
 
-                    if (key.KeyChar == 'p')
-                    {
-                        await DumpQueuedSongs(player.PlayQueue);
-                    }
+            var player = await BluPlayer.Connect(endpoint);
+            Console.WriteLine($"Player: {player.Name}");
+            Console.WriteLine(new string('=', 80));
+
+            await DumpPlayer(player);
+
+            while (true)
+            {
+                var key = Console.ReadKey();
+                    
+                if (key.KeyChar == 'q')
+                    break;
+
+                if (key.KeyChar == 'p')
+                {
+                    await DumpQueuedSongs(player.PlayQueue);
                 }
             }
         }
 
         private static async Task DumpPlayer(BluPlayer player)
         {
-            Console.WriteLine($"Player: {player.Name}");
-            Console.WriteLine(new string('=', 80));
-
             Console.WriteLine($"State: {await player.GetState()}");
             Console.WriteLine($"Shuffle: {await player.GetShuffleMode()}");
             Console.WriteLine($"Repeat: {await player.GetRepeatMode()}");
