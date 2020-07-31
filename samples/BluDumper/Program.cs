@@ -18,6 +18,8 @@ namespace BluDumper
                 Console.WriteLine($"Endpoint: {endpoint}");
 
                 var player = await BluPlayer.Connect(endpoint);
+                //player.Log = Console.Out;
+                
                 Console.WriteLine($"Player: {player.Name}");
                 Console.WriteLine(new string('=', 80));
 
@@ -146,7 +148,7 @@ namespace BluDumper
         {
             Console.WriteLine($"Sources (2 levels only):");
             var items = await musicSources.GetItems();
-            await DumpMusicSourcesRecursive(musicSources, items, 2);
+            await DumpMusicSourcesRecursive(musicSources, items, 3);
             Console.WriteLine();
         }
 

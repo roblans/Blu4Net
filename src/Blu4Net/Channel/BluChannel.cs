@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reactive.Linq;
 using System.Text;
@@ -16,6 +17,9 @@ namespace Blu4Net.Channel
     // https://nadelectronics.com/wp-content/uploads/2019/09/Custom-Integration-API-v1.0.pdf
     public class BluChannel
     {
+#if FILE_LOGGING
+        int counter = 0;
+#endif
         static readonly TimeSpan InfiniteTimeout = TimeSpan.FromMilliseconds(System.Threading.Timeout.Infinite);
         public Uri Endpoint { get; }
         public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(30);
@@ -67,6 +71,10 @@ namespace Blu4Net.Channel
                     var document = XDocument.Load(stream);
 
                     LogMessage($"Response: {document}");
+
+#if FILE_LOGGING
+                    document.Save(@$"D:\Temp\{Interlocked.Increment(ref counter)}.txt");
+#endif
 
                     return document;
                 }
@@ -347,6 +355,11 @@ namespace Blu4Net.Channel
             if (response.Items == null)
             {
                 response.Items = new BrowseContentItem[0];
+            }
+            else
+            { 
+                // note: TuneIn returns an empty <item></item> element  
+                response.Items = response.Items.Where(element => element.Text != null).ToArray();
             }
             return response;
         }
