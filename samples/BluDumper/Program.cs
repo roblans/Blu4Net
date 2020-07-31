@@ -53,6 +53,7 @@ namespace BluDumper
             Console.WriteLine($"Shuffle: {await player.GetShuffleMode()}");
             Console.WriteLine($"Repeat: {await player.GetRepeatMode()}");
             Console.WriteLine($"Volume: {await player.GetVolume()}%");
+            Console.WriteLine($"Position: {await player.GetPlayPosition()}");
 
             DumpPresets(await player.PresetList.GetPresets());
             DumpMedia(await player.GetMedia());
@@ -86,6 +87,11 @@ namespace BluDumper
                 Console.WriteLine($"Volume: {volume}%");
             });
 
+            player.PositionChanges.Subscribe(position =>
+            {
+                Console.WriteLine($"Position: {position}");
+            });
+
             player.MediaChanges.Subscribe(media =>
             {
                 DumpMedia(media);
@@ -100,6 +106,7 @@ namespace BluDumper
             {
                 DumpQueueInfo(info);
             });
+
         }
 
         private static void DumpMedia(PlayerMedia media)

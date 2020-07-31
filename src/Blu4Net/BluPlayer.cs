@@ -28,6 +28,7 @@ namespace Blu4Net
         public IObservable<ShuffleMode> ShuffleModeChanges { get; }
         public IObservable<RepeatMode> RepeatModeChanges { get; }
         public IObservable<PlayerMedia> MediaChanges { get; }
+        public IObservable<PlayPosition> PositionChanges { get; }
 
         private BluPlayer(BluChannel channel, SyncStatusResponse synStatus, StatusResponse status)
         {
@@ -64,6 +65,11 @@ namespace Blu4Net
                 .SkipWhile(response => response.Title1 == status.Title1 && response.Title2 == status.Title2 && response.Title3 == status.Title3)
                 .DistinctUntilChanged(response => $"{response.Title1}{response.Title2}{response.Title3}")
                 .Select(response => ParseMedia(response));
+
+            PositionChanges = _channel.StatusChanges
+                .SkipWhile(response => response.Seconds == status.Seconds && response.TotalLength == status.TotalLength)
+                .DistinctUntilChanged(response => $"{response.Seconds}{response.TotalLength}")
+                .Select(response => ParsePosition(response));
         }
 
         public static async Task<BluPlayer> Connect(Uri endpoint)
@@ -127,6 +133,11 @@ namespace Blu4Net
                 }
             }
             return PlayerState.Unknown;
+        }
+
+        private PlayPosition ParsePosition(StatusResponse response)
+        {
+            return new PlayPosition(TimeSpan.FromSeconds(response.Seconds), response.TotalLength != 0 ? TimeSpan.FromSeconds(response.TotalLength) : default(TimeSpan?));
         }
 
         public TextWriter Log
@@ -239,6 +250,12 @@ namespace Blu4Net
             return response.Items
                 .Select(element => new PlayerMusicSource(_channel, element.BrowseKey, element.Text))
                 .ToArray();
+        }
+
+        public async Task<PlayPosition> GetPlayPosition()
+        {
+            var response = await _channel.GetStatus();
+            return ParsePosition(response);
         }
 
         public override string ToString()
