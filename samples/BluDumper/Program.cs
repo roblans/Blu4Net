@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace BluDumper
@@ -53,6 +54,7 @@ namespace BluDumper
             DumpPresets(await player.PresetList.GetPresets());
             DumpMedia(await player.GetMedia());
             DumpQueueInfo(await player.PlayQueue.GetInfo());
+            await DumpMusicSources(player.MusicSources);
 
             Console.WriteLine(new string('=', 80));
             Console.WriteLine();
@@ -116,6 +118,7 @@ namespace BluDumper
                 Console.WriteLine($"\tNumber: {preset.Number}");
                 Console.WriteLine($"\tName: {preset.Name}");
                 Console.WriteLine($"\tImageUri: {preset.ImageUri}");
+                Console.WriteLine();
             }
         }
 
@@ -137,6 +140,31 @@ namespace BluDumper
                 }
             }
             Console.WriteLine($"Done.");
+        }
+
+        private static async Task DumpMusicSources(PlayerMusicSources musicSources)
+        {
+            Console.WriteLine($"Sources:");
+            var items = await musicSources.GetItems();
+            await DumpMusicSourcesRecursive(musicSources, items, 1);
+            Console.WriteLine();
+        }
+
+        private static async Task DumpMusicSourcesRecursive(PlayerMusicSources musicSources, IReadOnlyCollection<PlayerMusicSourceItem> items, int maxLevels, int level = 0)
+        {
+            if (level >= maxLevels)
+                return;
+
+            foreach (var item in items)
+            {
+                Console.WriteLine($"\t{item}");
+
+                if (item.Key != null)
+                {
+                    var children = await musicSources.GetItems(item.Key);
+                    await DumpMusicSourcesRecursive(musicSources, children, maxLevels, level + 1);
+                }
+            }
         }
     }
 }

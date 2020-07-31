@@ -10,13 +10,13 @@ using System.Reactive;
 
 namespace Blu4Net
 {
-    public class PresetList
+    public class PlayerPresetList
     {
         private readonly BluChannel _channel;
 
         public IObservable<IReadOnlyCollection<PlayerPreset>> Changes { get; }
 
-        internal PresetList(BluChannel channel, StatusResponse status)
+        internal PlayerPresetList(BluChannel channel, StatusResponse status)
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
 
@@ -33,7 +33,5 @@ namespace Blu4Net
                 .Select(element => new PlayerPreset(element.ID, element.Name, element.Image.ToAbsoluteUri(_channel.Endpoint)))
                 .ToArray();
         }
-
-
     }
 }

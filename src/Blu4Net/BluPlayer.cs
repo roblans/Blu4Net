@@ -20,7 +20,8 @@ namespace Blu4Net
         public string Brand { get; }
         public Uri Endpoint { get; }
 
-        public PresetList PresetList { get; private set; }
+        public PlayerMusicSources MusicSources { get; private set; }
+        public PlayerPresetList PresetList { get; private set; }
         public PlayQueue PlayQueue { get; private set; }
 
         public IObservable<int> VolumeChanges { get;  }
@@ -37,7 +38,8 @@ namespace Blu4Net
             Name = synStatus.Name;
             Brand = synStatus.Brand;
 
-            PresetList = new PresetList(_channel, status);
+            MusicSources = new PlayerMusicSources(_channel);
+            PresetList = new PlayerPresetList(_channel, status);
             PlayQueue = new PlayQueue(_channel, status);
 
             VolumeChanges = _channel.VolumeChanges
