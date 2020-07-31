@@ -9,19 +9,31 @@ namespace BluDumper
 {
     class Program
     {
+        static BluPlayer player;
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             using (BluEnvironment.ResolveEndpoints().Subscribe(async endpoint =>
             {
                 Console.WriteLine($"Endpoint: {endpoint}");
      
-                var player = await BluPlayer.Connect(endpoint);
+                player = await BluPlayer.Connect(endpoint);
                 
                 await DumpPlayer(player);
             }))
             {
-                Console.ReadLine();
+                while (true)
+                {
+                    var key = Console.ReadKey();
+                    
+                    if (key.KeyChar == 'q')
+                        break;
+
+                    if (key.KeyChar == 'p')
+                    {
+                        await DumpQueuedSongs(player.PlayQueue);
+                    }
+                }
             }
         }
 
@@ -35,14 +47,17 @@ namespace BluDumper
             Console.WriteLine($"Repeat: {await player.GetRepeatMode()}");
             Console.WriteLine($"Volume: {await player.GetVolume()}%");
 
-            await DumpPresets(player.PresetList);
+            DumpPresets(await player.PresetList.GetPresets());
             DumpMedia(await player.GetMedia());
-            await DumpQueue(player.PlayQueue);
+            DumpQueueInfo(await player.PlayQueue.GetInfo());
 
             Console.WriteLine(new string('=', 80));
             Console.WriteLine();
 
             Console.WriteLine("Waiting for changes...");
+            Console.WriteLine($"Press 'q' to quit");
+            Console.WriteLine($"Press 'p' to dump the PlayQueue");
+
             player.StateChanges.Subscribe(state =>
             {
                 Console.WriteLine($"State: {state}");
@@ -68,14 +83,14 @@ namespace BluDumper
                 DumpMedia(media);
             });
 
-            player.PresetList.Changes.Subscribe(async _ =>
+            player.PresetList.Changes.Subscribe(presets =>
             {
-                await DumpPresets(player.PresetList);
+                DumpPresets(presets);
             });
 
-            player.PlayQueue.Changes.Subscribe(async _ =>
+            player.PlayQueue.Changes.Subscribe(info =>
             {
-                await DumpQueue(player.PlayQueue);
+                DumpQueueInfo(info);
             });
         }
 
@@ -90,10 +105,10 @@ namespace BluDumper
             Console.WriteLine($"\tServiceIconUri: {media.ServiceIconUri}");
         }
 
-        private static async Task DumpPresets(PresetList list)
+        private static void DumpPresets(IReadOnlyCollection<PlayerPreset> presets)
         {
             Console.WriteLine($"Presets:");
-            foreach (var preset in await list.GetPresets())
+            foreach (var preset in presets)
             {
                 Console.WriteLine($"\tNumber: {preset.Number}");
                 Console.WriteLine($"\tName: {preset.Name}");
@@ -101,21 +116,24 @@ namespace BluDumper
             }
         }
 
-        private static async Task DumpQueue(PlayQueue queue)
+        private static void DumpQueueInfo(PlayQueueInfo info)
         {
             Console.WriteLine($"Queue:");
-            var info = await queue.GetInfo();
             Console.WriteLine($"\tName: {info.Name}");
             Console.WriteLine($"\tLength: {info.Length}");
+        }
 
-            //Console.WriteLine($"\tSongs:");
-            //await foreach (var page in queue.GetSongsPaged(500))
-            //{
-            //    foreach (var song in page)
-            //    {
-            //        Console.WriteLine($"\t\t{song}"); 
-            //    }
-            //}
+        private static async Task DumpQueuedSongs(PlayQueue queue)
+        {
+            Console.WriteLine($"\tSongs:");
+            await foreach (var page in queue.GetSongs(500))
+            {
+                foreach (var song in page)
+                {
+                    Console.WriteLine($"\t\t{song}");
+                }
+            }
+            Console.WriteLine($"Done.");
         }
     }
 }
