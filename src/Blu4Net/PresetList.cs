@@ -14,7 +14,7 @@ namespace Blu4Net
     {
         private readonly BluChannel _channel;
 
-        public IObservable<Unit> Changes { get; }
+        public IObservable<IReadOnlyCollection<PlayerPreset>> Changes { get; }
 
         internal PresetList(BluChannel channel, StatusResponse status)
         {
@@ -23,7 +23,7 @@ namespace Blu4Net
             Changes = _channel.StatusChanges
             .SkipWhile(response => response.PresetsID == status.PresetsID)
             .DistinctUntilChanged(response => response.PresetsID)
-            .Select(response => Unit.Default);
+            .SelectAsync(async _ => await GetPresets());
         }
 
         public async Task<IReadOnlyCollection<PlayerPreset>> GetPresets()
