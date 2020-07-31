@@ -20,7 +20,6 @@ namespace Blu4Net
         public string Brand { get; }
         public Uri Endpoint { get; }
 
-        public PlayerMusicSources MusicSources { get; private set; }
         public PlayerPresetList PresetList { get; private set; }
         public PlayQueue PlayQueue { get; private set; }
 
@@ -38,7 +37,6 @@ namespace Blu4Net
             Name = synStatus.Name;
             Brand = synStatus.Brand;
 
-            MusicSources = new PlayerMusicSources(_channel);
             PresetList = new PlayerPresetList(_channel, status);
             PlayQueue = new PlayQueue(_channel, status);
 
@@ -232,6 +230,15 @@ namespace Blu4Net
         {
             var response = await _channel.GetStatus();
             return ParseMedia(response);
+        }
+
+        public async Task<IReadOnlyCollection<PlayerMusicSource>> GetMusicSources()
+        {
+            var response = await _channel.BrowseContent();
+
+            return response.Items
+                .Select(element => new PlayerMusicSource(_channel, element.BrowseKey, element.Text))
+                .ToArray();
         }
 
         public override string ToString()

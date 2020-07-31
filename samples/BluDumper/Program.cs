@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace BluDumper
@@ -56,7 +57,7 @@ namespace BluDumper
             DumpPresets(await player.PresetList.GetPresets());
             DumpMedia(await player.GetMedia());
             DumpQueueInfo(await player.PlayQueue.GetInfo());
-            await DumpMusicSources(player.MusicSources);
+            await DumpMusicSources(await player.GetMusicSources());
 
             Console.WriteLine(new string('=', 80));
             Console.WriteLine();
@@ -144,24 +145,26 @@ namespace BluDumper
             Console.WriteLine($"Done.");
         }
 
-        private static async Task DumpMusicSources(PlayerMusicSources musicSources)
+        private static async Task DumpMusicSources(IEnumerable<PlayerMusicSource> sources)
         {
-            Console.WriteLine($"Sources (2 levels only):");
-            var items = await musicSources.GetItems();
-            await DumpMusicSourcesRecursive(musicSources, items, 3);
-            Console.WriteLine();
+            Console.WriteLine($"Sources (one level only):");
+            foreach(var source in sources)
+            {
+                Console.WriteLine($"\t{source}");
+                await DumpMusicSourceItems(await source.GetItems(), 1);
+            }
         }
 
-        private static async Task DumpMusicSourcesRecursive(PlayerMusicSources musicSources, IReadOnlyCollection<PlayerMusicSourceItem> items, int maxLevels, int level = 0)
+        private static async Task DumpMusicSourceItems(IReadOnlyCollection<PlayerMusicSourceItem> items, int maxLevels, int level = 0)
         {
             foreach (var item in items)
             {
-                Console.WriteLine($"{new string('\t', level + 1)}{item}");
+                Console.WriteLine($"{new string('\t', level + 2)}{item}");
 
-                if (item.Key != null && level < maxLevels - 1)
+                if (item.HasItems && level < maxLevels - 1)
                 {
-                    var children = await musicSources.GetItems(item.Key);
-                    await DumpMusicSourcesRecursive(musicSources, children, maxLevels, level + 1);
+                    var children = await item.GetItems();
+                    await DumpMusicSourceItems(children, maxLevels, level + 1);
                 }
             }
         }
