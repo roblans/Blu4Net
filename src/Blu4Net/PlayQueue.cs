@@ -13,7 +13,7 @@ namespace Blu4Net
     public class PlayQueue
     {
         private readonly BluChannel _channel;
-        public IObservable<Unit> Changes { get; }
+        public IObservable<PlayQueueInfo> Changes { get; }
 
         internal PlayQueue(BluChannel channel, StatusResponse status)
         {
@@ -22,7 +22,7 @@ namespace Blu4Net
             Changes = _channel.StatusChanges
             .SkipWhile(response => response.PlaylistID == status.PlaylistID)
             .DistinctUntilChanged(response => response.PlaylistID)
-            .Select(response => Unit.Default);
+            .SelectAsync(async _ => await GetInfo());
         }
 
         public async Task<PlayQueueInfo>  GetInfo()
@@ -31,13 +31,7 @@ namespace Blu4Net
             return new PlayQueueInfo(status.Name, status.Length);
         }
 
-        public async Task<IReadOnlyCollection<PlayQueueSong>> GetSongs()
-        {
-            var list = await _channel.GetPlaylist();
-            return list.Songs.Select(element => new PlayQueueSong(element.Artist, element.Album, element.Title)).ToArray();
-        }
-
-        public async IAsyncEnumerable<IReadOnlyCollection<PlayQueueSong>> GetSongsPaged(int pageSize)
+        public async IAsyncEnumerable<IReadOnlyCollection<PlayQueueSong>> GetSongs(int pageSize)
         {
             await foreach (var list in _channel.GetPlaylistPaged(pageSize))
             {
