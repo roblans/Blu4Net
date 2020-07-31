@@ -21,6 +21,7 @@ namespace Blu4Net
             var response = await _channel.BrowseContent(parentKey);
 
             return response.Items
+                .Where(element => element.Text != null)
                 .Select(element => new PlayerMusicSourceItem(element.Text, element.BrowseKey))
                 .ToArray();
         }

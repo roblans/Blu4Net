@@ -144,22 +144,19 @@ namespace BluDumper
 
         private static async Task DumpMusicSources(PlayerMusicSources musicSources)
         {
-            Console.WriteLine($"Sources:");
+            Console.WriteLine($"Sources (2 levels only):");
             var items = await musicSources.GetItems();
-            await DumpMusicSourcesRecursive(musicSources, items, 1);
+            await DumpMusicSourcesRecursive(musicSources, items, 2);
             Console.WriteLine();
         }
 
         private static async Task DumpMusicSourcesRecursive(PlayerMusicSources musicSources, IReadOnlyCollection<PlayerMusicSourceItem> items, int maxLevels, int level = 0)
         {
-            if (level >= maxLevels)
-                return;
-
             foreach (var item in items)
             {
-                Console.WriteLine($"\t{item}");
+                Console.WriteLine($"{new string('\t', level + 1)}{item}");
 
-                if (item.Key != null)
+                if (item.Key != null && level < maxLevels - 1)
                 {
                     var children = await musicSources.GetItems(item.Key);
                     await DumpMusicSourcesRecursive(musicSources, children, maxLevels, level + 1);

@@ -342,7 +342,13 @@ namespace Blu4Net.Channel
             {
                 parameters["key"] = key;
             }
-            return await SendRequest<BrowseContentResponse>("Browse", parameters);
+            
+            var response = await SendRequest<BrowseContentResponse>("Browse", parameters);
+            if (response.Items == null)
+            {
+                response.Items = new BrowseContentItem[0];
+            }
+            return response;
         }
     }
 }
