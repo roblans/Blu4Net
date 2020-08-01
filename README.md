@@ -1,7 +1,7 @@
 ![](https://dev.azure.com/roblans/Blu4Net/_apis/build/status/Blu4Net)
 
 # Blu4Net
-Blu4Net is a .NET library that interfaces with BluOS players (Bluesound, NAD). It uses an event-driven (RX), non-blocking model (Async/Await) that makes it lightweight and efficient.
+Blu4Net is a .NET library that interfaces with BluOS players (Bluesound, NAD). It uses an event-driven (RX), non-blocking (Async/Await) model that makes it lightweight and efficient.
 
 Supported Targets:
 
@@ -35,7 +35,7 @@ Player endpoint discovery (mDNS)
 ### Presets
 
 - Fetch presets
-- Load preset (number)
+- Load preset (by number)
 
 ### Queue
 
@@ -97,6 +97,8 @@ namespace GetttingStarted
                 // subscribe to volume changes
                 using (player.VolumeChanges.Subscribe(volume => Console.WriteLine($"Volume: {volume}%")))
                 {
+                    Console.WriteLine();
+                    Console.WriteLine($"Waiting for volume changes...");
                     Console.ReadLine();
                 }
             }
