@@ -36,6 +36,8 @@ namespace GetttingStarted
                 // subscribe to volume changes
                 using (player.VolumeChanges.Subscribe(volume => Console.WriteLine($"Volume: {volume}%")))
                 {
+                    Console.WriteLine();
+                    Console.WriteLine($"Waiting for volume changes...");
                     Console.ReadLine();
                 }
             }
