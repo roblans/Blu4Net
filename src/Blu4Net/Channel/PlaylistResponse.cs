@@ -18,29 +18,30 @@ namespace Blu4Net.Channel
         public int Modified;
 
         [XmlElement("song")]
-        public PlaylistSong[] Songs = new PlaylistSong[0];
+        public Song[] Songs = new Song[0];
 
         public override string ToString()
         {
             return Name;
         }
-    }
 
-    [XmlRoot("song")]
-    public class PlaylistSong
-    {
-        [XmlElement("title")]
-        public string Title;
 
-        [XmlElement("art")]
-        public string Artist;
-
-        [XmlElement("alb")]
-        public string Album;
-
-        public override string ToString()
+        [XmlRoot("song")]
+        public class Song
         {
-            return Title;
+            [XmlElement("title")]
+            public string Title;
+
+            [XmlElement("art")]
+            public string Artist;
+
+            [XmlElement("alb")]
+            public string Album;
+
+            public override string ToString()
+            {
+                return Title;
+            }
         }
     }
 }

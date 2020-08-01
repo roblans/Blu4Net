@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Blu4Net
 {
-    public class PlayerMusicSource : PlayerMusicSourceItem
+    public class MusicSource : MusicSourceEntry
     {
-        public PlayerMusicSource(BluChannel channel, string key, string text)
-            : base(channel, key, text)
+        public MusicSource(BluChannel channel, string browseKey)
+            : base(channel, browseKey, null)
         {
         }
     }

@@ -15,30 +15,29 @@ namespace Blu4Net.Channel
         {
             return Presets?.Length.ToString() ?? base.ToString();
         }
-    }
 
-    [XmlRoot("preset")]
-    public class Preset
-    {
-        [XmlAttribute("name")]
-        public string Name;
-
-        [XmlAttribute("image")]
-        public string Image;
-
-        [XmlAttribute("url")]
-        public string Url;
-
-        [XmlAttribute("volume")]
-        public int Volume = -1;
-
-        [XmlAttribute("id")]
-        public int ID;
-
-        public override string ToString()
+        [XmlRoot("preset")]
+        public class Preset
         {
-            return ID.ToString();
+            [XmlAttribute("name")]
+            public string Name;
+
+            [XmlAttribute("image")]
+            public string Image;
+
+            [XmlAttribute("url")]
+            public string Url;
+
+            [XmlAttribute("volume")]
+            public int Volume = -1;
+
+            [XmlAttribute("id")]
+            public int ID;
+
+            public override string ToString()
+            {
+                return ID.ToString();
+            }
         }
     }
-
 }

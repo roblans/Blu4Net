@@ -30,7 +30,7 @@ namespace Blu4Net
         {
             var response = await _channel.GetPresets();
             return response.Presets
-                .Select(element => new PlayerPreset(element.ID, element.Name, element.Image.ToAbsoluteUri(_channel.Endpoint)))
+                .Select(element => new PlayerPreset(element.ID, element.Name, BluParser.ParseAbsoluteUri(element.Image, _channel.Endpoint)))
                 .ToArray();
         }
     }

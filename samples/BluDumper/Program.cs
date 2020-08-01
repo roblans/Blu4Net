@@ -1,10 +1,12 @@
 ﻿using Blu4Net;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BluDumper
@@ -37,6 +39,16 @@ namespace BluDumper
                     {
                         await DumpQueuedSongs(player.PlayQueue);
                     }
+
+                    if (key.KeyChar == 'l')
+                    {
+                        var sources = await player.GetMusicSources();
+                        var library = sources.FirstOrDefault(element => element.BrowseKey == "LocalMusic:");
+                        if (library != null)
+                        {
+                            await DumpMusicSource(library, int.MaxValue);
+                        }
+                    }
                 }
             }
             else 
@@ -66,6 +78,7 @@ namespace BluDumper
             Console.WriteLine("Waiting for changes...");
             Console.WriteLine($"Press 'q' to quit");
             Console.WriteLine($"Press 'p' to dump the PlayQueue");
+            Console.WriteLine($"Press 'l' to dump the Library");
 
             player.StateChanges.Subscribe(state =>
             {
@@ -152,26 +165,33 @@ namespace BluDumper
             Console.WriteLine($"Done.");
         }
 
-        private static async Task DumpMusicSources(IEnumerable<PlayerMusicSource> sources)
+
+        private static async Task DumpMusicSources(IEnumerable<MusicSource> sources)
         {
             Console.WriteLine($"Sources (one level only):");
-            foreach(var source in sources)
+            foreach (var source in sources)
             {
                 Console.WriteLine($"\t{source}");
-                await DumpMusicSourceItems(await source.GetItems(), 1);
+                await DumpMusicSource(source, 1);
             }
         }
 
-        private static async Task DumpMusicSourceItems(IReadOnlyCollection<PlayerMusicSourceItem> items, int maxLevels, int level = 0)
+        private static async Task DumpMusicSource(MusicSource source, int maxLevels)
         {
-            foreach (var item in items)
-            {
-                Console.WriteLine($"{new string('\t', level + 2)}{item}");
+            Console.WriteLine($"{source}:");
+            await DumpMusicSourceEntries(await source.GetEntries(), maxLevels);
+        }
 
-                if (item.HasItems && level < maxLevels - 1)
+        private static async Task DumpMusicSourceEntries(IReadOnlyCollection<MusicSourceEntry> entries, int maxLevels, int level = 0)
+        {
+            foreach (var entry in entries)
+            {
+                Console.WriteLine($"{new string('\t', level + 2)}{entry}");
+
+                if (entry.IsContainer && level < maxLevels - 1)
                 {
-                    var children = await item.GetItems();
-                    await DumpMusicSourceItems(children, maxLevels, level + 1);
+                    var children = await entry.GetEntries();
+                    await DumpMusicSourceEntries(children, maxLevels, level + 1);
                 }
             }
         }

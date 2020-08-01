@@ -49,7 +49,7 @@ namespace Blu4Net
             StateChanges = _channel.StatusChanges
                 .SkipWhile(response => response.State == status.State)
                 .DistinctUntilChanged(response => response.State)
-                .Select(response => ParseState(response.State));
+                .Select(response => BluParser.ParseState(response.State));
 
             ShuffleModeChanges = _channel.StatusChanges
                 .SkipWhile(response => response.Shuffle == status.Shuffle)
@@ -64,12 +64,12 @@ namespace Blu4Net
             MediaChanges = _channel.StatusChanges
                 .SkipWhile(response => response.Title1 == status.Title1 && response.Title2 == status.Title2 && response.Title3 == status.Title3)
                 .DistinctUntilChanged(response => $"{response.Title1}{response.Title2}{response.Title3}")
-                .Select(response => ParseMedia(response));
+                .Select(response => BluParser.ParseMedia(response, Endpoint));
 
             PositionChanges = _channel.StatusChanges
                 .SkipWhile(response => response.Seconds == status.Seconds && response.TotalLength == status.TotalLength)
                 .DistinctUntilChanged(response => $"{response.Seconds}{response.TotalLength}")
-                .Select(response => ParsePosition(response));
+                .Select(response => BluParser.ParsePosition(response));
         }
 
         public static async Task<BluPlayer> Connect(Uri endpoint)
@@ -102,44 +102,6 @@ namespace Blu4Net
             return Connect(endpoint);
         }
 
-        private PlayerMedia ParseMedia(StatusResponse response)
-        {
-            if (response == null)
-                throw new ArgumentNullException(nameof(response));
-
-            var imageUri = response.Image != null ? response.Image.ToAbsoluteUri(Endpoint) : null;
-            var serviceIconUri = response.ServiceIcon != null ? response.ServiceIcon.ToAbsoluteUri(Endpoint): null;
-            var titles = new[] { response.Title1, response.Title2, response.Title3 }.Where(element => element != null).ToArray();
-
-            return new PlayerMedia(titles, imageUri, serviceIconUri);
-        }
-
-        private PlayerState ParseState(string value)
-        {
-            if (value != null)
-            {
-                switch (value)
-                {
-                    case "stream":
-                        return PlayerState.Streaming;
-                    case "play":
-                        return PlayerState.Playing;
-                    case "pause":
-                        return PlayerState.Paused;
-                    case "stop":
-                        return PlayerState.Stopped;
-                    case "connecting":
-                        return PlayerState.Connecting;
-                }
-            }
-            return PlayerState.Unknown;
-        }
-
-        private PlayPosition ParsePosition(StatusResponse response)
-        {
-            return new PlayPosition(TimeSpan.FromSeconds(response.Seconds), response.TotalLength != 0 ? TimeSpan.FromSeconds(response.TotalLength) : default(TimeSpan?));
-        }
-
         public TextWriter Log
         {
             get { return _channel.Log;  }
@@ -170,25 +132,25 @@ namespace Blu4Net
         public async Task<PlayerState> GetState()
         {
             var response = await _channel.GetStatus();
-            return ParseState(response.State);
+            return BluParser.ParseState(response.State);
         }
 
         public async Task<PlayerState> Play()
         {
             var response = await _channel.Play();
-            return ParseState(response.State);
+            return BluParser.ParseState(response.State);
         }
 
         public async Task<PlayerState> Pause(bool toggle = false)
         {
             var response = await _channel.Pause(toggle ? 1 : 0);
-            return ParseState(response.State);
+            return BluParser.ParseState(response.State);
         }
 
         public async Task<PlayerState> Stop()
         {
             var response = await _channel.Stop();
-            return ParseState(response.State);
+            return BluParser.ParseState(response.State);
         }
 
         public async Task<int?> Back()
@@ -240,22 +202,22 @@ namespace Blu4Net
         public async Task<PlayerMedia> GetMedia()
         {
             var response = await _channel.GetStatus();
-            return ParseMedia(response);
+            return BluParser.ParseMedia(response, Endpoint);
         }
 
-        public async Task<IReadOnlyCollection<PlayerMusicSource>> GetMusicSources()
+        public async Task<IReadOnlyCollection<MusicSource>> GetMusicSources()
         {
             var response = await _channel.BrowseContent();
 
             return response.Items
-                .Select(element => new PlayerMusicSource(_channel, element.BrowseKey, element.Text))
+                .Select(element => BluParser.ParseMusicSource(element, _channel))
                 .ToArray();
         }
 
         public async Task<PlayPosition> GetPlayPosition()
         {
             var response = await _channel.GetStatus();
-            return ParsePosition(response);
+            return BluParser.ParsePosition(response);
         }
 
         public override string ToString()

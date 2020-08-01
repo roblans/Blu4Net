@@ -9,24 +9,24 @@ namespace Blu4Net.Channel
     public class BrowseContentResponse
     {
         [XmlElement("item")]
-        public BrowseContentItem[] Items = new BrowseContentItem[0];
-    }
+        public Item[] Items = new Item[0];
 
-    [XmlRoot("item")]
-    public class BrowseContentItem
-    {
-        [XmlAttribute("browseKey")]
-        public string BrowseKey;
-
-        [XmlAttribute("text")]
-        public string Text;
-
-        [XmlAttribute("image")]
-        public string Image;
-
-        public override string ToString()
+        [XmlRoot("item")]
+        public class Item
         {
-            return Text;
+            [XmlAttribute("browseKey")]
+            public string BrowseKey;
+
+            [XmlAttribute("text")]
+            public string Text;
+
+            [XmlAttribute("image")]
+            public string Image;
+
+            public override string ToString()
+            {
+                return Text;
+            }
         }
     }
 }

@@ -256,7 +256,7 @@ namespace Blu4Net.Channel
             var response = await SendRequest<PlaylistResponse>("Playlist", parameters);
             if (response.Songs == null)
             {
-                response.Songs = new PlaylistSong[0];
+                response.Songs = new PlaylistResponse.Song[0];
             }
             return response;
         }
@@ -321,7 +321,7 @@ namespace Blu4Net.Channel
             var response = await SendRequest<PresetsResponse>("Presets");
             if (response.Presets == null)
             {
-                response.Presets = new Preset[0];
+                response.Presets = new PresetsResponse.Preset[0];
             }
             return response;
         }
@@ -354,7 +354,7 @@ namespace Blu4Net.Channel
             var response = await SendRequest<BrowseContentResponse>("Browse", parameters);
             if (response.Items == null)
             {
-                response.Items = new BrowseContentItem[0];
+                response.Items = new BrowseContentResponse.Item[0];
             }
             else
             { 
