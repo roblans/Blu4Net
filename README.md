@@ -45,7 +45,7 @@ Player endpoint discovery (mDNS)
 ### Music sources (Library, TuneIn, ...)
 
 - Fetch sources
-- Browse hierarchy
+- Browse hierarchy (note: not fully implemented yet)
 
 ### Notifications (Observable - ReactiveX)
 - State changes (Playing, Paused, Streaming, ...)
