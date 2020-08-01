@@ -33,5 +33,10 @@ namespace Blu4Net
                 .Select(element => new PlayerPreset(element.ID, element.Name, BluParser.ParseAbsoluteUri(element.Image, _channel.Endpoint)))
                 .ToArray();
         }
+
+        public Task LoadPreset(int number)
+        {
+            return _channel.LoadPreset(number);
+        }
     }
 }

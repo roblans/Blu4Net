@@ -49,6 +49,15 @@ namespace BluDumper
                             await DumpMusicSource(library, int.MaxValue);
                         }
                     }
+
+                    if (Char.IsDigit(key.KeyChar))
+                    {
+                        var number = (int)Char.GetNumericValue(key.KeyChar);
+                        if (number != 0)
+                        {
+                            await player.PresetList.LoadPreset(number);
+                        }
+                    }
                 }
             }
             else 
@@ -79,6 +88,7 @@ namespace BluDumper
             Console.WriteLine($"Press 'q' to quit");
             Console.WriteLine($"Press 'p' to dump the PlayQueue");
             Console.WriteLine($"Press 'l' to dump the Library");
+            Console.WriteLine($"Press '1..9' to load a Preset");
 
             player.StateChanges.Subscribe(state =>
             {
