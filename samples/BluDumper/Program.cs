@@ -181,7 +181,6 @@ namespace BluDumper
             Console.WriteLine($"Sources (one level only):");
             foreach (var source in sources)
             {
-                Console.WriteLine($"\t{source}");
                 await DumpMusicSource(source, 1);
             }
         }
@@ -196,7 +195,7 @@ namespace BluDumper
         {
             foreach (var entry in entries)
             {
-                Console.WriteLine($"{new string('\t', level + 2)}{entry}");
+                Console.WriteLine($"{new string('\t', level + 1)}{entry}");
 
                 if (entry.IsContainer && level < maxLevels - 1)
                 {

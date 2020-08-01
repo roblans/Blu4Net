@@ -42,8 +42,8 @@ namespace Blu4Net
             PlayQueue = new PlayQueue(_channel, status);
 
             VolumeChanges = _channel.VolumeChanges
-                .SkipWhile(response => response.Volume == status.Volume)
-                .DistinctUntilChanged(response => response.Volume)
+                .SkipWhile(response => response.Decibel == status.Decibel)
+                .DistinctUntilChanged(response => response.Decibel)
                 .Select(response => response.Volume);
 
             StateChanges = _channel.StatusChanges

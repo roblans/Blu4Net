@@ -14,7 +14,7 @@ namespace Blu4Net
         public MusicSourceEntry Parent { get; }
         public string BrowseKey { get; }
         public string Text { get; private set; }
-        public string Service { get; private set; }
+        public Uri ImageUri { get; private set; }
 
         public MusicSourceEntry(BluChannel channel, string browseKey, MusicSourceEntry parent)
         {
@@ -26,6 +26,7 @@ namespace Blu4Net
         internal void Load(BrowseContentResponse.Item item)
         {
             Text = item.Text;
+            ImageUri = BluParser.ParseAbsoluteUri(item.Image, _channel.Endpoint);
         }
 
         public bool IsContainer

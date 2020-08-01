@@ -10,7 +10,7 @@ namespace Blu4Net
     {
         public static Uri ParseAbsoluteUri(string value, Uri baseUri)
         {
-            if (value != null && Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri))
+            if (!string.IsNullOrEmpty(value) && Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri))
             {
                 if (uri.IsAbsoluteUri)
                 {
@@ -56,11 +56,19 @@ namespace Blu4Net
 
         public static PlayPosition ParsePosition(StatusResponse response)
         {
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
+
             return new PlayPosition(TimeSpan.FromSeconds(response.Seconds), response.TotalLength != 0 ? TimeSpan.FromSeconds(response.TotalLength) : default(TimeSpan?));
         }
 
         public static MusicSource ParseMusicSource(BrowseContentResponse.Item item, BluChannel channel)
         {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+            if (channel == null)
+                throw new ArgumentNullException(nameof(channel));
+
             var source = new MusicSource(channel, item.BrowseKey);
             source.Load(item);
             return source;
@@ -68,6 +76,13 @@ namespace Blu4Net
 
         public static MusicSourceEntry ParseMusicSourceEntry(BrowseContentResponse.Item item, BluChannel channel, MusicSourceEntry parent)
         {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+            if (channel == null)
+                throw new ArgumentNullException(nameof(channel));
+            if (parent == null)
+                throw new ArgumentNullException(nameof(parent));
+
             var source = new MusicSourceEntry(channel, item.BrowseKey, parent);
             source.Load(item);
             return source;

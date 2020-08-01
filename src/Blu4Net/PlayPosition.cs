@@ -6,18 +6,18 @@ namespace Blu4Net
 {
     public class PlayPosition
     {
-        public TimeSpan CurrentValue { get; }
-        public TimeSpan? TotalLength { get; }
+        public TimeSpan Elapsed { get; }
+        public TimeSpan? Length { get; }
 
-        public PlayPosition(TimeSpan currentValue, TimeSpan? totalLength)
+        public PlayPosition(TimeSpan elapsed, TimeSpan? totalLength)
         {
-            CurrentValue = currentValue;
-            TotalLength = totalLength;
+            Elapsed = elapsed;
+            Length = totalLength;
         }
 
         public override string ToString()
         {
-            return TotalLength != null ? $"{CurrentValue} - {TotalLength}" : $"{CurrentValue}";
+            return Length != null ? $"{Elapsed} - {Length}" : $"{Elapsed}";
         }
     }
 }
