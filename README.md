@@ -88,7 +88,7 @@ namespace GetttingStarted
 
                 // get the volume
                 var volume = await player.GetVolume();
-                Console.WriteLine($"Volume: {volume}");
+                Console.WriteLine($"Volume: {volume}%");
 
                 // get the current playing media
                 var media = await player.GetMedia();
