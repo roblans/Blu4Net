@@ -48,5 +48,11 @@ namespace Blu4Net
         {
             return _channel.Delete(songID);
         }
+
+        public async Task<int> Save(string name)
+        {
+            var response = await _channel.Save(name);
+            return response.Entries;
+        }
     }
 }

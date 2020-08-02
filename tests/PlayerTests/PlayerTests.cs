@@ -201,5 +201,11 @@ namespace PlayerTests
         {
             await Player.PlayQueue.Remove(7);
         }
+
+        [TestMethod]
+        public async Task Player_PlayQueueSave()
+        {
+            var entries = await Player.PlayQueue.Save(Guid.NewGuid().ToString("N"));
+        }
     }
 }

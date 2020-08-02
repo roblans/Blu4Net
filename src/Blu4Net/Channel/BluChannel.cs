@@ -297,6 +297,18 @@ namespace Blu4Net.Channel
             return SendRequest<DeleteResponse>("Delete", parameters);
         }
 
+        public Task<SavedResponse> Save(string name)
+        {
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+            if (name.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(name), "Value cannot be an empty string");
+
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["name"] = name.ToString();
+            return SendRequest<SavedResponse>("Save", parameters);
+        }
+
         public Task<ShuffleResponse> GetShuffle()
         {
             return SendRequest<ShuffleResponse>("Shuffle");

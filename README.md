@@ -43,7 +43,8 @@ Player endpoint discovery (mDNS)
 - Info (name + length)
 - Fetch songs (paged)
 - Clear
-- Remove(song)
+- Remove (song)
+- Save (name)
 
 ### Music sources (Library, TuneIn, ...)
 
