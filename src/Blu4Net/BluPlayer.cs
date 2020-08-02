@@ -64,12 +64,12 @@ namespace Blu4Net
             MediaChanges = _channel.StatusChanges
                 .SkipWhile(response => response.Title1 == status.Title1 && response.Title2 == status.Title2 && response.Title3 == status.Title3)
                 .DistinctUntilChanged(response => $"{response.Title1}{response.Title2}{response.Title3}")
-                .Select(response => BluParser.ParseMedia(response, Endpoint));
+                .Select(response => PlayerMedia.Create(response, Endpoint));
 
             PositionChanges = _channel.StatusChanges
                 .SkipWhile(response => response.Seconds == status.Seconds && response.TotalLength == status.TotalLength)
                 .DistinctUntilChanged(response => $"{response.Seconds}{response.TotalLength}")
-                .Select(response => BluParser.ParsePosition(response));
+                .Select(response => PlayPosition.Create(response));
         }
 
         public static async Task<BluPlayer> Connect(Uri endpoint)
@@ -208,7 +208,7 @@ namespace Blu4Net
         public async Task<PlayerMedia> GetMedia()
         {
             var response = await _channel.GetStatus();
-            return BluParser.ParseMedia(response, Endpoint);
+            return PlayerMedia.Create(response, Endpoint);
         }
 
         public async Task<IReadOnlyCollection<MusicSource>> GetMusicSources()
@@ -223,7 +223,7 @@ namespace Blu4Net
         public async Task<PlayPosition> GetPosition()
         {
             var response = await _channel.GetStatus();
-            return BluParser.ParsePosition(response);
+            return PlayPosition.Create(response);
         }
 
         public override string ToString()

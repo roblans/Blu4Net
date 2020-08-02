@@ -21,18 +21,6 @@ namespace Blu4Net
             return null;
         }
 
-        public static PlayerMedia ParseMedia(StatusResponse response, Uri endpoint)
-        {
-            if (response == null)
-                throw new ArgumentNullException(nameof(response));
-
-            var imageUri = response.Image != null ? ParseAbsoluteUri(response.Image, endpoint) : null;
-            var serviceIconUri = response.ServiceIcon != null ? ParseAbsoluteUri(response.ServiceIcon, endpoint) : null;
-            var titles = new[] { response.Title1, response.Title2, response.Title3 }.Where(element => element != null).ToArray();
-
-            return new PlayerMedia(titles, imageUri, serviceIconUri);
-        }
-
         public static PlayerState ParseState(string value)
         {
             if (value != null)
@@ -52,14 +40,6 @@ namespace Blu4Net
                 }
             }
             return PlayerState.Unknown;
-        }
-
-        public static PlayPosition ParsePosition(StatusResponse response)
-        {
-            if (response == null)
-                throw new ArgumentNullException(nameof(response));
-
-            return new PlayPosition(TimeSpan.FromSeconds(response.Seconds), response.TotalLength != 0 ? TimeSpan.FromSeconds(response.TotalLength) : default(TimeSpan?));
         }
 
         public static MusicSource ParseMusicSource(BrowseContentResponse.Item item, BluChannel channel)
