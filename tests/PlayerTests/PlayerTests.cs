@@ -189,5 +189,17 @@ namespace PlayerTests
             var presets = await Player.PresetList.GetPresets();
             Assert.IsNotNull(presets);
         }
+
+        [TestMethod]
+        public async Task Player_PlayQueueClear()
+        {
+            await Player.PlayQueue.Clear();
+        }
+
+        [TestMethod]
+        public async Task Player_PlayQueueRemove()
+        {
+            await Player.PlayQueue.Remove(7);
+        }
     }
 }

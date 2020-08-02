@@ -29,6 +29,9 @@ namespace Blu4Net.Channel
         [XmlRoot("song")]
         public class Song
         {
+            [XmlAttribute("id")]
+            public int ID;
+
             [XmlElement("title")]
             public string Title;
 

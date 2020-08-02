@@ -233,7 +233,7 @@ namespace ChannelTests
         [TestMethod]
         public async Task Channel_ClearPlaylist()
         {
-            var response = await Channel.ClearPlaylist();
+            var response = await Channel.Clear();
             Assert.AreEqual(0, response.Length);
         }
 

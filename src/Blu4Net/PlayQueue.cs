@@ -35,8 +35,18 @@ namespace Blu4Net
         {
             await foreach (var list in _channel.GetPlaylistPaged(pageSize))
             {
-                yield return list.Songs.Select(element => new PlayQueueSong(element.Artist, element.Album, element.Title)).ToArray();
+                yield return list.Songs.Select(element => new PlayQueueSong(element.ID, element.Artist, element.Album, element.Title)).ToArray();
             }
+        }
+
+        public Task Clear()
+        {
+            return _channel.Clear();
+        }
+
+        public Task Remove(int songID)
+        {
+            return _channel.Delete(songID);
         }
     }
 }
