@@ -45,7 +45,7 @@ Player endpoint discovery (mDNS)
 ### Music sources (Library, TuneIn, ...)
 
 - Fetch sources
-- Browse hierarchy
+- Browse hierarchy (note: not fully implemented yet)
 
 ### Notifications (Observable - ReactiveX)
 - State changes (Playing, Paused, Streaming, ...)
@@ -88,7 +88,7 @@ namespace GettingStarted
 
                 // get the volume
                 var volume = await player.GetVolume();
-                Console.WriteLine($"Volume: {volume}");
+                Console.WriteLine($"Volume: {volume}%");
 
                 // get the current playing media
                 var media = await player.GetMedia();
