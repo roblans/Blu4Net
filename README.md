@@ -17,6 +17,7 @@ Player endpoint discovery (mDNS)
 ### Basic operations
 
 - Play
+- Seek (offset)
 - Pause
 - Stop
 - Skip

@@ -142,6 +142,12 @@ namespace PlayerTests
         }
 
         [TestMethod]
+        public async Task Player_Seek()
+        {
+            await Player.Seek(TimeSpan.FromSeconds(30));
+        }
+
+        [TestMethod]
         public async Task Player_MuteOn()
         {
             await Player.Mute(true);
