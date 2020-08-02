@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Blu4Net.IO;
+using System.Globalization;
 
 namespace ChannelTests
 {
@@ -318,5 +319,12 @@ namespace ChannelTests
                 }
             }
         }
+
+        [TestMethod]
+        public async Task Channel_GetServices()
+        {
+            var response = await Channel.GetServices();
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -23,6 +24,7 @@ namespace Blu4Net.Channel
         static readonly TimeSpan InfiniteTimeout = TimeSpan.FromMilliseconds(System.Threading.Timeout.Infinite);
         public Uri Endpoint { get; }
         public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(30);
+        public CultureInfo AcceptLanguage { get; } = new CultureInfo("en-US");
         public TextWriter Log { get; set; }
         public IObservable<StatusResponse> StatusChanges { get; }
         public IObservable<SyncStatusResponse> SyncStatusChanges { get; }
@@ -65,6 +67,8 @@ namespace Blu4Net.Channel
             
             using (var client = new HttpClient() { Timeout = timeout })
             {
+                client.DefaultRequestHeaders.AcceptLanguage.TryParseAdd(AcceptLanguage.Name);
+
                 using (var response = await client.GetAsync(requestUri, cancellationToken))
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
@@ -362,6 +366,11 @@ namespace Blu4Net.Channel
                 response.Items = response.Items.Where(element => element.Text != null).ToArray();
             }
             return response;
+        }
+
+        public Task<XDocument> GetServices()
+        {
+            return SendRequest("Services");
         }
     }
 }
