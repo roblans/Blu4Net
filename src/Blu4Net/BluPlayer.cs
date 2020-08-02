@@ -214,7 +214,7 @@ namespace Blu4Net
                 .ToArray();
         }
 
-        public async Task<PlayPosition> GetPlayPosition()
+        public async Task<PlayPosition> GetPosition()
         {
             var response = await _channel.GetStatus();
             return BluParser.ParsePosition(response);
