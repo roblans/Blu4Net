@@ -12,10 +12,11 @@ namespace Blu4Net
         private readonly BluChannel _channel;
         private readonly string _searchKey;
 
+        public MusicSourceEntry Parent { get; }
         public string ServiceName { get; } 
         public IReadOnlyCollection<MusicSourceEntryLink> Links { get; }
 
-        public MusicSourceEntry(BluChannel channel, BrowseContentResponse response)
+        public MusicSourceEntry(BluChannel channel, MusicSourceEntry parent, BrowseContentResponse response)
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
             if (response == null)
@@ -32,7 +33,7 @@ namespace Blu4Net
                 throw new ArgumentNullException(nameof(key));
 
             var response = await _channel.BrowseContent(key);
-            return new MusicSourceEntry(_channel, response);
+            return new MusicSourceEntry(_channel, this, response);
         }
 
         public bool IsSearchable
@@ -46,7 +47,7 @@ namespace Blu4Net
                 throw new NotSupportedException("Musicsource is not searchable");
 
             var response = await _channel.BrowseContent(_searchKey, text);
-            return new MusicSourceEntry(_channel, response);
+            return new MusicSourceEntry(_channel, this, response);
         }
 
         public override string ToString()

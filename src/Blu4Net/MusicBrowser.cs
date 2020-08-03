@@ -10,7 +10,7 @@ namespace Blu4Net
     public class MusicBrowser : MusicSourceEntry
     {
         public MusicBrowser(BluChannel channel, BrowseContentResponse response)
-            : base(channel, response)
+            : base(channel, null, response)
         {
         }
     }
