@@ -366,12 +366,17 @@ namespace Blu4Net.Channel
             throw new InvalidDataException();
         }
 
-        public async Task<BrowseContentResponse> BrowseContent(string key = null)
+        public async Task<BrowseContentResponse> BrowseContent(string key = null, string searchText = null)
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             if (key != null)
             {
                 parameters["key"] = key;
+
+                if (searchText != null)
+                {
+                    parameters["q"] = searchText;
+                }
             }
             
             var response = await SendRequest<BrowseContentResponse>("Browse", parameters);

@@ -47,6 +47,14 @@ namespace BluDumper
                         await DumpMusicSourceEntry(entry, 3);
                     }
 
+                    if (key.KeyChar == 's')
+                    {
+                        var info = player.MusicBrowser.EntryInfos.SingleOrDefault(element => element.Name == "Library");
+                        var entry = await player.MusicBrowser.FetchEntry(info.Key);
+                        var search = await entry.Search("Muse");
+                        await DumpMusicSourceEntry(search, 3);
+                    }
+
                     if (Char.IsDigit(key.KeyChar))
                     {
                         var number = (int)Char.GetNumericValue(key.KeyChar);
@@ -84,7 +92,8 @@ namespace BluDumper
             Console.WriteLine("Waiting for changes...");
             Console.WriteLine($"Press 'q' to quit");
             Console.WriteLine($"Press 'p' to dump the PlayQueue");
-            Console.WriteLine($"Press 'l' to dump the Library");
+            Console.WriteLine($"Press 'l' to dump the Library (3 levels)");
+            Console.WriteLine($"Press 's' to search the library for 'Muse'");
             Console.WriteLine($"Press '1..9' to load a Preset");
 
             player.StateChanges.Subscribe(state =>
