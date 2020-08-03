@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Blu4Net.Channel;
+using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace Blu4Net
@@ -11,12 +13,15 @@ namespace Blu4Net
         public string Album { get; }
         public string Title { get; }
 
-        public PlayQueueSong(int id, string artist, string album, string title)
+        public PlayQueueSong(PlaylistResponse.Song response)
         {
-            ID = id;
-            Artist = artist ?? throw new ArgumentNullException(nameof(artist));
-            Album = album ?? throw new ArgumentNullException(nameof(album));
-            Title = title ?? throw new ArgumentNullException(nameof(title));
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
+
+            ID = response.ID;
+            Artist = response.Artist;
+            Album = response.Album;
+            Title = response.Title;
         }
 
         public override string ToString()

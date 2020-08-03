@@ -41,31 +41,5 @@ namespace Blu4Net
             }
             return PlayerState.Unknown;
         }
-
-        public static MusicSource ParseMusicSource(BrowseContentResponse.Item item, BluChannel channel)
-        {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-            if (channel == null)
-                throw new ArgumentNullException(nameof(channel));
-
-            var source = new MusicSource(channel, item.BrowseKey);
-            source.Load(item);
-            return source;
-        }
-
-        public static MusicSourceEntry ParseMusicSourceEntry(BrowseContentResponse.Item item, BluChannel channel, MusicSourceEntry parent)
-        {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-            if (channel == null)
-                throw new ArgumentNullException(nameof(channel));
-            if (parent == null)
-                throw new ArgumentNullException(nameof(parent));
-
-            var source = new MusicSourceEntry(channel, item.BrowseKey, parent);
-            source.Load(item);
-            return source;
-        }
     }
 }

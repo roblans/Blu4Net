@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blu4Net.Channel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,10 +10,13 @@ namespace Blu4Net
         public string Name { get; private set; }
         public int Length { get; private set; }
 
-        public PlayQueueInfo(string name, int length)
+        public PlayQueueInfo(PlaylistStatusResponse response)
         {
-            Name = name;
-            Length = length;
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
+
+            Name = response.Name;
+            Length = response.Length;
         }
 
         public override string ToString()

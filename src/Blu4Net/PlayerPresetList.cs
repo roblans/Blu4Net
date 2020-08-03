@@ -16,7 +16,7 @@ namespace Blu4Net
 
         public IObservable<IReadOnlyCollection<PlayerPreset>> Changes { get; }
 
-        internal PlayerPresetList(BluChannel channel, StatusResponse status)
+        public PlayerPresetList(BluChannel channel, StatusResponse status)
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
 
@@ -26,11 +26,12 @@ namespace Blu4Net
             .SelectAsync(async _ => await GetPresets());
         }
 
+
         public async Task<IReadOnlyCollection<PlayerPreset>> GetPresets()
         {
             var response = await _channel.GetPresets();
             return response.Presets
-                .Select(element => new PlayerPreset(element.ID, element.Name, BluParser.ParseAbsoluteUri(element.Image, _channel.Endpoint)))
+                .Select(element => new PlayerPreset(element, _channel.Endpoint))
                 .ToArray();
         }
 

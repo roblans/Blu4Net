@@ -8,6 +8,12 @@ namespace Blu4Net.Channel
     [XmlRoot("browse")]
     public class BrowseContentResponse
     {
+        [XmlAttribute("serviceName")]
+        public string ServiceName;
+
+        [XmlAttribute("searchKey")]
+        public string SearchKey;
+
         [XmlElement("item")]
         public Item[] Items = new Item[0];
 
@@ -16,6 +22,9 @@ namespace Blu4Net.Channel
         {
             [XmlAttribute("browseKey")]
             public string BrowseKey;
+
+            [XmlAttribute("type")]
+            public string Type;
 
             [XmlAttribute("text")]
             public string Text;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blu4Net.Channel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,11 +11,11 @@ namespace Blu4Net
         public string Name { get; }
         public Uri ImageUri { get; }
 
-        public PlayerPreset(int number, string name, Uri imageUri)
+        public PlayerPreset(PresetsResponse.Preset response, Uri endpoint)
         {
-            Number = number;
-            Name = name;
-            ImageUri = imageUri;
+            Number = response.ID;
+            Name = response.Name;
+            ImageUri = BluParser.ParseAbsoluteUri(response.Image, endpoint);
         }
 
         public override string ToString()

@@ -42,12 +42,9 @@ namespace BluDumper
 
                     if (key.KeyChar == 'l')
                     {
-                        var sources = await player.GetMusicSources();
-                        var library = sources.FirstOrDefault(element => element.BrowseKey == "LocalMusic:");
-                        if (library != null)
-                        {
-                            await DumpMusicSource(library, int.MaxValue);
-                        }
+                        var info = player.MusicBrowser.EntryInfos.SingleOrDefault(element => element.Name == "Library");
+                        var entry = await player.MusicBrowser.FetchEntry(info.Key);
+                        await DumpMusicSourceEntry(entry, 3);
                     }
 
                     if (Char.IsDigit(key.KeyChar))
@@ -79,7 +76,7 @@ namespace BluDumper
             DumpPresets(await player.PresetList.GetPresets());
             DumpMedia(await player.GetMedia());
             DumpQueueInfo(await player.PlayQueue.GetInfo());
-            await DumpMusicSources(await player.GetMusicSources());
+            await DumpMusicSources(player.MusicBrowser);
 
             Console.WriteLine(new string('=', 80));
             Console.WriteLine();
@@ -176,33 +173,38 @@ namespace BluDumper
         }
 
 
-        private static async Task DumpMusicSources(IEnumerable<MusicSource> sources)
+        private static async Task DumpMusicSources(MusicBrowser browser)
         {
-            Console.WriteLine($"Sources (one level only):");
-            foreach (var source in sources)
-            {
-                await DumpMusicSource(source, 1);
-            }
+            Console.WriteLine($"Sources:");
+            await DumpMusicSourceEntry(browser, 2);
         }
 
-        private static async Task DumpMusicSource(MusicSource source, int maxLevels)
+        private static async Task DumpMusicSourceEntry(MusicSourceEntry parent, int maxLevels, int level = 0)
         {
-            Console.WriteLine($"{source}:");
-            await DumpMusicSourceEntries(await source.GetEntries(), maxLevels);
-        }
-
-        private static async Task DumpMusicSourceEntries(IReadOnlyCollection<MusicSourceEntry> entries, int maxLevels, int level = 0)
-        {
-            foreach (var entry in entries)
+            foreach (var info in parent.EntryInfos)
             {
-                Console.WriteLine($"{new string('\t', level + 1)}{entry}");
+                Console.WriteLine($"{new string('\t', level + 1)}{info}");
 
-                if (entry.IsContainer && level < maxLevels - 1)
+                if (info.IsContainer && level < maxLevels - 1)
                 {
-                    var children = await entry.GetEntries();
-                    await DumpMusicSourceEntries(children, maxLevels, level + 1);
+                    var child = await parent.FetchEntry(info.Key);
+                    await DumpMusicSourceEntry(child, maxLevels, level + 1);
                 }
             }
         }
+
+        //private static async Task DumpMusicSourceEntries(IReadOnlyCollection<MusicSourceEntryOld> entries, int maxLevels, int level = 0)
+        //{
+        //    foreach (var entry in entries)
+        //    {
+        //        Console.WriteLine($"{new string('\t', level + 1)}{entry}");
+
+        //        if (entry.IsContainer && level < maxLevels - 1)
+        //        {
+        //            var children = await entry.GetEntries();
+        //            await DumpMusicSourceEntries(children, maxLevels, level + 1);
+        //        }
+        //    }
+        //}
     }
 }

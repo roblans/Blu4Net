@@ -20,8 +20,9 @@ namespace Blu4Net
         public string Brand { get; }
         public Uri Endpoint { get; }
 
-        public PlayerPresetList PresetList { get; private set; }
-        public PlayQueue PlayQueue { get; private set; }
+        public PlayerPresetList PresetList { get; }
+        public PlayQueue PlayQueue { get; }
+        public MusicBrowser MusicBrowser { get; }
 
         public IObservable<int> VolumeChanges { get;  }
         public IObservable<PlayerState> StateChanges { get;  }
@@ -30,7 +31,7 @@ namespace Blu4Net
         public IObservable<PlayerMedia> MediaChanges { get; }
         public IObservable<PlayPosition> PositionChanges { get; }
 
-        private BluPlayer(BluChannel channel, SyncStatusResponse synStatus, StatusResponse status)
+        private BluPlayer(BluChannel channel, SyncStatusResponse synStatus, StatusResponse status, BrowseContentResponse content)
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
 
@@ -40,6 +41,7 @@ namespace Blu4Net
 
             PresetList = new PlayerPresetList(_channel, status);
             PlayQueue = new PlayQueue(_channel, status);
+            MusicBrowser = new MusicBrowser(_channel, content);
 
             VolumeChanges = _channel.VolumeChanges
                 .SkipWhile(response => response.Decibel == status.Decibel)
@@ -64,12 +66,12 @@ namespace Blu4Net
             MediaChanges = _channel.StatusChanges
                 .SkipWhile(response => response.Title1 == status.Title1 && response.Title2 == status.Title2 && response.Title3 == status.Title3)
                 .DistinctUntilChanged(response => $"{response.Title1}{response.Title2}{response.Title3}")
-                .Select(response => PlayerMedia.Create(response, Endpoint));
+                .Select(response => new PlayerMedia(response, Endpoint));
 
             PositionChanges = _channel.StatusChanges
                 .SkipWhile(response => response.Seconds == status.Seconds && response.TotalLength == status.TotalLength)
                 .DistinctUntilChanged(response => $"{response.Seconds}{response.TotalLength}")
-                .Select(response => PlayPosition.Create(response));
+                .Select(response => new PlayPosition(response));
         }
 
         public static async Task<BluPlayer> Connect(Uri endpoint)
@@ -80,8 +82,9 @@ namespace Blu4Net
             var channel = new BluChannel(endpoint);
             var syncStatus = await channel.GetSyncStatus();
             var status = await channel.GetStatus();
+            var content = await channel.BrowseContent();
 
-            return new BluPlayer(channel, syncStatus, status);
+            return new BluPlayer(channel, syncStatus, status, content);
         }
 
         public static Task<BluPlayer> Connect(IPAddress address, int port = 11000)
@@ -208,23 +211,15 @@ namespace Blu4Net
         public async Task<PlayerMedia> GetMedia()
         {
             var response = await _channel.GetStatus();
-            return PlayerMedia.Create(response, Endpoint);
-        }
-
-        public async Task<IReadOnlyCollection<MusicSource>> GetMusicSources()
-        {
-            var response = await _channel.BrowseContent();
-
-            return response.Items
-                .Select(element => BluParser.ParseMusicSource(element, _channel))
-                .ToArray();
+            return new PlayerMedia(response, Endpoint);
         }
 
         public async Task<PlayPosition> GetPosition()
         {
             var response = await _channel.GetStatus();
-            return PlayPosition.Create(response);
+            return new PlayPosition(response);
         }
+
 
         public override string ToString()
         {
