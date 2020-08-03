@@ -6,14 +6,14 @@ using System.Text;
 
 namespace Blu4Net
 {
-    public class MusicSourceEntryInfo
+    public class MusicSourceEntryLink
     {
         public string Key { get; private set; }
         public string Name { get; private set; }
         public string Type { get; private set; }
         public Uri ImageUri { get; private set; }
 
-        public MusicSourceEntryInfo(BrowseContentResponse.Item item, Uri endpoint)
+        public MusicSourceEntryLink(BrowseContentResponse.Item item, Uri endpoint)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -26,7 +26,7 @@ namespace Blu4Net
             ImageUri = BluParser.ParseAbsoluteUri(item.Image, endpoint);
         }
 
-        public bool IsContainer
+        public bool IsResolvable
         {
             get { return Key != null; }
         }

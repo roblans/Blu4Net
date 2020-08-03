@@ -13,7 +13,7 @@ namespace Blu4Net
         private readonly string _searchKey;
 
         public string ServiceName { get; } 
-        public IReadOnlyCollection<MusicSourceEntryInfo> EntryInfos { get; }
+        public IReadOnlyCollection<MusicSourceEntryLink> Links { get; }
 
         public MusicSourceEntry(BluChannel channel, BrowseContentResponse response)
         {
@@ -23,10 +23,10 @@ namespace Blu4Net
 
             _searchKey = response.SearchKey;
             ServiceName = response.ServiceName;
-            EntryInfos = response.Items != null ? response.Items.Select(element => new MusicSourceEntryInfo(element, channel.Endpoint)).ToArray() : new MusicSourceEntryInfo[0];
+            Links = response.Items != null ? response.Items.Select(element => new MusicSourceEntryLink(element, channel.Endpoint)).ToArray() : new MusicSourceEntryLink[0];
         }
 
-        public async Task<MusicSourceEntry> FetchEntry(string key)
+        public async Task<MusicSourceEntry> ResolveLink(string key)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));

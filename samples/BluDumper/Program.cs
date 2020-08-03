@@ -42,15 +42,15 @@ namespace BluDumper
 
                     if (key.KeyChar == 'l')
                     {
-                        var info = player.MusicBrowser.EntryInfos.SingleOrDefault(element => element.Name == "Library");
-                        var entry = await player.MusicBrowser.FetchEntry(info.Key);
+                        var link = player.MusicBrowser.Links.SingleOrDefault(element => element.Name == "Library");
+                        var entry = await player.MusicBrowser.ResolveLink(link.Key);
                         await DumpMusicSourceEntry(entry, 3);
                     }
 
                     if (key.KeyChar == 's')
                     {
-                        var info = player.MusicBrowser.EntryInfos.SingleOrDefault(element => element.Name == "Library");
-                        var entry = await player.MusicBrowser.FetchEntry(info.Key);
+                        var link = player.MusicBrowser.Links.SingleOrDefault(element => element.Name == "Library");
+                        var entry = await player.MusicBrowser.ResolveLink(link.Key);
                         var search = await entry.Search("Muse");
                         await DumpMusicSourceEntry(search, 3);
                     }
@@ -190,13 +190,13 @@ namespace BluDumper
 
         private static async Task DumpMusicSourceEntry(MusicSourceEntry parent, int maxLevels, int level = 0)
         {
-            foreach (var info in parent.EntryInfos)
+            foreach (var link in parent.Links)
             {
-                Console.WriteLine($"{new string('\t', level + 1)}{info}");
+                Console.WriteLine($"{new string('\t', level + 1)}{link}");
 
-                if (info.IsContainer && level < maxLevels - 1)
+                if (link.IsResolvable && level < maxLevels - 1)
                 {
-                    var child = await parent.FetchEntry(info.Key);
+                    var child = await parent.ResolveLink(link.Key);
                     await DumpMusicSourceEntry(child, maxLevels, level + 1);
                 }
             }
