@@ -4,7 +4,7 @@
     <id>Blu4Net</id>
     <title>Blu4Net</title>
     <description>Blu4Net is a .NET library that interfaces with BluOS players.</description>
-    <version>$version$</version>
+    <version>1.0.0</version>
     <authors>Rob Lans</authors>
     <owners>Rob Lans</owners>
     <projectUrl>https://github.com/roblans/Blu4Net</projectUrl>
