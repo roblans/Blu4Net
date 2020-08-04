@@ -4,21 +4,24 @@
     <id>Blu4Net</id>
     <title>Blu4Net</title>
     <description>Blu4Net is a .NET library that interfaces with BluOS players.</description>
-    <version>1.0.0.0</version>
+    <version>1.0.0</version>
     <authors>Rob Lans</authors>
     <owners>Rob Lans</owners>
     <projectUrl>https://github.com/roblans/Blu4Net</projectUrl>
     <language>en-US</language>
     <tags>BluOS Bluesound NAD</tags>
     <dependencies>
-      <group targetFramework="netstandard2.0">
-        <dependency id="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+       <group targetFramework="netstandard2.0">
+         <dependency id="Zeroconf" version="3.4.2" />
+         <dependency id="Microsoft.Bcl.AsyncInterfaces" version="1.1.1" />
       </group>
-      <dependency id="Zeroconf" Version="3.4.2" />
+      <group targetFramework="netstandard2.1">
+        <dependency id="Zeroconf" version="3.4.2" />
+      </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="..\src\Blu4Net\bin\Release\netstandard2.0" target="lib\netstandard2.0" />
-    <file src="..\src\Blu4Net\bin\Release\netstandard2.1" target="lib\netstandard2.1" />
+    <file src="..\src\Blu4Net\bin\Release\netstandard2.0\Blu4Net.dll" target="lib\netstandard2.0" />
+    <file src="..\src\Blu4Net\bin\Release\netstandard2.1\Blu4Net.dll" target="lib\netstandard2.1" />
   </files>
 </package>
