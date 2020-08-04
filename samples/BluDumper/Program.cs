@@ -30,7 +30,7 @@ namespace BluDumper
 
                 while (true)
                 {
-                    var key = Console.ReadKey();
+                    var key = Console.ReadKey(true);
 
                     if (key.KeyChar == 'q')
                         break;
@@ -42,17 +42,20 @@ namespace BluDumper
 
                     if (key.KeyChar == 'l')
                     {
-                        var link = player.MusicBrowser.Links.SingleOrDefault(element => element.Name == "Library");
-                        var entry = await player.MusicBrowser.ResolveLink(link.Key);
-                        await DumpMusicSourceEntry(entry, 3);
+                        var entry = player.MusicBrowser.Entries.SingleOrDefault(element => element.Name == "Library");
+                        var node = await entry.Resolve();
+                        await DumpMusicContentNode(node, 3);
                     }
 
                     if (key.KeyChar == 's')
                     {
-                        var link = player.MusicBrowser.Links.SingleOrDefault(element => element.Name == "Library");
-                        var entry = await player.MusicBrowser.ResolveLink(link.Key);
-                        var search = await entry.Search("Muse");
-                        await DumpMusicSourceEntry(search, 3);
+                        Console.Write("Enter search term: ");
+                        var term = Console.ReadLine();
+
+                        var entry = player.MusicBrowser.Entries.SingleOrDefault(element => element.Name == "Library");
+                        var node = await entry.Resolve();
+                        var search = await node.Search(term);
+                        await DumpMusicContentNode(search, 3);
                     }
 
                     if (Char.IsDigit(key.KeyChar))
@@ -63,6 +66,8 @@ namespace BluDumper
                             await player.PresetList.LoadPreset(number);
                         }
                     }
+
+                    WriteInstructions();
                 }
             }
             else 
@@ -71,6 +76,16 @@ namespace BluDumper
                 Console.WriteLine("Press 'q' to quit");
                 while (Console.ReadKey().KeyChar != 'q') { }
             }
+        }
+
+        private static void WriteInstructions()
+        {
+            Console.WriteLine();
+            Console.WriteLine($"Press 'q' to quit");
+            Console.WriteLine($"Press 'p' to dump the PlayQueue");
+            Console.WriteLine($"Press 'l' to dump the Library (3 levels)");
+            Console.WriteLine($"Press 's' to search the library");
+            Console.WriteLine($"Press '1..9' to load a Preset");
         }
 
         private static async Task DumpPlayer(BluPlayer player)
@@ -84,17 +99,13 @@ namespace BluDumper
             DumpPresets(await player.PresetList.GetPresets());
             DumpMedia(await player.GetMedia());
             DumpQueueInfo(await player.PlayQueue.GetInfo());
-            await DumpMusicSources(player.MusicBrowser);
+            await DumpMusicBrowser(player.MusicBrowser);
 
             Console.WriteLine(new string('=', 80));
             Console.WriteLine();
 
             Console.WriteLine("Waiting for changes...");
-            Console.WriteLine($"Press 'q' to quit");
-            Console.WriteLine($"Press 'p' to dump the PlayQueue");
-            Console.WriteLine($"Press 'l' to dump the Library (3 levels)");
-            Console.WriteLine($"Press 's' to search the library for 'Muse'");
-            Console.WriteLine($"Press '1..9' to load a Preset");
+            WriteInstructions();
 
             player.StateChanges.Subscribe(state =>
             {
@@ -182,38 +193,24 @@ namespace BluDumper
         }
 
 
-        private static async Task DumpMusicSources(MusicBrowser browser)
+        private static async Task DumpMusicBrowser(MusicBrowser browser)
         {
             Console.WriteLine($"Sources:");
-            await DumpMusicSourceEntry(browser, 2);
+            await DumpMusicContentNode(browser, 2);
         }
 
-        private static async Task DumpMusicSourceEntry(MusicSourceEntry parent, int maxLevels, int level = 0)
+        private static async Task DumpMusicContentNode(MusicContentNode node, int maxLevels, int level = 0)
         {
-            foreach (var link in parent.Links)
+            foreach (var entry in node.Entries)
             {
-                Console.WriteLine($"{new string('\t', level + 1)}{link}");
+                Console.WriteLine($"{new string('\t', level + 1)}{entry}");
 
-                if (link.IsResolvable && level < maxLevels - 1)
+                if (entry.IsResolvable && level < maxLevels - 1)
                 {
-                    var child = await parent.ResolveLink(link.Key);
-                    await DumpMusicSourceEntry(child, maxLevels, level + 1);
+                    var child = await entry.Resolve();
+                    await DumpMusicContentNode(child, maxLevels, level + 1);
                 }
             }
         }
-
-        //private static async Task DumpMusicSourceEntries(IReadOnlyCollection<MusicSourceEntryOld> entries, int maxLevels, int level = 0)
-        //{
-        //    foreach (var entry in entries)
-        //    {
-        //        Console.WriteLine($"{new string('\t', level + 1)}{entry}");
-
-        //        if (entry.IsContainer && level < maxLevels - 1)
-        //        {
-        //            var children = await entry.GetEntries();
-        //            await DumpMusicSourceEntries(children, maxLevels, level + 1);
-        //        }
-        //    }
-        //}
     }
 }
