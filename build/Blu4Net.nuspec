@@ -12,9 +12,9 @@
     <tags>BluOS Bluesound NAD</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">
-        <dependency id="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="1.1.1" />
       </group>
-      <dependency id="Zeroconf" Version="3.4.2" />
+      <dependency id="Zeroconf" version="3.4.2" />
     </dependencies>
   </metadata>
   <files>
