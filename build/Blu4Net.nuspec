@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <package >
   <metadata>
     <id>Blu4Net</id>
@@ -11,10 +11,10 @@
     <language>en-US</language>
     <tags>BluOS Bluesound NAD</tags>
     <dependencies>
-      <dependency Include="id" Version="3.4.2" />
       <group targetFramework="netstandard2.0">
         <dependency id="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
       </group>
+      <dependency id="Zeroconf" Version="3.4.2" />
     </dependencies>
   </metadata>
   <files>
