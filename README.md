@@ -116,3 +116,5 @@ namespace GettingStarted
         }
     }
 }
+```
+See the BluDumper sample app for a complete example
