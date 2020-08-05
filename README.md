@@ -62,6 +62,12 @@ Player endpoint discovery (mDNS)
 - Preset changes
 - Queue changes
 
+## Installation
+
+Install the NuGet package.
+
+> Install-Package [Blu4Net](http://www.nuget.org/packages/blu4net)
+
 ## Getting started
 
 ```cs
