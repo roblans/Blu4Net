@@ -8,6 +8,8 @@ Supported Targets:
 - .NET Standard: 2.0
 - .NET Standard: 2.1
 
+Requires C# 8.0 (due to the use of IAsyncEnumerable\<T\>)
+
 ## Features
 
 ### Discovery
