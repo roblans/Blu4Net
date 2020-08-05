@@ -1,0 +1,10 @@
+Favourites
+
+	- Artists: http://192.168.0.27:11000/Artists?service=LocalMusic&category=FAVOURITES
+	- Albums: http://192.168.0.27:11000/Albums?service=LocalMusic&category=FAVOURITES
+	- Songs: http://192.168.0.27:11000/Songs?service=LocalMusic&category=FAVOURITES
+	- PLaylists: http://192.168.0.27:11000/Playlists?service=LocalMusic&category=FAVOURITES
+	- Stations: http://192.168.0.27:11000/RadioPresets?service=TuneIn&customurlform=1
+
+
+
