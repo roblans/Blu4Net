@@ -117,4 +117,4 @@ namespace GettingStarted
     }
 }
 ```
-See the BluDumper sample app for a complete example
+See the *[BluDumper](https://github.com/roblans/Blu4Net/tree/master/samples/BluDumper)* sample app for a complete example
