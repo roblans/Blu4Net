@@ -1,4 +1,4 @@
-![](https://dev.azure.com/roblans/Blu4Net/_apis/build/status/Blu4Net)
+![](https://dev.azure.com/roblans/Blu4Net/_apis/build/status/Blu4Net) ![](https://img.shields.io/nuget/v/blu4net.svg)
 
 # Blu4Net
 Blu4Net is a .NET library that interfaces with BluOS players (Bluesound, NAD). It uses an event-driven (RX), non-blocking (async/await) model that makes it lightweight and efficient.
