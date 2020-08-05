@@ -14,13 +14,8 @@ namespace Blu4Net.Channel
         [XmlAttribute("mute")]
         public int Mute;
 
-#if NETSTANDARD2_0
-        [XmlText(typeof(string))]
-        public string Volume;
-#else
-        [XmlText(typeof(int))]
+        [XmlText()]
         public int Volume;
-#endif
 
         public override string ToString()
         {

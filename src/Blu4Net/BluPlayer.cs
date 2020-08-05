@@ -46,11 +46,7 @@ namespace Blu4Net
             VolumeChanges = _channel.VolumeChanges
                 .SkipWhile(response => response.Decibel == status.Decibel)
                 .DistinctUntilChanged(response => response.Decibel)
-#if NETSTANDARD2_0
-                .Select(response => int.Parse(response.Volume));
-#else
                 .Select(response => response.Volume);
-#endif
 
             StateChanges = _channel.StatusChanges
                 .SkipWhile(response => response.State == status.State)
@@ -118,11 +114,7 @@ namespace Blu4Net
         public async Task<int> GetVolume()
         {
             var response = await _channel.GetVolume();
-#if NETSTANDARD2_0
-            return int.Parse(response.Volume);
-#else
             return response.Volume;
-#endif
         }
 
         public async Task<int> SetVolume(int percentage)
@@ -131,21 +123,13 @@ namespace Blu4Net
                 throw new ArgumentOutOfRangeException(nameof(percentage), "Value must be between 0 and 100");
 
             var response = await _channel.SetVolume(percentage);
-#if NETSTANDARD2_0
-            return int.Parse(response.Volume);
-#else
             return response.Volume;
-#endif
         }
 
         public async Task<int> Mute(bool on = true)
         {
             var response = await _channel.Mute(on ? 1 : 0);
-#if NETSTANDARD2_0
-            return int.Parse(response.Volume);
-#else
             return response.Volume;
-#endif
         }
 
         public async Task<PlayerState> GetState()
