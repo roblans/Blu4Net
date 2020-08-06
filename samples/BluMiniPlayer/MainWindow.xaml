@@ -1,0 +1,82 @@
+﻿<Window x:Class="BluMiniPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:local="clr-namespace:BluMiniPlayer"
+        mc:Ignorable="d"
+        Title="MainWindow" 
+        ResizeMode="NoResize" 
+        ShowInTaskbar="False" 
+        WindowStyle="SingleBorderWindow" SizeToContent="WidthAndHeight">
+    <StackPanel Background="LightGray" Orientation="Vertical">
+        <DockPanel>
+            <Image Margin="4" Source="https://www.musicmeter.nl/images/cover/51000/51283.jpg" Width="48"></Image>
+            <StackPanel Orientation="Vertical" Margin="4">
+                <Viewbox Height="16" HorizontalAlignment="Left" >
+                    <TextBlock FontWeight="Bold" Text="Line1 Line1 Line1 " />
+                </Viewbox>
+                <Viewbox Height="16" HorizontalAlignment="Left" >
+                    <TextBlock Text="Line2 Line2 Line2 " />
+                </Viewbox>
+                <Viewbox Height="16" HorizontalAlignment="Left" >
+                    <TextBlock Text="Line3 Line3 Line3 " />
+                </Viewbox>
+            </StackPanel>
+        </DockPanel>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Resources>
+                <Style TargetType="fa5:SvgAwesome">
+                    <Setter Property="Width" Value="16" />
+                    <Setter Property="Height" Value="16" />
+                    <Setter Property="Margin" Value="4" />
+                </Style>
+            </StackPanel.Resources>
+            <fa5:SvgAwesome Icon="Solid_Backward" />
+            <fa5:SvgAwesome Icon="Solid_Play" />
+            <fa5:SvgAwesome Icon="Solid_Forward" />
+            <fa5:SvgAwesome Icon="Solid_VolumeDown" />
+            <Slider Width="80" VerticalAlignment="Center" Maximum="100" LargeChange="2" ></Slider>
+            <fa5:SvgAwesome Icon="Solid_VolumeUp" />
+        </StackPanel>
+        <Separator Background="White" Margin="4"  />
+        <UniformGrid Rows="1">
+            <UniformGrid.Resources>
+                <Style TargetType="Grid">
+                    <Setter Property="Margin" Value="4" />
+                </Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="16" />
+                    <Setter Property="FontWeight" Value="DemiBold" />
+                    <Setter Property="TextAlignment" Value="Center" />
+                </Style>
+                <Style TargetType="Ellipse">
+                    <Setter Property="Stroke" Value="Black" />
+                    <Setter Property="Width" Value="24" />
+                    <Setter Property="Height" Value="24" />
+                </Style>
+            </UniformGrid.Resources>
+            <Grid>
+                <Ellipse />
+                <TextBlock>1</TextBlock>
+            </Grid>
+            <Grid>
+                <Ellipse />
+                <TextBlock>2</TextBlock>
+            </Grid>
+            <Grid>
+                <Ellipse />
+                <TextBlock>3</TextBlock>
+            </Grid>
+            <Grid>
+                <Ellipse />
+                <TextBlock>4</TextBlock>
+            </Grid>
+            <Grid>
+                <Ellipse />
+                <TextBlock>5</TextBlock>
+            </Grid>
+        </UniformGrid>        
+    </StackPanel>
+</Window>
