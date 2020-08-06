@@ -28,6 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GettingStarted", "samples\G
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{D59B5CD8-307E-4FE2-B74E-361D7C9F3FD2}"
 	ProjectSection(SolutionItems) = preProject
+		Protocol.txt = Protocol.txt
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -35,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{EA3D617E
 	ProjectSection(SolutionItems) = preProject
 		build\Blu4Net.nuspec = build\Blu4Net.nuspec
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluMiniPlayer", "samples\BluMiniPlayer\BluMiniPlayer.csproj", "{5026BEAD-5E42-4728-A220-8A8869350531}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +69,10 @@ Global
 		{4156B6C5-0755-4D1D-B090-A114482DBE28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4156B6C5-0755-4D1D-B090-A114482DBE28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4156B6C5-0755-4D1D-B090-A114482DBE28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5026BEAD-5E42-4728-A220-8A8869350531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5026BEAD-5E42-4728-A220-8A8869350531}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5026BEAD-5E42-4728-A220-8A8869350531}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5026BEAD-5E42-4728-A220-8A8869350531}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +85,7 @@ Global
 		{42241814-06B5-4B85-B86B-9A9D5FFE26A6} = {A214CF46-C36A-4082-A76C-2A99083EEB4E}
 		{6C77DE58-33C5-49A4-8971-F747BF4D60F7} = {FC644B1B-0906-41C0-9917-C489FAD6DD01}
 		{4156B6C5-0755-4D1D-B090-A114482DBE28} = {A214CF46-C36A-4082-A76C-2A99083EEB4E}
+		{5026BEAD-5E42-4728-A220-8A8869350531} = {A214CF46-C36A-4082-A76C-2A99083EEB4E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED1817FB-BA64-40D8-A0CC-840703659480}
