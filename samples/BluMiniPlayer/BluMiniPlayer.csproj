@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="FontAwesome5" Version="2.0.8" />
+    <PackageReference Include="System.Reactive" Version="4.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Blu4Net\Blu4Net.csproj" />
   </ItemGroup>
 
 </Project>
