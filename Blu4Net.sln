@@ -37,7 +37,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{EA3D617E
 		build\Blu4Net.nuspec = build\Blu4Net.nuspec
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluMiniPlayer", "samples\BluMiniPlayer\BluMiniPlayer.csproj", "{5026BEAD-5E42-4728-A220-8A8869350531}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BluMiniPlayer", "samples\BluMiniPlayer\BluMiniPlayer.csproj", "{5026BEAD-5E42-4728-A220-8A8869350531}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{B431F1E5-4348-479C-A4DD-27EDEF303944}"
+	ProjectSection(SolutionItems) = preProject
+		assets\BluMiniPlayer.PNG = assets\BluMiniPlayer.PNG
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
