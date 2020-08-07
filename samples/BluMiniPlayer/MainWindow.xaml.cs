@@ -129,13 +129,6 @@ namespace BluMiniPlayer
             Close();
         }
 
-        private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
-            {
-                DragMove();
-            }
-        }
 
         private async void Preset_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -176,12 +169,20 @@ namespace BluMiniPlayer
                 switch (element.Tag)
                 {
                     case "Up":
-                        await Player.SetVolume(volume + 1);
+                        await Player.SetVolume(volume + 2);
                         break;
                     case "Down":
-                        await Player.SetVolume(volume - 1);
+                        await Player.SetVolume(volume - 2);
                         break;
                 }
+            }
+        }
+
+        private void Caption_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                DragMove();
             }
         }
     }

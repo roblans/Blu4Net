@@ -6,22 +6,22 @@
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         Title="MainWindow" 
         Width="200"
-        Height="150"
+        Height="160"
         ResizeMode="NoResize" 
         ShowInTaskbar="False"
-        WindowStyle="None" WindowStartupLocation="CenterScreen" MouseMove="Window_MouseMove" Topmost="True">
+        WindowStyle="None" WindowStartupLocation="CenterScreen" Topmost="True">
     <StackPanel Background="Black" Orientation="Vertical">
         <StackPanel.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="Foreground" Value="White" />
             </Style>
         </StackPanel.Resources>
-        <DockPanel>
+        <DockPanel x:Name="Caption" MouseMove="Caption_MouseMove" >
             <Button x:Name="CloseButton" DockPanel.Dock="Right" Content="X" Height="14" Width="14" Margin="2" FontSize="8" FontWeight="Bold" Background="Black" Foreground="White" Click="CloseButton_Click" />
             <TextBlock Text="{Binding PlayerName, FallbackValue=Bluesound}" Margin="4" Height="14" />
-        </DockPanel> 
+        </DockPanel>
         <Separator Background="White"  />
-        <DockPanel>
+        <DockPanel Margin="4">
             <Image Margin="4" Source="{Binding MediaImageUri, FallbackValue=https://www.musicmeter.nl/images/cover/51000/51283.jpg}" Width="48"></Image>
             <StackPanel Orientation="Vertical" Margin="4">
                 <Viewbox Height="16" HorizontalAlignment="Left" >
@@ -50,7 +50,7 @@
             <fa5:SvgAwesome x:Name="PauseButton" Icon="Solid_Pause" Tag="Pause" MouseDown="Action_MouseDown" Visibility="Collapsed" />
             <fa5:SvgAwesome Icon="Solid_Forward" Tag="Skip" MouseDown="Action_MouseDown" />
             <fa5:SvgAwesome Tag="Down" Icon="Solid_VolumeDown" MouseDown="ChangeVolume_MouseDown"  />
-            <Slider Width="80" VerticalAlignment="Center" Maximum="100" Value="{Binding Volume}" ></Slider>
+            <ProgressBar Width="80" Height="8" Minimum="0" Maximum="100" Value="{Binding Volume, FallbackValue=50}" Foreground="MediumBlue"  />
             <fa5:SvgAwesome Tag="Up" Icon="Solid_VolumeUp" MouseDown="ChangeVolume_MouseDown" />
         </StackPanel>
         <Separator Background="White" Margin="4"  />
@@ -92,6 +92,6 @@
                 <Ellipse />
                 <TextBlock>5</TextBlock>
             </Grid>
-        </UniformGrid>        
+        </UniformGrid>
     </StackPanel>
 </Window>
