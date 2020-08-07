@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BluMiniPlayer", "samples\Bl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{B431F1E5-4348-479C-A4DD-27EDEF303944}"
 	ProjectSection(SolutionItems) = preProject
-		assets\BluMiniPlayer.PNG = assets\BluMiniPlayer.PNG
+		assets\BluMiniPlayer.png = assets\BluMiniPlayer.png
 	EndProjectSection
 EndProject
 Global
