@@ -169,10 +169,10 @@ namespace BluMiniPlayer
                 switch (element.Tag)
                 {
                     case "Up":
-                        await Player.SetVolume(volume + 2);
+                        await Player.SetVolume(volume + 1);
                         break;
                     case "Down":
-                        await Player.SetVolume(volume - 2);
+                        await Player.SetVolume(volume - 1);
                         break;
                 }
             }
