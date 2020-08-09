@@ -69,8 +69,8 @@ namespace Blu4Net.Channel
             {
                 client.DefaultRequestHeaders.AcceptLanguage.TryParseAdd(AcceptLanguage.Name);
 
-                using (var response = await client.GetAsync(requestUri, cancellationToken))
-                using (var stream = await response.Content.ReadAsStreamAsync())
+                using (var response = await client.GetAsync(requestUri, cancellationToken).ConfigureAwait(false))
+                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 {
                     var document = XDocument.Load(stream);
 
@@ -98,7 +98,7 @@ namespace Blu4Net.Channel
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var document = await SendRequest(request, parameters, timeout, cancellationToken);
+            var document = await SendRequest(request, parameters, timeout, cancellationToken).ConfigureAwait(false);
             return document.Deserialize<T>();
         }
 
@@ -132,7 +132,7 @@ namespace Blu4Net.Channel
                         }
                         try
                         {
-                            var response = await SendRequest<T>(request, parameters, InfiniteTimeout, cancellationToken);
+                            var response = await SendRequest<T>(request, parameters, InfiniteTimeout, cancellationToken).ConfigureAwait(false);
 
                             if (longPollingTag != null)
                             {
@@ -159,12 +159,12 @@ namespace Blu4Net.Channel
 
         public async Task<StatusResponse> GetStatus()
         {
-            return await SendRequest<StatusResponse>("Status");
+            return await SendRequest<StatusResponse>("Status").ConfigureAwait(false);
         }
 
         public async Task<SyncStatusResponse> GetSyncStatus()
         {
-            return await SendRequest<SyncStatusResponse>("SyncStatus");
+            return await SendRequest<SyncStatusResponse>("SyncStatus").ConfigureAwait(false);
         }
 
         public Task<PlayResponse> Play()
@@ -193,27 +193,27 @@ namespace Blu4Net.Channel
                 parameters["toggle"] = toggle.ToString();
             }
 
-            return await SendRequest<PlayResponse>("Pause", parameters);
+            return await SendRequest<PlayResponse>("Pause", parameters).ConfigureAwait(false);
         }
 
         public async Task<StopResponse> Stop()
         {
-            return await SendRequest<StopResponse>("Stop");
+            return await SendRequest<StopResponse>("Stop").ConfigureAwait(false);
         }
 
         public async Task<SkipResponse> Skip()
         {
-            return await SendRequest<SkipResponse>("Skip");
+            return await SendRequest<SkipResponse>("Skip").ConfigureAwait(false);
         }
 
         public async Task<BackResponse> Back()
         {
-            return await SendRequest<BackResponse>("Back");
+            return await SendRequest<BackResponse>("Back").ConfigureAwait(false);
         }
 
         public async Task<VolumeResponse> GetVolume()
         {
-            return await SendRequest<VolumeResponse>("Volume");
+            return await SendRequest<VolumeResponse>("Volume").ConfigureAwait(false);
         }
 
         public async Task<VolumeResponse> SetVolume(int percentage)
@@ -223,7 +223,7 @@ namespace Blu4Net.Channel
 
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["level"] = percentage.ToString();
-            return await SendRequest<VolumeResponse>("Volume", parameters);
+            return await SendRequest<VolumeResponse>("Volume", parameters).ConfigureAwait(false);
         }
 
         public async Task<VolumeResponse> Mute(int mute = 1)
@@ -233,14 +233,14 @@ namespace Blu4Net.Channel
 
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["mute"] = mute.ToString();
-            return await SendRequest<VolumeResponse>("Volume", parameters);
+            return await SendRequest<VolumeResponse>("Volume", parameters).ConfigureAwait(false);
         }
 
         public async Task<PlaylistStatusResponse> GetPlaylistStatus()
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["length"] = 1.ToString();
-            return await SendRequest<PlaylistStatusResponse>("Playlist", parameters);
+            return await SendRequest<PlaylistStatusResponse>("Playlist", parameters).ConfigureAwait(false);
         }
 
         private async Task<PlaylistResponse> GetPlaylist(int startIndex, int length)
@@ -257,7 +257,7 @@ namespace Blu4Net.Channel
                 parameters["end"] = (startIndex + length - 1).ToString();
             }
             
-            var response = await SendRequest<PlaylistResponse>("Playlist", parameters);
+            var response = await SendRequest<PlaylistResponse>("Playlist", parameters).ConfigureAwait(false);
             if (response.Songs == null)
             {
                 response.Songs = new PlaylistResponse.Song[0];
@@ -271,7 +271,7 @@ namespace Blu4Net.Channel
 
             while (true)
             {
-                var listing = await GetPlaylist(startIndex, pageSize);
+                var listing = await GetPlaylist(startIndex, pageSize).ConfigureAwait(false);
                 if (listing.Songs.Length == 0)
                     break;
 
@@ -287,7 +287,7 @@ namespace Blu4Net.Channel
 
         public async Task<ClearResponse> Clear()
         {
-            return await SendRequest<ClearResponse>("Clear");
+            return await SendRequest<ClearResponse>("Clear").ConfigureAwait(false);
         }
 
         public Task<DeleteResponse> Delete(int id)
@@ -341,7 +341,7 @@ namespace Blu4Net.Channel
 
         public async Task<PresetsResponse> GetPresets()
         {
-            var response = await SendRequest<PresetsResponse>("Presets");
+            var response = await SendRequest<PresetsResponse>("Presets").ConfigureAwait(false);
             if (response.Presets == null)
             {
                 response.Presets = new PresetsResponse.Preset[0];
@@ -354,7 +354,7 @@ namespace Blu4Net.Channel
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["id"] = id.ToString();
             
-            var document = await SendRequest("Preset", parameters);
+            var document = await SendRequest("Preset", parameters).ConfigureAwait(false);
             if (document.Root.Name == "loaded")
             {
                 return document.Deserialize<PlaylistPresetLoadedResponse>();
@@ -379,7 +379,7 @@ namespace Blu4Net.Channel
                 }
             }
             
-            var response = await SendRequest<BrowseContentResponse>("Browse", parameters);
+            var response = await SendRequest<BrowseContentResponse>("Browse", parameters).ConfigureAwait(false);
             if (response.Items == null)
             {
                 response.Items = new BrowseContentResponse.Item[0];

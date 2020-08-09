@@ -38,7 +38,7 @@ namespace Blu4Net
             if (_searchKey == null)
                 throw new NotSupportedException("Musicsource is not searchable");
 
-            var response = await _channel.BrowseContent(_searchKey, searchTerm);
+            var response = await _channel.BrowseContent(_searchKey, searchTerm).ConfigureAwait(false);
             return new MusicContentNode(_channel, this, response);
         }
 

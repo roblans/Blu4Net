@@ -22,18 +22,18 @@ namespace Blu4Net
             Changes = _channel.StatusChanges
             .SkipWhile(response => response.PlaylistID == status.PlaylistID)
             .DistinctUntilChanged(response => response.PlaylistID)
-            .SelectAsync(async _ => await GetInfo());
+            .SelectAsync(async _ => await GetInfo().ConfigureAwait(false));
         }
 
         public async Task<PlayQueueInfo>  GetInfo()
         {
-            var status = await _channel.GetPlaylistStatus();
+            var status = await _channel.GetPlaylistStatus().ConfigureAwait(false);
             return new PlayQueueInfo(status);
         }
 
         public async IAsyncEnumerable<IReadOnlyCollection<PlayQueueSong>> GetSongs(int pageSize)
         {
-            await foreach (var list in _channel.GetPlaylistPaged(pageSize))
+            await foreach (var list in _channel.GetPlaylistPaged(pageSize).ConfigureAwait(false))
             {
                 yield return list.Songs.Select(element => new PlayQueueSong(element)).ToArray();
             }
@@ -51,7 +51,7 @@ namespace Blu4Net
 
         public async Task<int> Save(string name)
         {
-            var response = await _channel.Save(name);
+            var response = await _channel.Save(name).ConfigureAwait(false);
             return response.Entries;
         }
     }

@@ -23,13 +23,13 @@ namespace Blu4Net
             Changes = _channel.StatusChanges
             .SkipWhile(response => response.PresetsID == status.PresetsID)
             .DistinctUntilChanged(response => response.PresetsID)
-            .SelectAsync(async _ => await GetPresets());
+            .SelectAsync(async _ => await GetPresets().ConfigureAwait(false));
         }
 
 
         public async Task<IReadOnlyCollection<PlayerPreset>> GetPresets()
         {
-            var response = await _channel.GetPresets();
+            var response = await _channel.GetPresets().ConfigureAwait(false);
             return response.Presets
                 .Select(element => new PlayerPreset(element, _channel.Endpoint))
                 .ToArray();

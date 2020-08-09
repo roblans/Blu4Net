@@ -41,7 +41,7 @@ namespace Blu4Net
             if (_key == null)
                 throw new InvalidOperationException("This entry is not resolvable");
 
-            var response = await _channel.BrowseContent(_key);
+            var response = await _channel.BrowseContent(_key).ConfigureAwait(false);
             return new MusicContentNode(_channel, Node, response);
         }
 

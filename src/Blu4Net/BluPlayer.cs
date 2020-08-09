@@ -80,9 +80,9 @@ namespace Blu4Net
                 throw new ArgumentNullException(nameof(endpoint));
             
             var channel = new BluChannel(endpoint);
-            var syncStatus = await channel.GetSyncStatus();
-            var status = await channel.GetStatus();
-            var content = await channel.BrowseContent();
+            var syncStatus = await channel.GetSyncStatus().ConfigureAwait(false);
+            var status = await channel.GetStatus().ConfigureAwait(false);
+            var content = await channel.BrowseContent().ConfigureAwait(false);
 
             return new BluPlayer(channel, syncStatus, status, content);
         }
@@ -113,7 +113,7 @@ namespace Blu4Net
 
         public async Task<int> GetVolume()
         {
-            var response = await _channel.GetVolume();
+            var response = await _channel.GetVolume().ConfigureAwait(false);
             return response.Volume;
         }
 
@@ -122,52 +122,52 @@ namespace Blu4Net
             if (percentage < 0 || percentage > 100)
                 throw new ArgumentOutOfRangeException(nameof(percentage), "Value must be between 0 and 100");
 
-            var response = await _channel.SetVolume(percentage);
+            var response = await _channel.SetVolume(percentage).ConfigureAwait(false);
             return response.Volume;
         }
 
         public async Task<int> Mute(bool on = true)
         {
-            var response = await _channel.Mute(on ? 1 : 0);
+            var response = await _channel.Mute(on ? 1 : 0).ConfigureAwait(false);
             return response.Volume;
         }
 
         public async Task<PlayerState> GetState()
         {
-            var response = await _channel.GetStatus();
+            var response = await _channel.GetStatus().ConfigureAwait(false);
             return BluParser.ParseState(response.State);
         }
 
         public async Task<PlayerState> Play()
         {
-            var response = await _channel.Play();
+            var response = await _channel.Play().ConfigureAwait(false);
             return BluParser.ParseState(response.State);
         }
 
         public async Task<PlayerState> Seek(TimeSpan offset)
         {
-            var response = await _channel.Play((int)offset.TotalSeconds);
+            var response = await _channel.Play((int)offset.TotalSeconds).ConfigureAwait(false);
             return BluParser.ParseState(response.State);
         }
 
         public async Task<PlayerState> Pause(bool toggle = false)
         {
-            var response = await _channel.Pause(toggle ? 1 : 0);
+            var response = await _channel.Pause(toggle ? 1 : 0).ConfigureAwait(false);
             return BluParser.ParseState(response.State);
         }
 
         public async Task<PlayerState> Stop()
         {
-            var response = await _channel.Stop();
+            var response = await _channel.Stop().ConfigureAwait(false);
             return BluParser.ParseState(response.State);
         }
 
         public async Task<int?> Back()
         {
-            var status = await _channel.GetStatus();
+            var status = await _channel.GetStatus().ConfigureAwait(false);
             if (status.StreamUrl == null)
             { 
-                var response = await _channel.Back();
+                var response = await _channel.Back().ConfigureAwait(false);
                 return response?.ID;
             }
             return null;
@@ -175,10 +175,10 @@ namespace Blu4Net
 
         public async Task<int?> Skip()
         {
-            var status = await _channel.GetStatus();
+            var status = await _channel.GetStatus().ConfigureAwait(false);
             if (status.StreamUrl == null)
             {
-                var response = await _channel.Skip();
+                var response = await _channel.Skip().ConfigureAwait(false);
                 return response?.ID;
             }
             return null;
@@ -186,37 +186,37 @@ namespace Blu4Net
 
         public async Task<ShuffleMode> GetShuffleMode()
         {
-            var response = await _channel.GetShuffle();
+            var response = await _channel.GetShuffle().ConfigureAwait(false);
             return (ShuffleMode)response.Shuffle;
         }
 
         public async Task<ShuffleMode> SetShuffleMode(ShuffleMode mode = ShuffleMode.ShuffleOn)
         {
-            var response = await _channel.SetShuffle((int)mode);
+            var response = await _channel.SetShuffle((int)mode).ConfigureAwait(false);
             return (ShuffleMode)response.Shuffle;
         }
 
         public async Task<RepeatMode> GetRepeatMode()
         {
-            var response = await _channel.GetRepeat();
+            var response = await _channel.GetRepeat().ConfigureAwait(false);
             return (RepeatMode)response.Repeat;
         }
 
         public async Task<RepeatMode> SetRepeatMode(RepeatMode mode = RepeatMode.RepeatAll)
         {
-            var response = await _channel.SetRepeat((int)mode);
+            var response = await _channel.SetRepeat((int)mode).ConfigureAwait(false);
             return (RepeatMode)response.Repeat;
         }
 
         public async Task<PlayerMedia> GetMedia()
         {
-            var response = await _channel.GetStatus();
+            var response = await _channel.GetStatus().ConfigureAwait(false);
             return new PlayerMedia(response, Endpoint);
         }
 
         public async Task<PlayPosition> GetPosition()
         {
-            var response = await _channel.GetStatus();
+            var response = await _channel.GetStatus().ConfigureAwait(false);
             return new PlayPosition(response);
         }
 
