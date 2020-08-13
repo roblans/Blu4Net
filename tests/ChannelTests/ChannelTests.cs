@@ -8,7 +8,7 @@ using System;
 using System.Reactive.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Blu4Net.IO;
+using Blu4Net.Tests;
 using System.Globalization;
 
 namespace ChannelTests

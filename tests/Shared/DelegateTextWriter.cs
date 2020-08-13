@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace Blu4Net.IO
+namespace Blu4Net.Tests
 {
     public class DelegateTextWriter : TextWriter
     {

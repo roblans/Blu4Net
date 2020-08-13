@@ -1,5 +1,5 @@
 using Blu4Net;
-using Blu4Net.IO;
+using Blu4Net.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
