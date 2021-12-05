@@ -16,7 +16,7 @@ namespace Blu4Net
         public Uri ImageUri { get; }
         public Uri ServiceIconUri { get; }
         public string ServiceName { get; }
-
+        public PlayerState PlayerState { get; }
         public PlayerMedia(StatusResponse response, Uri endpoint)
         {
             if (response == null)
@@ -26,6 +26,7 @@ namespace Blu4Net
             ServiceIconUri = response.ServiceIcon != null ? BluParser.ParseAbsoluteUri(response.ServiceIcon, endpoint) : null;
             Titles = new[] { response.Title1, response.Title2, response.Title3 }.Where(element => element != null).ToArray();
             ServiceName = response.Service;
+            PlayerState = BluParser.ParseState(response.State);
         }
 
 
