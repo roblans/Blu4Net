@@ -42,7 +42,7 @@ namespace Blu4Net.Channel
         public string Song; // can be empty
 
         [XmlElement("totlen")]
-        public int TotalLength;
+        public double TotalLength;
 
         [XmlElement("secs")]
         public int Seconds;
