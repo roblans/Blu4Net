@@ -21,9 +21,9 @@ namespace Blu4Net.Channel
 #if FILE_LOGGING
         int counter = 0;
 #endif
-        static readonly TimeSpan InfiniteTimeout = TimeSpan.FromMilliseconds(System.Threading.Timeout.Infinite);
         public Uri Endpoint { get; }
         public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(30);
+        public TimeSpan RetryDelay { get; } = TimeSpan.FromSeconds(5);
         public CultureInfo AcceptLanguage { get; } = new CultureInfo("en-US");
         public TextWriter Log { get; set; }
         public IObservable<StatusResponse> StatusChanges { get; }
@@ -35,13 +35,13 @@ namespace Blu4Net.Channel
             Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 
             // recommended long polling interval for Status is 100 seconds
-            StatusChanges = LongPolling<StatusResponse>("Status", 100).Publish().RefCount();
+            StatusChanges = LongPolling<StatusResponse>("Status", 100).Retry(RetryDelay).Publish().RefCount();
 
             // recommended long polling interval for SyncStatus changes is 180 seconds
-            SyncStatusChanges = LongPolling<SyncStatusResponse>("SyncStatus", 180).Publish().RefCount();
+            SyncStatusChanges = LongPolling<SyncStatusResponse>("SyncStatus", 180).Retry(RetryDelay).Publish().RefCount();
 
             // recommended long polling interval for volume is not specified (use 100)
-            VolumeChanges = LongPolling<VolumeResponse>("Volume", 100).Publish().RefCount();
+            VolumeChanges = LongPolling<VolumeResponse>("Volume", 100).Retry(RetryDelay).Publish().RefCount();
         }
 
         private void LogMessage(string message)
@@ -132,7 +132,7 @@ namespace Blu4Net.Channel
                         }
                         try
                         {
-                            var response = await SendRequest<T>(request, parameters, InfiniteTimeout, cancellationToken).ConfigureAwait(false);
+                            var response = await SendRequest<T>(request, parameters, TimeSpan.FromSeconds(1.5 * timeout), cancellationToken).ConfigureAwait(false);
 
                             if (longPollingTag != null)
                             {
@@ -140,7 +140,7 @@ namespace Blu4Net.Channel
                             }
                             longPollingTag = response.ETag;
                         }
-                        catch (OperationCanceledException)
+                        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                         {
                             observer.OnCompleted();
                             break;
