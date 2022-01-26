@@ -13,7 +13,7 @@ Supported Targets:
 
 Requires C# 8.0 (due to the use of IAsyncEnumerable\<T\>)
 
-![](https://dev.azure.com/roblans/Blu4Net/_apis/build/status/Blu4Net) ![](https://img.shields.io/nuget/v/blu4net.svg)
+![](https://dev.azure.com/roblans/Blu4Net/_apis/build/status/Blu4Net%20Release?branchName=master) ![](https://img.shields.io/nuget/v/blu4net.svg)
 
 ## Features
 
