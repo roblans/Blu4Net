@@ -10,7 +10,7 @@ namespace Blu4Net
     {
         public static Uri ParseAbsoluteUri(string value, Uri baseUri)
         {
-            if (!string.IsNullOrEmpty(value) && Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri))
+            if (!string.IsNullOrEmpty(value) && Uri.TryCreate(value, value?.StartsWith("/") == true ? UriKind.Relative : UriKind.RelativeOrAbsolute, out var uri))
             {
                 if (uri.IsAbsoluteUri)
                 {
