@@ -11,6 +11,9 @@ namespace Blu4Net.Channel
         [XmlAttribute("serviceName")]
         public string ServiceName;
 
+        [XmlAttribute("serviceIcon")]
+        public string ServiceIcon;
+
         [XmlAttribute("searchKey")]
         public string SearchKey;
 
@@ -29,6 +32,12 @@ namespace Blu4Net.Channel
             [XmlAttribute("text")]
             public string Text;
 
+            [XmlAttribute("text2")]
+            public string Text2;
+
+            [XmlAttribute("playURL")]
+            public string PlayURL;
+            
             [XmlAttribute("image")]
             public string Image;
 

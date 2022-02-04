@@ -14,6 +14,8 @@ namespace Blu4Net
 
         public MusicContentNode Node { get;}
         public string Name { get;}
+        public string Text2 { get;}
+        public string PlayURL { get; }
         public string Type { get;}
         public Uri ImageUri { get; }
 
@@ -27,6 +29,8 @@ namespace Blu4Net
 
             _key = item.BrowseKey;
             Name = item.Text;
+            Text2 = item.Text2;
+            PlayURL = item.PlayURL;
             Type = !string.IsNullOrEmpty(item.Type) ? item.Type.First().ToString().ToUpper() + item.Type.Substring(1) : null;
             ImageUri = BluParser.ParseAbsoluteUri(item.Image, channel.Endpoint);
         }
