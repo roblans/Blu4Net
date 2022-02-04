@@ -64,8 +64,8 @@ namespace Blu4Net
                 .Select(response => (RepeatMode)response.Repeat);
 
             MediaChanges = _channel.StatusChanges
-                .SkipWhile(response => response.Title1 == status.Title1 && response.Title2 == status.Title2 && response.Title3 == status.Title3)
-                .DistinctUntilChanged(response => $"{response.Title1}{response.Title2}{response.Title3}")
+                .SkipWhile(response => response.Title1 == status.Title1 && response.Title2 == status.Title2 && response.Title3 == status.Title3 && response.Quality == status.Quality)
+                .DistinctUntilChanged(response => $"{response.Title1}{response.Title2}{response.Title3}{response.Quality}")
                 .Select(response => new PlayerMedia(response, Endpoint));
 
             PositionChanges = _channel.StatusChanges
@@ -149,7 +149,7 @@ namespace Blu4Net
             var response = await _channel.Play((int)offset.TotalSeconds).ConfigureAwait(false);
             return BluParser.ParseState(response.State);
         }
-
+ 
         public async Task<PlayerState> Pause(bool toggle = false)
         {
             var response = await _channel.Pause(toggle ? 1 : 0).ConfigureAwait(false);
