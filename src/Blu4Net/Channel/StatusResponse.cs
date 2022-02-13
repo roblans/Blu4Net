@@ -48,7 +48,7 @@ namespace Blu4Net.Channel
         public string Title3;
 
         [XmlElement("song")]
-        public string Song; // can be empty
+        public int? Song; // can be empty
 
         [XmlElement("totlen")]
         public double TotalLength;

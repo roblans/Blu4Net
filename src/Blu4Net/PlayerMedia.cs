@@ -19,6 +19,11 @@ namespace Blu4Net
         public string Quality { get; }
         public string StreamFormat { get; }
         public PlayerState PlayerState { get; }
+
+        /// <summary>
+        /// NAD: The position of the current track in the play queue. Also see streamUrl.
+        /// </summary>
+        public int? Song { get; }
         public PlayerMedia(StatusResponse response, Uri endpoint)
         {
             if (response == null)
@@ -30,6 +35,7 @@ namespace Blu4Net
             ServiceName = response.Service;
             Quality = response.Quality;
             StreamFormat = response.StreamFormat;
+            Song = response.Song;
             PlayerState = BluParser.ParseState(response.State);
         }
 
