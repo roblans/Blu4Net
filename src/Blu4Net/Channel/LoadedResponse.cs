@@ -5,12 +5,12 @@ using System.Xml.Serialization;
 
 namespace Blu4Net.Channel
 {
-    public class PresetLoadedResponse
+    public class LoadedResponse
     {
     }
 
     [XmlRoot("loaded")]
-    public class PlaylistPresetLoadedResponse : PresetLoadedResponse
+    public class PlaylistLoadedResponse : LoadedResponse
     {
         [XmlAttribute("service")]
         public string Service;
@@ -25,7 +25,7 @@ namespace Blu4Net.Channel
     }
 
     [XmlRoot("state")]
-    public class StreamPresetLoadedResponse : PresetLoadedResponse
+    public class StreamLoadedResponse : LoadedResponse
     {
         [XmlText()]
         public string State;
