@@ -360,7 +360,7 @@ namespace Blu4Net.Channel
             return response;
         }
 
-        public async Task<PresetLoadedResponse> LoadPreset(int id)
+        public async Task<LoadedResponse> LoadPreset(int id)
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["id"] = id.ToString();
@@ -368,11 +368,32 @@ namespace Blu4Net.Channel
             var document = await SendRequest("Preset", parameters).ConfigureAwait(false);
             if (document.Root.Name == "loaded")
             {
-                return document.Deserialize<PlaylistPresetLoadedResponse>();
+                return document.Deserialize<PlaylistLoadedResponse>();
             }
             if (document.Root.Name == "state")
             {
-                return document.Deserialize<StreamPresetLoadedResponse>();
+                return document.Deserialize<StreamLoadedResponse>();
+            }
+            throw new InvalidDataException();
+        }
+
+        public async Task<LoadedResponse> PlayURL(string playURL)
+        {
+            var parts = playURL.Split(new char[] { '?' });
+            var parameters = HttpUtility.ParseQueryString(parts[1]);
+
+            var document = await SendRequest(parts[0], parameters).ConfigureAwait(false);
+            if (document.Root.Name == "loaded")
+            {
+                return document.Deserialize<PlaylistLoadedResponse>();
+            }
+            else if (document.Root.Name == "state")
+            {
+                return document.Deserialize<StreamLoadedResponse>();
+            }
+            else if (document.Root.Name == "addsong")
+            {
+                return document.Deserialize<AddSongResponse>();
             }
             throw new InvalidDataException();
         }
