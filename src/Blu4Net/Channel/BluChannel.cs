@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace Blu4Net.Channel
 
             // recommended long polling interval for Status is 100 seconds
             StatusChanges = LongPolling<StatusResponse>("Status", 100).Retry(RetryDelay).Publish().RefCount();
-
+            
             // recommended long polling interval for SyncStatus changes is 180 seconds
             SyncStatusChanges = LongPolling<SyncStatusResponse>("SyncStatus", 180).Retry(RetryDelay).Publish().RefCount();
 
@@ -179,6 +180,16 @@ namespace Blu4Net.Channel
 
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["seek"] = seek.ToString();
+            return SendRequest<PlayResponse>("Play", parameters);
+        }
+
+        public Task<PlayResponse> PlayByID(int id)
+        {
+            if (id < 0)
+                throw new ArgumentException(nameof(id), "Value must be greater than zero");
+
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["id"] = id.ToString();
             return SendRequest<PlayResponse>("Play", parameters);
         }
 

@@ -144,6 +144,12 @@ namespace Blu4Net
             return BluParser.ParseState(response.State);
         }
 
+        public async Task<PlayerState> Play(int id)
+        {
+            var response = await _channel.PlayByID(id).ConfigureAwait(false);
+            return BluParser.ParseState(response.State);
+        }
+
         public async Task<PlayerState> Seek(TimeSpan offset)
         {
             var response = await _channel.Play((int)offset.TotalSeconds).ConfigureAwait(false);
