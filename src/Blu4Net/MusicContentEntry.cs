@@ -16,6 +16,7 @@ namespace Blu4Net
         public string Name { get;}
         public string Text2 { get;}
         public string PlayURL { get; }
+        public string AutoplayURL { get; }
         public string Type { get;}
         public Uri ImageUri { get; }
 
@@ -31,6 +32,7 @@ namespace Blu4Net
             Name = item.Text;
             Text2 = item.Text2;
             PlayURL = item.PlayURL;
+            AutoplayURL = item.AutoplayURL;
             Type = !string.IsNullOrEmpty(item.Type) ? item.Type.First().ToString().ToUpper() + item.Type.Substring(1) : null;
             ImageUri = BluParser.ParseAbsoluteUri(item.Image, channel.Endpoint);
         }
