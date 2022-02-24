@@ -16,6 +16,7 @@ namespace Blu4Net
         public string ServiceName { get; } 
         public Uri ServiceIconUri { get; } 
         public IReadOnlyCollection<MusicContentEntry> Entries { get; }
+        public IReadOnlyCollection<MusicContentCategory> Categories { get; }
 
         public MusicContentNode(BluChannel channel, MusicContentNode parent, BrowseContentResponse response)
         {
@@ -28,6 +29,7 @@ namespace Blu4Net
             ServiceName = response.ServiceName;
             ServiceIconUri = BluParser.ParseAbsoluteUri(response.ServiceIcon, _channel.Endpoint);
             Entries = response.Items != null ? response.Items.Select(element => new MusicContentEntry(channel, this, element)).ToArray() : new MusicContentEntry[0];
+            Categories = response.Categories != null ? response.Categories.Select(category => new MusicContentCategory(channel, this, category)).ToArray() : new MusicContentCategory[0];
         }
 
         public bool IsSearchable
