@@ -35,6 +35,9 @@ namespace Blu4Net.Channel
             [XmlAttribute("text2")]
             public string Text2;
 
+            [XmlAttribute("contextMenuKey")]
+            public string ContextMenuKey;
+
             [XmlAttribute("playURL")]
             public string PlayURL;
 
@@ -43,6 +46,24 @@ namespace Blu4Net.Channel
 
             [XmlAttribute("image")]
             public string Image;
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+
+        [XmlElement("category")]
+        public Category[] Categories = new Category[0];
+
+        [XmlRoot("category")]
+        public class Category
+        {
+            [XmlAttribute("text")]
+            public string Text;
+
+            [XmlElement("item")]
+            public Item[] Items = new Item[0];
 
             public override string ToString()
             {
