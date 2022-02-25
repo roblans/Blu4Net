@@ -47,6 +47,9 @@ namespace Blu4Net.Channel
             [XmlAttribute("autoplayURL")]
             public string AutoplayURL;
 
+            [XmlAttribute("actionURL")]
+            public string ActionURL;
+
             [XmlAttribute("image")]
             public string Image;
 
