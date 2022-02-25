@@ -11,6 +11,7 @@ namespace Blu4Net
     {
         private readonly BluChannel _channel;
         private readonly string _searchKey;
+        private readonly string _nextKey;
 
         public MusicContentNode Parent { get; }
         public string ServiceName { get; } 
@@ -26,6 +27,7 @@ namespace Blu4Net
                 throw new ArgumentNullException(nameof(response));
 
             _searchKey = response.SearchKey;
+            _nextKey = string.IsNullOrEmpty(response.NextKey) ? null : response.NextKey;
             ServiceName = response.ServiceName;
             ServiceIconUri = BluParser.ParseAbsoluteUri(response.ServiceIcon, _channel.Endpoint);
             Entries = response.Items != null ? response.Items.Select(element => new MusicContentEntry(channel, this, element)).ToArray() : new MusicContentEntry[0];

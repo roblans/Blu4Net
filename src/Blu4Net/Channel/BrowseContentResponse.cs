@@ -17,6 +17,9 @@ namespace Blu4Net.Channel
         [XmlAttribute("searchKey")]
         public string SearchKey;
 
+        [XmlAttribute("nextKey")]
+        public string NextKey;
+
         [XmlElement("item")]
         public Item[] Items = new Item[0];
 
@@ -64,6 +67,9 @@ namespace Blu4Net.Channel
 
             [XmlElement("item")]
             public Item[] Items = new Item[0];
+
+            [XmlAttribute("nextKey")]
+            public string NextKey;
 
             public override string ToString()
             {

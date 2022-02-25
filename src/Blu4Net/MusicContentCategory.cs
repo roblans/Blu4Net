@@ -13,11 +13,14 @@ namespace Blu4Net
                 throw new ArgumentNullException(nameof(response));
 
             Name = response.Text;
+            NextKey = string.IsNullOrEmpty(response.NextKey) ? null : response.NextKey;
             Entries = response.Items != null ? response.Items.Select(element => new MusicContentEntry(channel, parent, element)).ToArray() : new MusicContentEntry[0];
         }
 
         public IReadOnlyCollection<MusicContentEntry> Entries { get; }
 
         public string Name { get; }
+
+        public string NextKey { get; }
     }
 }
