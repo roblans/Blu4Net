@@ -111,7 +111,7 @@ namespace Blu4Net.Channel
             return SendRequest<T>(request, parameters, Timeout, CancellationToken.None);
         }
 
-        private IObservable<T> LongPolling<T>(string request, int timeout) where T : LongPollingResponse
+        private IObservable<T> LongPolling<T>(string request, int timeout) where T : ILongPollingResponse
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));

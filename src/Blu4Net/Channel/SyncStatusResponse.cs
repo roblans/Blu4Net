@@ -6,8 +6,11 @@ using System.Xml.Serialization;
 namespace Blu4Net.Channel
 {
     [XmlRoot("SyncStatus")]
-    public class SyncStatusResponse : LongPollingResponse
+    public class SyncStatusResponse : ILongPollingResponse
     {
+        [XmlAttribute("etag")]
+        public string ETag { get; set; }
+
         [XmlAttribute("modelName")]
         public string ModelName;
 
