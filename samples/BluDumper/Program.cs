@@ -201,15 +201,30 @@ namespace BluDumper
 
         private static async Task DumpMusicContentNode(MusicContentNode node, int maxLevels, int level = 0)
         {
-            foreach (var entry in node.Entries)
+            await foreach (var page in GetAllEntries(node))
             {
-                Console.WriteLine($"{new string('\t', level + 1)}{entry}");
-
-                if (entry.IsResolvable && level < maxLevels - 1)
+                foreach (var entry in page)
                 {
-                    var child = await entry.Resolve();
-                    await DumpMusicContentNode(child, maxLevels, level + 1);
+                    Console.WriteLine($"{new string('\t', level + 1)}{entry}");
+
+                    if (entry.IsResolvable && level < maxLevels - 1)
+                    {
+                        var child = await entry.Resolve();
+                        await DumpMusicContentNode(child, maxLevels, level + 1);
+                    }
                 }
+            }
+        }
+
+        private static async IAsyncEnumerable<IReadOnlyCollection<MusicContentEntry>> GetAllEntries(MusicContentNode node)
+        {
+            yield return node.Entries;
+
+            var current = node;
+            while (current.HasNext)
+            {
+                current = await current.ResolveNext();
+                yield return current.Entries;
             }
         }
     }

@@ -28,6 +28,7 @@ namespace Blu4Net
 
             _searchKey = response.SearchKey;
             _nextKey = string.IsNullOrEmpty(response.NextKey) ? null : response.NextKey;
+
             ServiceName = response.ServiceName;
             ServiceIconUri = BluParser.ParseAbsoluteUri(response.ServiceIcon, _channel.Endpoint);
             Entries = response.Items != null ? response.Items.Select(element => new MusicContentEntry(channel, this, element)).ToArray() : new MusicContentEntry[0];
@@ -45,6 +46,17 @@ namespace Blu4Net
                 throw new NotSupportedException("Musicsource is not searchable");
 
             var response = await _channel.BrowseContent(_searchKey, searchTerm).ConfigureAwait(false);
+            return new MusicContentNode(_channel, this, response);
+        }
+
+        public bool HasNext
+        {
+            get { return _nextKey != null; }
+        }
+        
+        public async Task<MusicContentNode> ResolveNext()
+        {
+            var response = await _channel.BrowseContent(_nextKey).ConfigureAwait(false);
             return new MusicContentNode(_channel, this, response);
         }
 
