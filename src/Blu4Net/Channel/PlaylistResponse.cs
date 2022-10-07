@@ -32,6 +32,24 @@ namespace Blu4Net.Channel
             [XmlAttribute("id")]
             public int ID;
 
+            [XmlAttribute("trackstationid")]
+            public string TrackstationID;
+
+            [XmlAttribute("songid")]
+            public string SongID;
+
+            [XmlAttribute("similarstationid")]
+            public string SimilarstationID;
+
+            [XmlAttribute("albumid")]
+            public string AlbumID;
+
+            [XmlAttribute("artistid")]
+            public string ArtistID;
+
+            [XmlAttribute("service")]
+            public string Service;
+
             [XmlElement("title")]
             public string Title;
 
