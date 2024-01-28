@@ -23,6 +23,9 @@ namespace Blu4Net.Channel
         [XmlElement("volume")]
         public int Volume;
 
+        [XmlElement("canSeek")]
+        public int CanSeek;
+
         [XmlElement("db")]
         public double Decibel;
 

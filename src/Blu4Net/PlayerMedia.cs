@@ -19,6 +19,7 @@ namespace Blu4Net
         public string ServiceName { get; }
         public string Quality { get; }
         public string StreamFormat { get; }
+        public bool CanSeek { get; }
         public PlayerState PlayerState { get; }
 
         /// <summary>
@@ -39,6 +40,7 @@ namespace Blu4Net
             StreamFormat = response.StreamFormat;
             Song = response.Song;
             PlayerState = BluParser.ParseState(response.State);
+            CanSeek = response.CanSeek == 1;
         }
 
 
