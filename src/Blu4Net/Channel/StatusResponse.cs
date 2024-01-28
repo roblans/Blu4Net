@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace Blu4Net.Channel
 {
     [XmlRoot("status")]
     public class StatusResponse : ILongPollingResponse
     {
+        [XmlElement("actions")]
+        public ActionsArray Actions = new ActionsArray();
+
         [XmlAttribute("etag")]
         public string ETag { get; set; }
 
@@ -16,7 +16,7 @@ namespace Blu4Net.Channel
 
         [XmlElement("streamFormat")]
         public string StreamFormat;
-        
+
         [XmlElement("quality")]
         public string Quality;
 
@@ -80,11 +80,39 @@ namespace Blu4Net.Channel
         [XmlElement("serviceIcon")]
         public string ServiceIcon;
 
-
-
         public override string ToString()
         {
             return State;
+        }
+
+        public class ActionsArray
+        {
+            [XmlElement("action")]
+            public Action[] Items = new Action[0];
+        }
+
+        [XmlRoot("action")]
+        public class Action
+        {
+            [XmlAttribute("icon")]
+            public string Icon;
+
+            [XmlAttribute("name")]
+            public string Name;
+
+            [XmlAttribute("notification")]
+            public string Notification;
+
+            [XmlAttribute("text")]
+            public string Text;
+
+            [XmlAttribute("url")]
+            public string Url;
+
+            public override string ToString()
+            {
+                return Name;
+            }
         }
     }
 }

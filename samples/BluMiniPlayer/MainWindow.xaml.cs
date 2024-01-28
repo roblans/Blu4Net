@@ -19,6 +19,8 @@ namespace BluMiniPlayer
         private IReadOnlyCollection<string> _mediaTitles;
         private Uri _mediaImageUri;
         private PlayerState _playerState;
+        private string _skipAction;
+        private string _backAction;
         private int _volume;
 
         public BluPlayer Player { get; private set; }
@@ -76,6 +78,34 @@ namespace BluMiniPlayer
             RaisePropertyChanged(nameof(MediaTitle3));
 
             MediaImageUri = media.ImageUri;
+            _backAction = null;
+            _skipAction = null;
+
+            if (media.PlayerState == PlayerState.Streaming)
+            {
+                var backButtonVisibility = Visibility.Collapsed;
+                var skipButtonVisibility = Visibility.Collapsed;
+                foreach (var action in media.Actions)
+                {
+                    if (action.Action == PlayerAction.Back && action.Url != null)
+                    {
+                        _backAction = action.Url;
+                        backButtonVisibility = Visibility.Visible;
+                    }
+                    if (action.Action == PlayerAction.Skip && action.Url != null)
+                    {
+                        _skipAction = action.Url;
+                        skipButtonVisibility = Visibility.Visible;
+                    }
+                }
+                BackButton.Visibility = backButtonVisibility;
+                SkipButton.Visibility = skipButtonVisibility;
+            }
+            else if (media.PlayerState == PlayerState.Playing)
+            {
+                BackButton.Visibility = Visibility.Visible;
+                SkipButton.Visibility = Visibility.Visible;
+            }
         }
 
         public string PlayerName
@@ -145,7 +175,14 @@ namespace BluMiniPlayer
                 switch(element.Tag)
                 {
                     case "Back":
-                        await Player.Back();
+                        if (_backAction == null)
+                        {
+                            await Player.Back();
+                        }
+                        else
+                        {
+                            await Player.Action(_backAction);
+                        }
                         break;
                     case "Play":
                         await Player.Play();
@@ -154,7 +191,14 @@ namespace BluMiniPlayer
                         await Player.Pause();
                         break;
                     case "Skip":
-                        await Player.Skip();
+                        if (_skipAction == null)
+                        {
+                            await Player.Skip();
+                        }
+                        else 
+                        {
+                            await Player.Action(_skipAction);
+                        }
                         break;
 
                 }
