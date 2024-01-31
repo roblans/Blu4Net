@@ -12,12 +12,14 @@ namespace Blu4Net
 {
     public class PlayerMedia
     {
+        public IReadOnlyList<StreamingRadioAction> Actions { get; }
         public IReadOnlyList<string> Titles { get; }
         public Uri ImageUri { get; }
         public Uri ServiceIconUri { get; }
         public string ServiceName { get; }
         public string Quality { get; }
         public string StreamFormat { get; }
+        public bool CanSeek { get; }
         public PlayerState PlayerState { get; }
 
         /// <summary>
@@ -29,6 +31,7 @@ namespace Blu4Net
             if (response == null)
                 throw new ArgumentNullException(nameof(response));
 
+            Actions = response.Actions.Items.Select(action => new StreamingRadioAction(action, endpoint)).ToArray();
             ImageUri = response.Image != null ? BluParser.ParseAbsoluteUri(response.Image, endpoint) : null;
             ServiceIconUri = response.ServiceIcon != null ? BluParser.ParseAbsoluteUri(response.ServiceIcon, endpoint) : null;
             Titles = new[] { response.Title1, response.Title2, response.Title3 }.Where(element => element != null).ToArray();
@@ -37,6 +40,7 @@ namespace Blu4Net
             StreamFormat = response.StreamFormat;
             Song = response.Song;
             PlayerState = BluParser.ParseState(response.State);
+            CanSeek = response.CanSeek == 1;
         }
 
 

@@ -226,6 +226,15 @@ namespace Blu4Net
             return new PlayPosition(response);
         }
 
+        public async Task<string> Action(string actionUri)
+        {
+            var response = await _channel.ActionURL(actionUri).ConfigureAwait(false);
+            if (response is NotificationActionResponse notifaction)
+            {
+                return notifaction.Text;
+            }
+            return null;
+        }
 
         public override string ToString()
         {

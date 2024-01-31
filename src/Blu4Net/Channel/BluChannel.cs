@@ -398,6 +398,35 @@ namespace Blu4Net.Channel
             throw new InvalidDataException();
         }
 
+        public async Task<ActionResponse> ActionURL(string actionURL)
+        {
+            var parts = actionURL.Split(new char[] { '?' });
+            var parameters = HttpUtility.ParseQueryString(parts[1]);
+
+            var document = await SendRequest(parts[0], parameters).ConfigureAwait(false);
+            if (document.Root.Name == "response")
+            {
+                return document.Deserialize<NotificationActionResponse>();
+            }
+            else if (document.Root.Name == "back")
+            {
+                return document.Deserialize<BackActionResponse>();
+            }
+            else if (document.Root.Name == "skip")
+            {
+                return document.Deserialize<SkipActionResponse>();
+            }
+            else if (document.Root.Name == "love")
+            {
+                return document.Deserialize<LoveActionResponse>();
+            }
+            else if (document.Root.Name == "ban")
+            {
+                return document.Deserialize<BackActionResponse>();
+            }
+            throw new InvalidDataException();
+        }
+
         public async Task<BrowseContentResponse> BrowseContent(string key = null, string query = null)
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);

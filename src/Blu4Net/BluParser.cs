@@ -41,5 +41,24 @@ namespace Blu4Net
             }
             return PlayerState.Unknown;
         }
+
+        public static PlayerAction ParseAction(string value) 
+        {
+            if (value != null)
+            {
+                switch (value)
+                {
+                    case "back":
+                        return PlayerAction.Back;
+                    case "skip":
+                        return PlayerAction.Skip;
+                    case "love":
+                        return PlayerAction.Love;
+                    case "ban":
+                        return PlayerAction.Ban;
+                }
+            }
+            return PlayerAction.Unknown;
+        }
     }
 }

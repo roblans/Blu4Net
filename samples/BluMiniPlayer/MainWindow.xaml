@@ -45,10 +45,10 @@
                     <Setter Property="Margin" Value="4" />
                 </Style>
             </StackPanel.Resources>
-            <fa5:SvgAwesome Icon="Solid_Backward" Tag="Back" MouseDown="Action_MouseDown" />
+            <fa5:SvgAwesome x:Name="BackButton" Icon="Solid_Backward" Tag="Back" MouseDown="Action_MouseDown" />
             <fa5:SvgAwesome x:Name="PlayButton" Icon="Solid_Play" Tag="Play" MouseDown="Action_MouseDown" />
             <fa5:SvgAwesome x:Name="PauseButton" Icon="Solid_Pause" Tag="Pause" MouseDown="Action_MouseDown" Visibility="Collapsed" />
-            <fa5:SvgAwesome Icon="Solid_Forward" Tag="Skip" MouseDown="Action_MouseDown" />
+            <fa5:SvgAwesome x:Name="SkipButton" Icon="Solid_Forward" Tag="Skip" MouseDown="Action_MouseDown" />
             <fa5:SvgAwesome Tag="Down" Icon="Solid_VolumeDown" MouseDown="ChangeVolume_MouseDown"  />
             <ProgressBar Width="80" Height="8" Minimum="0" Maximum="100" Value="{Binding Volume, FallbackValue=50}" Foreground="MediumBlue"  />
             <fa5:SvgAwesome Tag="Up" Icon="Solid_VolumeUp" MouseDown="ChangeVolume_MouseDown" />
