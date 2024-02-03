@@ -2,11 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Blu4Net
 {
@@ -26,6 +22,10 @@ namespace Blu4Net
         /// NAD: The position of the current track in the play queue. Also see streamUrl.
         /// </summary>
         public int? Song { get; }
+        public string ArtistID { get; }
+        public string AlbumID { get; }
+        public string TrackstationID { get; }
+
         public PlayerMedia(StatusResponse response, Uri endpoint)
         {
             if (response == null)
@@ -39,10 +39,12 @@ namespace Blu4Net
             Quality = response.Quality;
             StreamFormat = response.StreamFormat;
             Song = response.Song;
+            ArtistID = response.ArtistID;
+            AlbumID = response.AlbumID;
+            TrackstationID = response.TrackstationID;
             PlayerState = BluParser.ParseState(response.State);
             CanSeek = response.CanSeek == 1;
         }
-
 
         public override string ToString()
         {
