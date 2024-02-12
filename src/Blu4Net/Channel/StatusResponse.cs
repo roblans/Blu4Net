@@ -38,8 +38,14 @@ namespace Blu4Net.Channel
         [XmlElement("artist")]
         public string Artist;
 
+        [XmlElement("artistid")]
+        public string ArtistID;
+
         [XmlElement("album")]
         public string Album;
+
+        [XmlElement("albumid")]
+        public string AlbumID;
 
         [XmlElement("title1")]
         public string Title1;
@@ -52,6 +58,9 @@ namespace Blu4Net.Channel
 
         [XmlElement("song")]
         public int? Song; // can be empty
+
+        [XmlElement("trackstationid")]
+        public string TrackstationID;
 
         [XmlElement("totlen")]
         public double TotalLength;

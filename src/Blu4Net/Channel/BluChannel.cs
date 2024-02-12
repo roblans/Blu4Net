@@ -422,7 +422,7 @@ namespace Blu4Net.Channel
             }
             else if (document.Root.Name == "ban")
             {
-                return document.Deserialize<BackActionResponse>();
+                return document.Deserialize<BanActionResponse>();
             }
             throw new InvalidDataException();
         }
