@@ -1,6 +1,7 @@
 ﻿using Blu4Net.Channel;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -74,12 +75,17 @@ namespace Blu4Net
                 .Select(response => new PlayPosition(response));
         }
 
-        public static async Task<BluPlayer> Connect(Uri endpoint)
+        public static async Task<BluPlayer> Connect(Uri endpoint, CultureInfo acceptLanguage = null)
         {
             if (endpoint == null)
                 throw new ArgumentNullException(nameof(endpoint));
-            
-            var channel = new BluChannel(endpoint);
+
+            if (acceptLanguage == null)
+            {
+                acceptLanguage = new CultureInfo("en-US");
+            }
+
+            var channel = new BluChannel(endpoint, acceptLanguage);
             var syncStatus = await channel.GetSyncStatus().ConfigureAwait(false);
             var status = await channel.GetStatus().ConfigureAwait(false);
             var content = await channel.BrowseContent().ConfigureAwait(false);
@@ -87,22 +93,22 @@ namespace Blu4Net
             return new BluPlayer(channel, syncStatus, status, content);
         }
 
-        public static Task<BluPlayer> Connect(IPAddress address, int port = 11000)
+        public static Task<BluPlayer> Connect(IPAddress address, int port = 11000, CultureInfo acceptLanguage = null)
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
 
             var endpoint = new UriBuilder("http", address.ToString(), port).Uri;
-            return Connect(endpoint);
+            return Connect(endpoint, acceptLanguage);
         }
 
-        public static Task<BluPlayer> Connect(string host, int port = 11000)
+        public static Task<BluPlayer> Connect(string host, int port = 11000, CultureInfo acceptLanguage = null)
         {
             if (host == null)
                 throw new ArgumentNullException(nameof(host));
 
             var endpoint = new UriBuilder("http", host, port).Uri;
-            return Connect(endpoint);
+            return Connect(endpoint, acceptLanguage);
         }
 
         public TextWriter Log
@@ -234,6 +240,11 @@ namespace Blu4Net
                 return notifaction.Text;
             }
             return null;
+        }
+
+        public void UpdateAcceptLanguage(CultureInfo culture)
+        {
+            _channel.AcceptLanguage = culture;
         }
 
         public override string ToString()

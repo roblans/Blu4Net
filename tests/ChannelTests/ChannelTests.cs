@@ -22,7 +22,7 @@ namespace ChannelTests
         public static async Task Initialize(TestContext context)
         {
             var enpoint = await BluEnvironment.ResolveEndpoints().FirstAsync();
-            Channel = new BluChannel(enpoint);
+            Channel = new BluChannel(enpoint, new CultureInfo("en-US"));
             Channel.Log = new DelegateTextWriter((message => context.WriteLine(message)));
         }
 
