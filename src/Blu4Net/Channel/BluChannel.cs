@@ -25,15 +25,17 @@ namespace Blu4Net.Channel
         public Uri Endpoint { get; }
         public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(30);
         public TimeSpan RetryDelay { get; } = TimeSpan.FromSeconds(5);
-        public CultureInfo AcceptLanguage { get; } = new CultureInfo("en-US");
+        public CultureInfo AcceptLanguage { get; set; }
         public TextWriter Log { get; set; }
         public IObservable<StatusResponse> StatusChanges { get; }
         public IObservable<SyncStatusResponse> SyncStatusChanges { get; }
         public IObservable<VolumeResponse> VolumeChanges { get; }
 
-        public BluChannel(Uri endpoint)
+        public BluChannel(Uri endpoint, CultureInfo acceptLanguage)
         {
             Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+
+            AcceptLanguage = acceptLanguage ?? throw new ArgumentNullException(nameof(acceptLanguage));
 
             // recommended long polling interval for Status is 100 seconds
             StatusChanges = LongPolling<StatusResponse>("Status", 100).Retry(RetryDelay).Publish().RefCount();
