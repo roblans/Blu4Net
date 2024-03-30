@@ -22,6 +22,7 @@ namespace Blu4Net
         /// NAD: The position of the current track in the play queue. Also see streamUrl.
         /// </summary>
         public int? Song { get; }
+        public string SongID { get; }
         public string ArtistID { get; }
         public string AlbumID { get; }
         public string TrackstationID { get; }
@@ -39,6 +40,7 @@ namespace Blu4Net
             Quality = response.Quality;
             StreamFormat = response.StreamFormat;
             Song = response.Song;
+            SongID = response.SongID;
             ArtistID = response.ArtistID;
             AlbumID = response.AlbumID;
             TrackstationID = response.TrackstationID;

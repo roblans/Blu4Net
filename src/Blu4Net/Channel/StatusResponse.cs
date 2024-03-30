@@ -59,6 +59,9 @@ namespace Blu4Net.Channel
         [XmlElement("song")]
         public int? Song; // can be empty
 
+        [XmlElement("songid")]
+        public string SongID;
+
         [XmlElement("trackstationid")]
         public string TrackstationID;
 
