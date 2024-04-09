@@ -33,11 +33,11 @@ namespace PlayerTests
                 var completion = new TaskCompletionSource<int>();
 
                 using (Player.VolumeChanges
-                    .Where(element => element == previous + 1)
+                    .Where(volume => volume.Percentage == previous + 1)
                     .Timeout(TimeSpan.FromSeconds(2))
-                    .Subscribe(value =>
+                    .Subscribe(volume =>
                     {
-                        completion.SetResult(value);
+                        completion.SetResult(volume.Percentage);
                     }))
                 {
                     await Player.SetVolume(previous + 1);

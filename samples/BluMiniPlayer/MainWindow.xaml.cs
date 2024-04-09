@@ -63,7 +63,7 @@ namespace BluMiniPlayer
                 Player.StateChanges.ObserveOnDispatcher().Subscribe(value => PlayerState = value);
 
                 Volume = await Player.GetVolume();
-                Player.VolumeChanges.ObserveOnDispatcher().Subscribe(value => Volume = value);
+                Player.VolumeChanges.ObserveOnDispatcher().Subscribe(value => Volume = value.Percentage);
 
                 UpdateMedia(await Player.GetMedia());
                 Player.MediaChanges.ObserveOnDispatcher().Subscribe(UpdateMedia);

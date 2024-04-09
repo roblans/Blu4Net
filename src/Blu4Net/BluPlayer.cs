@@ -25,7 +25,7 @@ namespace Blu4Net
         public PlayQueue PlayQueue { get; }
         public MusicBrowser MusicBrowser { get; }
 
-        public IObservable<int> VolumeChanges { get;  }
+        public IObservable<Volume> VolumeChanges { get;  }
         public IObservable<PlayerState> StateChanges { get;  }
         public IObservable<ShuffleMode> ShuffleModeChanges { get; }
         public IObservable<RepeatMode> RepeatModeChanges { get; }
@@ -47,7 +47,7 @@ namespace Blu4Net
             VolumeChanges = _channel.VolumeChanges
                 .SkipWhile(response => response.Decibel == status.Decibel)
                 .DistinctUntilChanged(response => response.Decibel)
-                .Select(response => response.Volume);
+                .Select(response => new Volume(response));
 
             StateChanges = _channel.StatusChanges
                 .SkipWhile(response => response.State == status.State)
