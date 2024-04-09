@@ -117,10 +117,10 @@ namespace Blu4Net
             set { _channel.Log = value; }
         }
 
-        public async Task<int> GetVolume()
+        public async Task<Volume> GetVolume()
         {
             var response = await _channel.GetVolume().ConfigureAwait(false);
-            return response.Volume;
+            return new Volume(response);
         }
 
         public async Task<int> SetVolume(int percentage)

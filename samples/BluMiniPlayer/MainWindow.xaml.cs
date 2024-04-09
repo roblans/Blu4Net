@@ -62,7 +62,8 @@ namespace BluMiniPlayer
                 PlayerState = await Player.GetState();
                 Player.StateChanges.ObserveOnDispatcher().Subscribe(value => PlayerState = value);
 
-                Volume = await Player.GetVolume();
+                var volume = await Player.GetVolume();
+                Volume = volume.Percentage;
                 Player.VolumeChanges.ObserveOnDispatcher().Subscribe(value => Volume = value.Percentage);
 
                 UpdateMedia(await Player.GetMedia());
@@ -213,10 +214,10 @@ namespace BluMiniPlayer
                 switch (element.Tag)
                 {
                     case "Up":
-                        await Player.SetVolume(volume + 2);
+                        await Player.SetVolume(volume.Percentage + 2);
                         break;
                     case "Down":
-                        await Player.SetVolume(volume - 2);
+                        await Player.SetVolume(volume.Percentage - 2);
                         break;
                 }
             }
