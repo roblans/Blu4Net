@@ -124,7 +124,7 @@ namespace BluDumper
 
             player.VolumeChanges.Subscribe(volume =>
             {
-                Console.WriteLine($"Volume: {volume}%");
+                Console.WriteLine($"Volume: {volume}");
             });
 
             player.PositionChanges.Subscribe(position =>

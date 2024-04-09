@@ -105,14 +105,14 @@ namespace GettingStarted
 
                 // get the volume
                 var volume = await player.GetVolume();
-                Console.WriteLine($"Volume: {volume}%");
+                Console.WriteLine($"Volume: {volume}");
 
                 // get the current playing media
                 var media = await player.GetMedia();
                 Console.WriteLine($"Media: {media.Titles.FirstOrDefault()}");
 
                 // subscribe to volume changes
-                using (player.VolumeChanges.Subscribe(volume => Console.WriteLine($"Volume: {volume}%")))
+                using (player.VolumeChanges.Subscribe(volume => Console.WriteLine($"Volume: {volume}")))
                 {
                     Console.WriteLine();
                     Console.WriteLine($"Waiting for volume changes...");
