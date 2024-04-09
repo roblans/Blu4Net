@@ -25,7 +25,7 @@ namespace Blu4Net
         public PlayQueue PlayQueue { get; }
         public MusicBrowser MusicBrowser { get; }
 
-        public IObservable<int> VolumeChanges { get;  }
+        public IObservable<Volume> VolumeChanges { get;  }
         public IObservable<PlayerState> StateChanges { get;  }
         public IObservable<ShuffleMode> ShuffleModeChanges { get; }
         public IObservable<RepeatMode> RepeatModeChanges { get; }
@@ -47,7 +47,7 @@ namespace Blu4Net
             VolumeChanges = _channel.VolumeChanges
                 .SkipWhile(response => response.Decibel == status.Decibel)
                 .DistinctUntilChanged(response => response.Decibel)
-                .Select(response => response.Volume);
+                .Select(response => new Volume(response));
 
             StateChanges = _channel.StatusChanges
                 .SkipWhile(response => response.State == status.State)
@@ -117,10 +117,10 @@ namespace Blu4Net
             set { _channel.Log = value; }
         }
 
-        public async Task<int> GetVolume()
+        public async Task<Volume> GetVolume()
         {
             var response = await _channel.GetVolume().ConfigureAwait(false);
-            return response.Volume;
+            return new Volume(response);
         }
 
         public async Task<int> SetVolume(int percentage)
