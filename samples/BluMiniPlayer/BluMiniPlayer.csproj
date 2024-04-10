@@ -1,18 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="FontAwesome5" Version="2.0.8" />
-    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="FontAwesome5" Version="2.1.11" />
+    <PackageReference Include="System.Reactive" Version="6.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Blu4Net\Blu4Net.csproj" />
   </ItemGroup>
-
 </Project>
