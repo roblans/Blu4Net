@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 
 namespace BluMiniPlayer
@@ -60,14 +60,14 @@ namespace BluMiniPlayer
                 PlayerName = Player.Name;
 
                 PlayerState = await Player.GetState();
-                Player.StateChanges.ObserveOnDispatcher().Subscribe(value => PlayerState = value);
+                Player.StateChanges.ObserveOn(SynchronizationContext.Current).Subscribe(value => PlayerState = value);
 
                 var volume = await Player.GetVolume();
                 Volume = volume.Percentage;
-                Player.VolumeChanges.ObserveOnDispatcher().Subscribe(value => Volume = value.Percentage);
+                Player.VolumeChanges.ObserveOn(SynchronizationContext.Current).Subscribe(value => Volume = value.Percentage);
 
                 UpdateMedia(await Player.GetMedia());
-                Player.MediaChanges.ObserveOnDispatcher().Subscribe(UpdateMedia);
+                Player.MediaChanges.ObserveOn(SynchronizationContext.Current).Subscribe(UpdateMedia);
             }
         }
 
