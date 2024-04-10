@@ -93,7 +93,7 @@ namespace BluDumper
             Console.WriteLine($"State: {await player.GetState()}");
             Console.WriteLine($"Shuffle: {await player.GetShuffleMode()}");
             Console.WriteLine($"Repeat: {await player.GetRepeatMode()}");
-            Console.WriteLine($"Volume: {await player.GetVolume()}%");
+            Console.WriteLine($"Volume: {await player.GetVolume()}");
             Console.WriteLine($"Position: {await player.GetPosition()}");
 
             DumpPresets(await player.PresetList.GetPresets());
