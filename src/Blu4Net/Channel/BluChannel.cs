@@ -182,7 +182,7 @@ namespace Blu4Net.Channel
             return SendRequest<PlayResponse>("Play", parameters);
         }
 
-        public Task<AddSlaveResponse> AddSlave(string address, int port)
+        public Task<AddSlaveResponse> AddSlave(string address, int port, bool createStereoPair, ChannelMode slaveChannel, string groupName)
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
@@ -194,6 +194,15 @@ namespace Blu4Net.Channel
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["slave"] = address;
             parameters["port"] = port.ToString();
+
+            if (createStereoPair)
+            {
+                parameters["channelMode"] = slaveChannel == ChannelMode.Left ? ChannelMode.Right.ToString().ToLower() : ChannelMode.Left.ToString().ToLower();
+                parameters["slaveChannelMode"] = slaveChannel.ToString().ToLower();
+                if (string.IsNullOrWhiteSpace(groupName) == false)
+                    parameters["group"] = groupName;
+            }
+
 
             return SendRequest<AddSlaveResponse>("AddSlave", parameters);
         }

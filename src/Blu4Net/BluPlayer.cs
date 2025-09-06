@@ -234,6 +234,14 @@ namespace Blu4Net
 
         public async Task<AddSlaveResponse> AddSlave(BluPlayer slave)
         {
+            return await AddSlave(slave, createStereoPair: false);
+        }
+        public async Task<AddSlaveResponse> AddSlave(BluPlayer slave, bool createStereoPair)
+        {
+            return await AddSlave(slave, createStereoPair: createStereoPair, ChannelMode.Right);
+        }
+        public async Task<AddSlaveResponse> AddSlave(BluPlayer slave, bool createStereoPair, ChannelMode slaveChannel, string groupName = null)
+        {
             if (slave == null)
                 throw new ArgumentNullException(nameof(slave));
 
@@ -248,16 +256,15 @@ namespace Blu4Net
                 throw new ArgumentException("Player is already a slave", nameof(slave));
 
 
-            return await _channel.AddSlave(slave.Endpoint.Host, slave.Endpoint.Port);
+            return await _channel.AddSlave(slave.Endpoint.Host, slave.Endpoint.Port, createStereoPair, slaveChannel, groupName);
         }
-
 
         public async Task<string> Action(string actionUri)
         {
             var response = await _channel.ActionURL(actionUri).ConfigureAwait(false);
-            if (response is NotificationActionResponse notifaction)
+            if (response is NotificationActionResponse notification)
             {
-                return notifaction.Text;
+                return notification.Text;
             }
             return null;
         }

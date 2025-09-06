@@ -1,9 +1,9 @@
 ﻿
 namespace Blu4Net
 {
-	public enum ChannelMode
-	{
-		Left,
-		Right
-	}
+    public enum ChannelMode
+    {
+        Left,
+        Right
+    }
 }

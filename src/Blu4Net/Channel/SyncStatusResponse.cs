@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 
 namespace Blu4Net.Channel
 {
@@ -43,8 +44,18 @@ namespace Blu4Net.Channel
         [XmlAttribute("zoneUngroup")]
         public string ZoneUngroupUrl;
 
-        // [XmlAttribute("channelMode")]
-        // public ChannelMode? ChannelMode;
+        [XmlIgnore]
+        public ChannelMode? ChannelMode
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ChannelName)) return null;
+                if (Enum.TryParse<ChannelMode>(ChannelName, true, out var val)) return val;
+                return null;
+            }
+        }
+        [XmlAttribute("channelName")]
+        public string ChannelName;
 
         [XmlElement("zoneSlave")]
         public ZoneSlave ZoneSlave;
@@ -88,9 +99,16 @@ namespace Blu4Net.Channel
         [XmlAttribute("zoneSlave")]
         public bool IsZoneSlave;
 
-        // [XmlAttribute("channelMode")]
-        // public ChannelMode? ChannelMode;
-
+        [XmlIgnore]
+        public ChannelMode? ChannelMode
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ChannelName)) return null;
+                if (Enum.TryParse<ChannelMode>(ChannelName, true, out var val)) return val;
+                return null;
+            }
+        }
         [XmlAttribute("channelName")]
         public string ChannelName;
 
