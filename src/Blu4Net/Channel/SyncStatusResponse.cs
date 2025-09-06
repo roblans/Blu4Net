@@ -43,8 +43,8 @@ namespace Blu4Net.Channel
 		[XmlAttribute("zoneUngroup")]
 		public string ZoneUngroupUrl;
 
-		[XmlAttribute("channelMode")]
-		public ChannelMode? ChannelMode;
+		// [XmlAttribute("channelMode")]
+		// public ChannelMode? ChannelMode;
 
 		[XmlElement("zoneSlave")]
 		public ZoneSlave ZoneSlave;
@@ -88,8 +88,8 @@ namespace Blu4Net.Channel
 		[XmlAttribute("zoneSlave")]
 		public bool IsZoneSlave;
 
-		[XmlAttribute("channelMode")]
-		public ChannelMode? ChannelMode;
+		// [XmlAttribute("channelMode")]
+		// public ChannelMode? ChannelMode;
 
 		[XmlAttribute("channelName")]
 		public string ChannelName;
