@@ -2,107 +2,107 @@
 
 namespace Blu4Net.Channel
 {
-	[XmlRoot("SyncStatus")]
-	public class SyncStatusResponse : ILongPollingResponse
-	{
-		[XmlAttribute("etag")]
-		public string ETag { get; set; }
+    [XmlRoot("SyncStatus")]
+    public class SyncStatusResponse : ILongPollingResponse
+    {
+        [XmlAttribute("etag")]
+        public string ETag { get; set; }
 
-		[XmlAttribute("modelName")]
-		public string ModelName;
+        [XmlAttribute("modelName")]
+        public string ModelName;
 
-		[XmlAttribute("name")]
-		public string Name;
+        [XmlAttribute("name")]
+        public string Name;
 
-		[XmlAttribute("brand")]
-		public string Brand;
+        [XmlAttribute("brand")]
+        public string Brand;
 
-		[XmlAttribute("volume")]
-		public int Volume;
+        [XmlAttribute("volume")]
+        public int Volume;
 
-		[XmlAttribute("db")]
-		public double Decibel;
+        [XmlAttribute("db")]
+        public double Decibel;
 
-		[XmlAttribute("mac")]
-		public string MAC;
+        [XmlAttribute("mac")]
+        public string MAC;
 
-		// Properties for when the player is in sync group
-		[XmlElement("slave")]
-		public Slave[] Slave = new Slave[0];
+        // Properties for when the player is in sync group
+        [XmlElement("slave")]
+        public Slave[] Slave = new Slave[0];
 
-		[XmlElement("master")]
-		public Master Master;
+        [XmlElement("master")]
+        public Master Master;
 
-		// Properties for when the player is part of a zone
-		[XmlAttribute("zoneController")]
-		public bool IsZoneController;
+        // Properties for when the player is part of a zone
+        [XmlAttribute("zoneController")]
+        public bool IsZoneController;
 
-		[XmlAttribute("zone")]
-		public string ZoneName;
+        [XmlAttribute("zone")]
+        public string ZoneName;
 
-		[XmlAttribute("zoneUngroup")]
-		public string ZoneUngroupUrl;
+        [XmlAttribute("zoneUngroup")]
+        public string ZoneUngroupUrl;
 
-		// [XmlAttribute("channelMode")]
-		// public ChannelMode? ChannelMode;
+        // [XmlAttribute("channelMode")]
+        // public ChannelMode? ChannelMode;
 
-		[XmlElement("zoneSlave")]
-		public ZoneSlave ZoneSlave;
+        [XmlElement("zoneSlave")]
+        public ZoneSlave ZoneSlave;
 
-		public override string ToString()
-		{
-			return Name;
-		}
-	}
+        public override string ToString()
+        {
+            return Name;
+        }
+    }
 
-	public class Master
-	{
-		[XmlAttribute("port")]
-		public int Port;
+    public class Master
+    {
+        [XmlAttribute("port")]
+        public int Port;
 
-		[XmlText]
-		public string Address;
+        [XmlText]
+        public string Address;
 
-		public override string ToString() => $"{Address}:{Port}";
-	}
+        public override string ToString() => $"{Address}:{Port}";
+    }
 
-	public class Slave
-	{
-		[XmlAttribute("port")]
-		public int Port;
+    public class Slave
+    {
+        [XmlAttribute("port")]
+        public int Port;
 
-		[XmlAttribute("id")]
-		public string Address;
+        [XmlAttribute("id")]
+        public string Address;
 
-		public override string ToString() => $"{Address}:{Port}";
-	}
+        public override string ToString() => $"{Address}:{Port}";
+    }
 
-	public class ZoneSlave
-	{
-		[XmlAttribute("id")]
-		public string Id;
+    public class ZoneSlave
+    {
+        [XmlAttribute("id")]
+        public string Id;
 
-		[XmlAttribute("port")]
-		public int Port;
+        [XmlAttribute("port")]
+        public int Port;
 
-		[XmlAttribute("zoneSlave")]
-		public bool IsZoneSlave;
+        [XmlAttribute("zoneSlave")]
+        public bool IsZoneSlave;
 
-		// [XmlAttribute("channelMode")]
-		// public ChannelMode? ChannelMode;
+        // [XmlAttribute("channelMode")]
+        // public ChannelMode? ChannelMode;
 
-		[XmlAttribute("channelName")]
-		public string ChannelName;
+        [XmlAttribute("channelName")]
+        public string ChannelName;
 
-		[XmlAttribute("name")]
-		public string Name;
+        [XmlAttribute("name")]
+        public string Name;
 
-		[XmlAttribute("model")]
-		public string Model;
+        [XmlAttribute("model")]
+        public string Model;
 
-		[XmlAttribute("modelName")]
-		public string ModelName;
+        [XmlAttribute("modelName")]
+        public string ModelName;
 
-		public override string ToString() => $"{Name} ({Id}:{Port})";
-	}
+        public override string ToString() => $"{Name} ({Id}:{Port})";
+    }
 }
