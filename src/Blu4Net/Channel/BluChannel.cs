@@ -207,6 +207,27 @@ namespace Blu4Net.Channel
             return SendRequest<AddSlaveResponse>("AddSlave", parameters);
         }
 
+        public Task<SyncStatusResponse> RemoveSlave(string address, int port)
+        {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+            if (address.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(address), "Value cannot be an empty string");
+            if (port < 1 || port > 65535)
+                throw new ArgumentOutOfRangeException(nameof(port), "Value must be between 1 and 65535");
+
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["slave"] = address;
+            parameters["port"] = port.ToString();
+
+            return SendRequest<SyncStatusResponse>("RemoveSlave", parameters);
+        }
+
+        public Task<SyncStatusResponse> ZoneUngroup(string zoneUngroupUrl)
+        {
+            return SendRequest<SyncStatusResponse>(zoneUngroupUrl);
+        }
+
         public Task<PlayResponse> PlayByID(int id)
         {
             if (id < 0)

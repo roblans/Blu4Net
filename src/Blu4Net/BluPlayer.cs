@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Zeroconf;
@@ -253,10 +254,42 @@ namespace Blu4Net
                 throw new ArgumentException("Cannot add slave to slave", nameof(slave));
 
             if (syncStatus.Slave?.Any(s => s.Address == slave.Endpoint.Host) == true)
-                throw new ArgumentException("Player is already a slave", nameof(slave));
+                throw new ArgumentException($"Player '{slave.Name}' is already a slave", nameof(slave));
 
 
             return await _channel.AddSlave(slave.Endpoint.Host, slave.Endpoint.Port, createStereoPair, slaveChannel, groupName);
+        }
+
+        public async Task<SyncStatusResponse> RemoveSlave(BluPlayer slave)
+        {
+            if (slave == null)
+                throw new ArgumentNullException(nameof(slave));
+
+            if (this == slave)
+                throw new ArgumentException("Cannot remove self as slave", nameof(slave));
+
+            SyncStatusResponse syncStatus = await _channel.GetSyncStatus();
+
+            bool isSyncSlave = syncStatus.Slave?.Any(s => s.Address == slave.Endpoint.Host) == true;
+            bool isFixedGroupSlave = syncStatus.ZoneSlave?.Id == slave.Endpoint.Host == true;
+
+            if (isSyncSlave == false && isFixedGroupSlave == false)
+                throw new ArgumentException($"Player '{slave.Name}' is not a slave", nameof(slave));
+
+            return await _channel.RemoveSlave(slave.Endpoint.Host, slave.Endpoint.Port);
+        }
+
+        public async Task<SyncStatusResponse> ZoneUngroup()
+        {
+            SyncStatusResponse syncStatus = await _channel.GetSyncStatus();
+
+            if (syncStatus.IsZoneController == false)
+                throw new ArgumentException("Player is not a zone controller");
+
+            // For stereo pair, the zoneSlave is a single instance of ZoneSlave.  Is this an array in a Home Theatre Group?
+            await _channel.RemoveSlave(syncStatus.ZoneSlave.Id, syncStatus.ZoneSlave.Port);
+
+            return await _channel.GetSyncStatus();
         }
 
         public async Task<string> Action(string actionUri)
