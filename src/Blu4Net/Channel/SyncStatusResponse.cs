@@ -91,7 +91,7 @@ namespace Blu4Net.Channel
     public class ZoneSlave
     {
         [XmlAttribute("id")]
-        public string Id;
+        public string Address;
 
         [XmlAttribute("port")]
         public int Port;
@@ -121,6 +121,6 @@ namespace Blu4Net.Channel
         [XmlAttribute("modelName")]
         public string ModelName;
 
-        public override string ToString() => $"{Name} ({Id}:{Port})";
+        public override string ToString() => $"{Name} ({Address}:{Port})";
     }
 }
