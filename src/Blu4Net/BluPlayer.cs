@@ -27,6 +27,7 @@ namespace Blu4Net
         public IObservable<RepeatMode> RepeatModeChanges { get; }
         public IObservable<PlayerMedia> MediaChanges { get; }
         public IObservable<PlayPosition> PositionChanges { get; }
+        public IObservable<GroupingState> GroupingChanges { get; }
 
         private BluPlayer(BluChannel channel, SyncStatusResponse synStatus, StatusResponse status, BrowseContentResponse content)
         {
@@ -69,6 +70,13 @@ namespace Blu4Net
                 .SkipWhile(response => response.Seconds == status.Seconds && response.TotalLength == status.TotalLength)
                 .DistinctUntilChanged(response => $"{response.Seconds}{response.TotalLength}")
                 .Select(response => new PlayPosition(response));
+
+            var initialGroupingKey = SyncStatusKey(synStatus);
+
+            GroupingChanges = _channel.SyncStatusChanges
+                .SkipWhile(response => SyncStatusKey(response) == initialGroupingKey)
+                .DistinctUntilChanged(response => SyncStatusKey(response))
+                .Select(response => new GroupingState(response));
         }
 
         public static async Task<BluPlayer> Connect(Uri endpoint, CultureInfo acceptLanguage = null)
@@ -255,6 +263,12 @@ namespace Blu4Net
             return await _channel.AddSlave(slave.Endpoint.Host, slave.Endpoint.Port, createStereoPair, slaveChannel, groupName);
         }
 
+        public async Task<GroupingState> GetGroupingState()
+        {
+            var response = await _channel.GetSyncStatus().ConfigureAwait(false);
+            return new GroupingState(response);
+        }
+
         public async Task<SyncStatusResponse> RemoveSlave(BluPlayer slave)
         {
             if (slave == null)
@@ -266,7 +280,7 @@ namespace Blu4Net
             SyncStatusResponse syncStatus = await _channel.GetSyncStatus();
 
             bool isSyncSlave = syncStatus.Slave?.Any(s => s.Address == slave.Endpoint.Host) == true;
-            bool isFixedGroupSlave = syncStatus.ZoneSlave?.Id == slave.Endpoint.Host == true;
+            bool isFixedGroupSlave = syncStatus.ZoneSlave?.Address == slave.Endpoint.Host == true;
 
             if (isSyncSlave == false && isFixedGroupSlave == false)
                 throw new ArgumentException($"Player '{slave.Name}' is not a slave", nameof(slave));
@@ -282,7 +296,7 @@ namespace Blu4Net
                 throw new ArgumentException("Player is not a zone controller");
 
             // For stereo pair, the zoneSlave is a single instance of ZoneSlave.  Is this an array in a Home Theatre Group?
-            await _channel.RemoveSlave(syncStatus.ZoneSlave.Id, syncStatus.ZoneSlave.Port);
+            await _channel.RemoveSlave(syncStatus.ZoneSlave.Address, syncStatus.ZoneSlave.Port);
 
             return await _channel.GetSyncStatus();
         }
@@ -297,6 +311,18 @@ namespace Blu4Net
             return null;
         }
 
+        private static string SyncStatusKey(Channel.SyncStatusResponse r)
+        {
+            if (r == null) return string.Empty;
+            var slaves = r.Slave?.Select(s => $"{s.Address}:{s.Port}").OrderBy(x => x) ?? Enumerable.Empty<string>();
+            return string.Concat(
+                r.IsZoneController ? "ZC" : "NZC", "|",
+                string.Join(",", slaves), "|",
+                r.ZoneSlave == null ? string.Empty : $"{r.ZoneSlave.Address}:{r.ZoneSlave.Port}", "|",
+                r.Master == null ? string.Empty : $"{r.Master.Address}:{r.Master.Port}"
+            );
+        }
+
         public void UpdateAcceptLanguage(CultureInfo culture)
         {
             _channel.AcceptLanguage = culture;
@@ -307,4 +333,6 @@ namespace Blu4Net
             return Name;
         }
     }
+
+
 }
