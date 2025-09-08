@@ -15,6 +15,7 @@ namespace Blu4Net
 
         public string Name { get; }
         public string Brand { get; }
+        public string MacAddress { get; }
         public Uri Endpoint { get; }
 
         public PlayerPresetList PresetList { get; }
@@ -36,6 +37,7 @@ namespace Blu4Net
             Endpoint = _channel.Endpoint;
             Name = synStatus.Name;
             Brand = synStatus.Brand;
+            MacAddress = synStatus.MAC;
 
             PresetList = new PlayerPresetList(_channel, status);
             PlayQueue = new PlayQueue(_channel, status);
