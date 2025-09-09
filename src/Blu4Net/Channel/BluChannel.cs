@@ -469,6 +469,10 @@ namespace Blu4Net.Channel
             {
                 return document.Deserialize<BanActionResponse>();
             }
+            else if (document.Root.Name == "state")
+            {
+                return document.Deserialize<StateActionResponse>();
+            }
             throw new InvalidDataException();
         }
 
