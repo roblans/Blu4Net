@@ -71,7 +71,7 @@ namespace Blu4Net.Channel
 
         public override string ToString()
         {
-            return $"Love: {Text}";
+            return $"State: {Text}";
         }
     }
 }
