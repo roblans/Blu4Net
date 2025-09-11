@@ -297,8 +297,7 @@ namespace Blu4Net
             if (syncStatus.IsZoneController == false)
                 throw new ArgumentException("Player is not a zone controller");
 
-            // For stereo pair, the zoneSlave is a single instance of ZoneSlave.  Is this an array in a Home Theatre Group?
-            await _channel.RemoveSlave(syncStatus.ZoneSlave.Address, syncStatus.ZoneSlave.Port);
+            await _channel.ActionURL(syncStatus.ZoneUngroupUrl);
 
             return await _channel.GetSyncStatus();
         }
