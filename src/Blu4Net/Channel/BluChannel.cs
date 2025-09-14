@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 
 namespace Blu4Net.Channel
 {
@@ -39,7 +36,7 @@ namespace Blu4Net.Channel
 
             // recommended long polling interval for Status is 100 seconds
             StatusChanges = LongPolling<StatusResponse>("Status", 100).Retry(RetryDelay).Publish().RefCount();
-            
+
             // recommended long polling interval for SyncStatus changes is 180 seconds
             SyncStatusChanges = LongPolling<SyncStatusResponse>("SyncStatus", 180).Retry(RetryDelay).Publish().RefCount();
 
@@ -67,7 +64,7 @@ namespace Blu4Net.Channel
             }.Uri;
 
             LogMessage($"Request: {requestUri}");
-            
+
             using (var client = new HttpClient() { Timeout = timeout })
             {
                 client.DefaultRequestHeaders.AcceptLanguage.TryParseAdd(AcceptLanguage.Name);
@@ -185,6 +182,52 @@ namespace Blu4Net.Channel
             return SendRequest<PlayResponse>("Play", parameters);
         }
 
+        public Task<AddSlaveResponse> AddSlave(string address, int port, bool createStereoPair, ChannelMode slaveChannel, string groupName)
+        {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+            if (address.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(address), "Value cannot be an empty string");
+            if (port < 1 || port > 65535)
+                throw new ArgumentOutOfRangeException(nameof(port), "Value must be between 1 and 65535");
+
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["slave"] = address;
+            parameters["port"] = port.ToString();
+
+            if (createStereoPair)
+            {
+                parameters["channelMode"] = slaveChannel == ChannelMode.Left ? ChannelMode.Right.ToString().ToLower() : ChannelMode.Left.ToString().ToLower();
+                parameters["slaveChannelMode"] = slaveChannel.ToString().ToLower();
+                if (string.IsNullOrWhiteSpace(groupName) == false)
+                    parameters["group"] = groupName;
+            }
+
+
+            return SendRequest<AddSlaveResponse>("AddSlave", parameters);
+        }
+
+        public Task<SyncStatusResponse> RemoveSlave(string address, int port)
+        {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+            if (address.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(address), "Value cannot be an empty string");
+            if (port < 1 || port > 65535)
+                throw new ArgumentOutOfRangeException(nameof(port), "Value must be between 1 and 65535");
+
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["slave"] = address;
+            parameters["port"] = port.ToString();
+
+            return SendRequest<SyncStatusResponse>("RemoveSlave", parameters);
+        }
+
+        public Task<SyncStatusResponse> ZoneUngroup(string zoneUngroupUrl)
+        {
+            return SendRequest<SyncStatusResponse>(zoneUngroupUrl);
+        }
+
         public Task<PlayResponse> PlayByID(int id)
         {
             if (id < 0)
@@ -269,7 +312,7 @@ namespace Blu4Net.Channel
                 parameters["start"] = startIndex.ToString();
                 parameters["end"] = (startIndex + length - 1).ToString();
             }
-            
+
             var response = await SendRequest<PlaylistResponse>("Playlist", parameters).ConfigureAwait(false);
             if (response.Songs == null)
             {
@@ -366,7 +409,7 @@ namespace Blu4Net.Channel
         {
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["id"] = id.ToString();
-            
+
             var document = await SendRequest("Preset", parameters).ConfigureAwait(false);
             if (document.Root.Name == "loaded")
             {
@@ -426,6 +469,10 @@ namespace Blu4Net.Channel
             {
                 return document.Deserialize<BanActionResponse>();
             }
+            else if (document.Root.Name == "state")
+            {
+                return document.Deserialize<StateActionResponse>();
+            }
             throw new InvalidDataException();
         }
 
@@ -441,14 +488,14 @@ namespace Blu4Net.Channel
                     parameters["q"] = query;
                 }
             }
-            
+
             var response = await SendRequest<BrowseContentResponse>("Browse", parameters).ConfigureAwait(false);
             if (response.Items == null)
             {
                 response.Items = new BrowseContentResponse.Item[0];
             }
             else
-            { 
+            {
                 // note: TuneIn returns an empty <item></item> element  
                 response.Items = response.Items.Where(element => element.Text != null).ToArray();
             }

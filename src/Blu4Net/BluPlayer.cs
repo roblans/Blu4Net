@@ -1,15 +1,11 @@
 ﻿using Blu4Net.Channel;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading.Tasks;
-using Zeroconf;
 
 namespace Blu4Net
 {
@@ -19,18 +15,20 @@ namespace Blu4Net
 
         public string Name { get; }
         public string Brand { get; }
+        public string MacAddress { get; }
         public Uri Endpoint { get; }
 
         public PlayerPresetList PresetList { get; }
         public PlayQueue PlayQueue { get; }
         public MusicBrowser MusicBrowser { get; }
 
-        public IObservable<Volume> VolumeChanges { get;  }
-        public IObservable<PlayerState> StateChanges { get;  }
+        public IObservable<Volume> VolumeChanges { get; }
+        public IObservable<PlayerState> StateChanges { get; }
         public IObservable<ShuffleMode> ShuffleModeChanges { get; }
         public IObservable<RepeatMode> RepeatModeChanges { get; }
         public IObservable<PlayerMedia> MediaChanges { get; }
         public IObservable<PlayPosition> PositionChanges { get; }
+        public IObservable<GroupingState> GroupingChanges { get; }
 
         private BluPlayer(BluChannel channel, SyncStatusResponse synStatus, StatusResponse status, BrowseContentResponse content)
         {
@@ -39,6 +37,7 @@ namespace Blu4Net
             Endpoint = _channel.Endpoint;
             Name = synStatus.Name;
             Brand = synStatus.Brand;
+            MacAddress = synStatus.MAC;
 
             PresetList = new PlayerPresetList(_channel, status);
             PlayQueue = new PlayQueue(_channel, status);
@@ -73,6 +72,13 @@ namespace Blu4Net
                 .SkipWhile(response => response.Seconds == status.Seconds && response.TotalLength == status.TotalLength)
                 .DistinctUntilChanged(response => $"{response.Seconds}{response.TotalLength}")
                 .Select(response => new PlayPosition(response));
+
+            var initialGroupingKey = SyncStatusKey(synStatus);
+
+            GroupingChanges = _channel.SyncStatusChanges
+                .SkipWhile(response => SyncStatusKey(response) == initialGroupingKey)
+                .DistinctUntilChanged(response => SyncStatusKey(response))
+                .Select(response => new GroupingState(response));
         }
 
         public static async Task<BluPlayer> Connect(Uri endpoint, CultureInfo acceptLanguage = null)
@@ -113,7 +119,7 @@ namespace Blu4Net
 
         public TextWriter Log
         {
-            get { return _channel.Log;  }
+            get { return _channel.Log; }
             set { _channel.Log = value; }
         }
 
@@ -161,7 +167,7 @@ namespace Blu4Net
             var response = await _channel.Play((int)offset.TotalSeconds).ConfigureAwait(false);
             return BluParser.ParseState(response.State);
         }
- 
+
         public async Task<PlayerState> Pause(bool toggle = false)
         {
             var response = await _channel.Pause(toggle ? 1 : 0).ConfigureAwait(false);
@@ -178,7 +184,7 @@ namespace Blu4Net
         {
             var status = await _channel.GetStatus().ConfigureAwait(false);
             if (status.StreamUrl == null)
-            { 
+            {
                 var response = await _channel.Back().ConfigureAwait(false);
                 return response?.ID;
             }
@@ -232,14 +238,90 @@ namespace Blu4Net
             return new PlayPosition(response);
         }
 
+        public async Task<AddSlaveResponse> AddSlave(BluPlayer slave)
+        {
+            return await AddSlave(slave, createStereoPair: false);
+        }
+        public async Task<AddSlaveResponse> AddSlave(BluPlayer slave, bool createStereoPair)
+        {
+            return await AddSlave(slave, createStereoPair: createStereoPair, ChannelMode.Right);
+        }
+        public async Task<AddSlaveResponse> AddSlave(BluPlayer slave, bool createStereoPair, ChannelMode slaveChannel, string groupName = null)
+        {
+            if (slave == null)
+                throw new ArgumentNullException(nameof(slave));
+
+            if (this == slave)
+                throw new ArgumentException("Cannot add self as slave", nameof(slave));
+
+            SyncStatusResponse syncStatus = await _channel.GetSyncStatus();
+            if (syncStatus.Master != null)
+                throw new ArgumentException("Cannot add slave to slave", nameof(slave));
+
+            if (syncStatus.Slave?.Any(s => s.Address == slave.Endpoint.Host) == true)
+                throw new ArgumentException($"Player '{slave.Name}' is already a slave", nameof(slave));
+
+
+            return await _channel.AddSlave(slave.Endpoint.Host, slave.Endpoint.Port, createStereoPair, slaveChannel, groupName);
+        }
+
+        public async Task<GroupingState> GetGroupingState()
+        {
+            var response = await _channel.GetSyncStatus().ConfigureAwait(false);
+            return new GroupingState(response);
+        }
+
+        public async Task<SyncStatusResponse> RemoveSlave(BluPlayer slave)
+        {
+            if (slave == null)
+                throw new ArgumentNullException(nameof(slave));
+
+            if (this == slave)
+                throw new ArgumentException("Cannot remove self as slave", nameof(slave));
+
+            SyncStatusResponse syncStatus = await _channel.GetSyncStatus();
+
+            bool isSyncSlave = syncStatus.Slave?.Any(s => s.Address == slave.Endpoint.Host) == true;
+            bool isFixedGroupSlave = syncStatus.ZoneSlave?.Address == slave.Endpoint.Host == true;
+
+            if (isSyncSlave == false && isFixedGroupSlave == false)
+                throw new ArgumentException($"Player '{slave.Name}' is not a slave", nameof(slave));
+
+            return await _channel.RemoveSlave(slave.Endpoint.Host, slave.Endpoint.Port);
+        }
+
+        public async Task<SyncStatusResponse> ZoneUngroup()
+        {
+            SyncStatusResponse syncStatus = await _channel.GetSyncStatus();
+
+            if (syncStatus.IsZoneController == false)
+                throw new ArgumentException("Player is not a zone controller");
+
+            await _channel.ActionURL(syncStatus.ZoneUngroupUrl);
+
+            return await _channel.GetSyncStatus();
+        }
+
         public async Task<string> Action(string actionUri)
         {
             var response = await _channel.ActionURL(actionUri).ConfigureAwait(false);
-            if (response is NotificationActionResponse notifaction)
+            if (response is NotificationActionResponse notification)
             {
-                return notifaction.Text;
+                return notification.Text;
             }
             return null;
+        }
+
+        private static string SyncStatusKey(Channel.SyncStatusResponse r)
+        {
+            if (r == null) return string.Empty;
+            var slaves = r.Slave?.Select(s => $"{s.Address}:{s.Port}").OrderBy(x => x) ?? Enumerable.Empty<string>();
+            return string.Concat(
+                r.IsZoneController ? "ZC" : "NZC", "|",
+                string.Join(",", slaves), "|",
+                r.ZoneSlave == null ? string.Empty : $"{r.ZoneSlave.Address}:{r.ZoneSlave.Port}", "|",
+                r.Master == null ? string.Empty : $"{r.Master.Address}:{r.Master.Port}"
+            );
         }
 
         public void UpdateAcceptLanguage(CultureInfo culture)
@@ -252,4 +334,6 @@ namespace Blu4Net
             return Name;
         }
     }
+
+
 }

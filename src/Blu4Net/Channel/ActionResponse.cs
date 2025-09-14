@@ -62,4 +62,16 @@ namespace Blu4Net.Channel
             return $"Love: {Text}";
         }
     }
+
+    [XmlRoot("state")]
+    public class StateActionResponse : ActionResponse
+    {
+        [XmlText()]
+        public string Text;
+
+        public override string ToString()
+        {
+            return $"State: {Text}";
+        }
+    }
 }
