@@ -138,6 +138,12 @@ namespace Blu4Net
             return response.Volume;
         }
 
+        public async Task<int> AdjustVolumeDb(double delta_db)
+        {
+            var response = await _channel.AdjustVolumeDb(delta_db).ConfigureAwait(false);
+            return response.Volume;
+        }
+
         public async Task<int> Mute(bool on = true)
         {
             var response = await _channel.Mute(on ? 1 : 0).ConfigureAwait(false);

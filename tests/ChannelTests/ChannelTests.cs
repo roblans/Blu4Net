@@ -190,6 +190,15 @@ namespace ChannelTests
         }
 
         [TestMethod]
+        public async Task Channel_AdjustVolumeDb()
+        {
+            var amount = -1;
+            var previous = await Channel.GetVolume();
+            var response = await Channel.AdjustVolumeDb(amount);
+            Assert.AreEqual(previous.Decibel + amount, response.Decibel);
+        }
+
+        [TestMethod]
         public async Task Channel_MuteOn()
         {
             var response = await Channel.Mute(1);
