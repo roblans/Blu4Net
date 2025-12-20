@@ -282,6 +282,13 @@ namespace Blu4Net.Channel
             return await SendRequest<VolumeResponse>("Volume", parameters).ConfigureAwait(false);
         }
 
+        public async Task<VolumeResponse> AdjustVolumeDb(double delta_db)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["db"] = delta_db.ToString(CultureInfo.InvariantCulture);
+            return await SendRequest<VolumeResponse>("Volume", parameters).ConfigureAwait(false);
+        }
+
         public async Task<VolumeResponse> Mute(int mute = 1)
         {
             if (mute < 0 || mute > 1)

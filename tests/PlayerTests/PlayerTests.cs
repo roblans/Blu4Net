@@ -51,6 +51,32 @@ namespace PlayerTests
         }
 
         [TestMethod]
+        public async Task Player_AdjustVolumeDb()
+        {
+            var previous = await Player.GetVolume();
+            try
+            {
+                var completion = new TaskCompletionSource<int>();
+
+                using (Player.VolumeChanges
+                    .Where(volume => volume.Percentage == previous.Percentage + 1)
+                    .Timeout(TimeSpan.FromSeconds(2))
+                    .Subscribe(volume =>
+                    {
+                        completion.SetResult(volume.Percentage);
+                    }))
+                {
+                    await Player.AdjustVolumeDb(-0.5f);
+                    await completion.Task;
+                };
+            }
+            finally
+            {
+                await Player.SetVolume(previous.Percentage);
+            }
+        }
+
+        [TestMethod]
         public async Task Player_ChangeState()
         {
             var state = await Player.GetState();
