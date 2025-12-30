@@ -335,5 +335,29 @@ namespace ChannelTests
             var response = await Channel.GetServices();
         }
 
+        [TestMethod]
+        public async Task Channel_GetActiveInputSources()
+        {
+            var response = await Channel.GetInputSources();
+            Assert.IsTrue(response.Items.Length > 0);
+        }
+
+        [TestMethod]
+        public async Task Channel_SetActiveInputSource()
+        {
+            var channelStatus = await Channel.GetStatus();
+            var previousInputId = channelStatus.InputId;
+            
+            var inputs = await Channel.GetInputSources();
+            if (inputs.Items.Length > 2)
+            {
+                var otherInput = inputs.Items.First(i => i.Id != previousInputId);
+               
+                var response = await Channel.PlayByInputID(otherInput.Id);
+                Assert.IsNotNull(response);
+            }
+            
+            await Channel.PlayByInputID(previousInputId);
+        }
     }
 }

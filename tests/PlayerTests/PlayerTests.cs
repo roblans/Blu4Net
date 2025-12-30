@@ -233,5 +233,44 @@ namespace PlayerTests
         {
             var entries = await Player.PlayQueue.Save(Guid.NewGuid().ToString("N"));
         }
+
+        [TestMethod]
+        public async Task Player_GetActiveInputSources()
+        {
+            var inputSources = await Player.GetInputSources();
+            Assert.IsNotNull(inputSources);
+        }
+
+        [TestMethod]
+        public async Task Player_SetActiveInputSource()
+        {
+            var previousInput = await Player.GetInputSourceId();
+            var inputSources = await Player.GetInputSources();
+            Assert.IsNotNull(inputSources);
+
+            if (inputSources.Length > 0)
+            {
+                var firstInput = inputSources[0];
+                if (!string.IsNullOrEmpty(firstInput.PlayUrl))
+                {
+                    var result = await Player.SetInputSourceById(firstInput.Id);
+                    Assert.IsTrue(result);
+                }
+            }
+            
+            await Player.SetInputSourceById(previousInput);
+        }
+        
+        [TestMethod]
+        public async Task Player_GetActiveInputSources_CheckProperties()
+        {
+            var inputSources = await Player.GetInputSources();
+            Assert.IsNotNull(inputSources);
+
+            foreach (var input in inputSources)
+            {
+                Assert.IsNotNull(input.Id, "Input source name should not be null");
+            }
+        }
     }
 }

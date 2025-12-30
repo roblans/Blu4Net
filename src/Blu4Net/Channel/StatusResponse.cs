@@ -13,6 +13,9 @@ namespace Blu4Net.Channel
 
         [XmlElement("state")]
         public string State;
+        
+        [XmlElement("inputId")]
+        public string InputId;
 
         [XmlElement("streamFormat")]
         public string StreamFormat;
