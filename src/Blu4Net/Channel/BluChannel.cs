@@ -236,6 +236,16 @@ namespace Blu4Net.Channel
             var parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["id"] = id.ToString();
             return SendRequest<PlayResponse>("Play", parameters);
+        }        
+        
+        public Task<PlayResponse> PlayByInputID(string inputId)
+        {
+            if (string.IsNullOrWhiteSpace(inputId))
+                throw new ArgumentException(nameof(inputId), "Value must not be empty.");
+
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["inputId"] = inputId.ToString();
+            return SendRequest<PlayResponse>("Play", parameters);
         }
 
         public async Task<PlayResponse> Pause(int toggle = 0)
@@ -512,6 +522,18 @@ namespace Blu4Net.Channel
         public Task<XDocument> GetServices()
         {
             return SendRequest("Services");
+        }
+
+        public async Task<RadioBrowseResponse> GetInputSources()
+        {
+            var parameters = HttpUtility.ParseQueryString("service=Capture");
+
+            var response = await SendRequest<RadioBrowseResponse>("RadioBrowse", parameters).ConfigureAwait(false);
+            if (response.Items == null)
+            {
+                response.Items = new RadioBrowseResponse.Item[0];
+            }
+            return response;
         }
     }
 }

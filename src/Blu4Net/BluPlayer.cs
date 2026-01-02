@@ -64,7 +64,7 @@ namespace Blu4Net
                 .Select(response => (RepeatMode)response.Repeat);
 
             MediaChanges = _channel.StatusChanges
-                .SkipWhile(response => response.Title1 == status.Title1 && response.Title2 == status.Title2 && response.Title3 == status.Title3 && response.Quality == status.Quality)
+                .SkipWhile(response => response.InputId == status.InputId && response.Title1 == status.Title1 && response.Title2 == status.Title2 && response.Title3 == status.Title3 && response.Quality == status.Quality)
                 .DistinctUntilChanged(response => $"{response.Title1}{response.Title2}{response.Title3}{response.Quality}")
                 .Select(response => new PlayerMedia(response, Endpoint));
 
@@ -123,6 +123,12 @@ namespace Blu4Net
             set { _channel.Log = value; }
         }
 
+        public async Task<string> GetInputSourceId()
+        {
+            var response = await _channel.GetStatus().ConfigureAwait(false);
+            return response.InputId;
+        }
+        
         public async Task<Volume> GetVolume()
         {
             var response = await _channel.GetVolume().ConfigureAwait(false);
@@ -333,6 +339,23 @@ namespace Blu4Net
         public void UpdateAcceptLanguage(CultureInfo culture)
         {
             _channel.AcceptLanguage = culture;
+        }
+
+        public async Task<InputSourceItem[]> GetInputSources()
+        {
+            var response = await _channel.GetInputSources().ConfigureAwait(false);
+            return response.Items
+                .Select(item => new InputSourceItem(item, Endpoint))
+                .ToArray();
+        }
+
+        public async Task<bool> SetInputSourceById(string inputId)
+        {
+            if (string.IsNullOrEmpty(inputId))
+                throw new ArgumentNullException(nameof(inputId));
+
+            var response = await _channel.PlayByInputID(inputId);
+            return response != null;
         }
 
         public override string ToString()
