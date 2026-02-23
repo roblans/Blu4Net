@@ -29,6 +29,7 @@ namespace Blu4Net
         public IObservable<PlayerMedia> MediaChanges { get; }
         public IObservable<PlayPosition> PositionChanges { get; }
         public IObservable<GroupingState> GroupingChanges { get; }
+        public IObservable<string> InputSourceChanges { get; }
 
         private BluPlayer(BluChannel channel, SyncStatusResponse synStatus, StatusResponse status, BrowseContentResponse content)
         {
@@ -72,6 +73,11 @@ namespace Blu4Net
                 .SkipWhile(response => response.Seconds == status.Seconds && response.TotalLength == status.TotalLength)
                 .DistinctUntilChanged(response => $"{response.Seconds}{response.TotalLength}")
                 .Select(response => new PlayPosition(response));
+
+            InputSourceChanges = _channel.StatusChanges
+                .SkipWhile(response => response.InputId == status.InputId)
+                .DistinctUntilChanged(response => response.InputId)
+                .Select(response => response.InputId ?? string.Empty);
 
             var initialGroupingKey = SyncStatusKey(synStatus);
 
