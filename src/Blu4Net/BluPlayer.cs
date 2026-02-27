@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Blu4Net
@@ -362,6 +363,11 @@ namespace Blu4Net
 
             var response = await _channel.PlayByInputID(inputId);
             return response != null;
+        }
+
+        public Task<bool> Ping(TimeSpan timeout, CancellationToken cancellationToken = default)
+        {
+            return _channel.Ping(timeout, cancellationToken);
         }
 
         public override string ToString()

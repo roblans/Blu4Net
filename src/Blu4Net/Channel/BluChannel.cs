@@ -535,5 +535,18 @@ namespace Blu4Net.Channel
             }
             return response;
         }
+
+        public async Task<bool> Ping(TimeSpan timeout, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await SendRequest<SyncStatusResponse>("SyncStatus", null, timeout, cancellationToken).ConfigureAwait(false);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
