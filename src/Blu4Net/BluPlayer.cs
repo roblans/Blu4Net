@@ -207,6 +207,13 @@ namespace Blu4Net
                 var response = await _channel.Back().ConfigureAwait(false);
                 return response?.ID;
             }
+            
+            var backAction = status.Actions?.Items.FirstOrDefault(a => a.Name.Equals("back", StringComparison.OrdinalIgnoreCase));
+            if (backAction != null && !string.IsNullOrEmpty(backAction.Url))            
+            {
+                await _channel.ActionURL(backAction.Url).ConfigureAwait(false);
+            }
+            
             return null;
         }
 
@@ -218,6 +225,13 @@ namespace Blu4Net
                 var response = await _channel.Skip().ConfigureAwait(false);
                 return response?.ID;
             }
+            
+            var skipAction = status.Actions?.Items.FirstOrDefault(a => a.Name.Equals("skip", StringComparison.OrdinalIgnoreCase));
+            if (skipAction != null && !string.IsNullOrEmpty(skipAction.Url))            
+            {
+                await _channel.ActionURL(skipAction.Url).ConfigureAwait(false);
+            }
+            
             return null;
         }
 
