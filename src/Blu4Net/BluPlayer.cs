@@ -243,18 +243,39 @@ namespace Blu4Net
 
         public async Task<ShuffleMode> SetShuffleMode(ShuffleMode mode = ShuffleMode.ShuffleOn)
         {
+            // Shuffle is only supported when playing from the local play queue.
+            // Streams (radio, internet radio, etc.) do not support shuffle and
+            // the device returns an 'invalid state' error.
+            var status = await _channel.GetStatus().ConfigureAwait(false);
+            if (status.StreamUrl != null)
+                return (ShuffleMode)status.Shuffle;
+
             var response = await _channel.SetShuffle((int)mode).ConfigureAwait(false);
             return (ShuffleMode)response.Shuffle;
         }
 
         public async Task<RepeatMode> GetRepeatMode()
         {
+            // Repeat is only supported when playing from the local play queue.
+            // Streams (radio, internet radio, etc.) do not support repeat and
+            // the device returns an 'invalid state' error.
+            var status = await _channel.GetStatus().ConfigureAwait(false);
+            if (status.StreamUrl != null)
+                return (RepeatMode)status.Repeat;
+            
             var response = await _channel.GetRepeat().ConfigureAwait(false);
             return (RepeatMode)response.Repeat;
         }
 
         public async Task<RepeatMode> SetRepeatMode(RepeatMode mode = RepeatMode.RepeatAll)
         {
+            // Repeat is only supported when playing from the local play queue.
+            // Streams (radio, internet radio, etc.) do not support repeat and
+            // the device returns an 'invalid state' error.
+            var status = await _channel.GetStatus().ConfigureAwait(false);
+            if (status.StreamUrl != null)
+                return (RepeatMode)status.Repeat;
+
             var response = await _channel.SetRepeat((int)mode).ConfigureAwait(false);
             return (RepeatMode)response.Repeat;
         }
