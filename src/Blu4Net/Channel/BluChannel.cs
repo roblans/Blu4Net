@@ -487,6 +487,10 @@ namespace Blu4Net.Channel
             {
                 return document.Deserialize<AddSongResponse>();
             }
+            else if (document.Root.Name == "playlist")
+            {
+                return document.Deserialize<PlaylistPlayResponse>();
+            }
             throw new InvalidDataException();
         }
 
