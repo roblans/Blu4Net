@@ -41,6 +41,11 @@ namespace Blu4Net
             ImageUri = BluParser.ParseAbsoluteUri(item.Image, channel.Endpoint);
         }
 
+        /// <summary>
+        /// The browse key used for navigating into this entry (null when not resolvable).
+        /// </summary>
+        public string BrowseKey => _key;
+
         public bool HasContextMenu
         {
             get { return _contextMenuKey != null; }

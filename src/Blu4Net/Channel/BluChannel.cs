@@ -77,14 +77,26 @@ namespace Blu4Net.Channel
                     using (TextReader tr = new StringReader(responseContent))
                     {
                         var document = XDocument.Load(tr);
-
                         LogMessage($"Response: {document}");
-#if FILE_LOGGING
-                        document.Save(@$"D:\Temp\{Interlocked.Increment(ref counter)}.txt");
-#endif
+                        
+                        #if FILE_LOGGING
+                            document.Save(@$"D:\Temp\{Interlocked.Increment(ref counter)}.txt");
+                        #endif
+
+                        ThrowWhenResponseIsAnError(document);
+                        
                         return document;
                     }
                 }
+            }
+        }
+
+        private void ThrowWhenResponseIsAnError(XDocument response)
+        {
+            if (response.Root.Name == "error")
+            {
+                var errorResponse = response.Deserialize<ErrorResponse>();
+                throw new BluChannelException($"Response contains an error: '{errorResponse.Message}'.");
             }
         }
 
@@ -373,6 +385,21 @@ namespace Blu4Net.Channel
             return SendRequest<DeleteResponse>("Delete", parameters);
         }
 
+        public async Task Move(int from, int to)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["from"] = from.ToString();
+            parameters["to"] = to.ToString();
+            await SendRequest("Move", parameters).ConfigureAwait(false);
+        }
+
+        public async Task PlayIndex(int index)
+        {
+            var parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["id"] = index.ToString();
+            await SendRequest("Play", parameters).ConfigureAwait(false);
+        }
+
         public Task<SavedResponse> Save(string name)
         {
             if (name == null)
@@ -459,6 +486,10 @@ namespace Blu4Net.Channel
             else if (document.Root.Name == "addsong")
             {
                 return document.Deserialize<AddSongResponse>();
+            }
+            else if (document.Root.Name == "playlist")
+            {
+                return document.Deserialize<PlaylistPlayResponse>();
             }
             throw new InvalidDataException();
         }
