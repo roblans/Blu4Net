@@ -71,16 +71,19 @@ namespace Blu4Net.Channel
 
                 using (var response = await client.GetAsync(requestUri, cancellationToken).ConfigureAwait(false))
                 using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                using (var streamReader = new StreamReader(stream))
                 {
-                    var document = XDocument.Load(stream);
+                    var responseContent = streamReader.ReadToEnd();
+                    using (TextReader tr = new StringReader(responseContent))
+                    {
+                        var document = XDocument.Load(tr);
 
-                    LogMessage($"Response: {document}");
-
+                        LogMessage($"Response: {document}");
 #if FILE_LOGGING
-                    document.Save(@$"D:\Temp\{Interlocked.Increment(ref counter)}.txt");
+                        document.Save(@$"D:\Temp\{Interlocked.Increment(ref counter)}.txt");
 #endif
-
-                    return document;
+                        return document;
+                    }
                 }
             }
         }
