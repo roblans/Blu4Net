@@ -54,5 +54,15 @@ namespace Blu4Net
             var response = await _channel.Save(name).ConfigureAwait(false);
             return response.Entries;
         }
+
+        public Task Move(int from, int to)
+        {
+            return _channel.Move(from, to);
+        }
+
+        public Task PlayIndex(int index)
+        {
+            return _channel.PlayIndex(index);
+        }
     }
 }
